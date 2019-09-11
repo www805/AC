@@ -42,10 +42,10 @@
 
         <!--字符串工具类-->
         <dependency>
-            <groupId>org.openanzo.dependencies</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.4</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
+
 
         <!-- shiro start -->
         <dependency>

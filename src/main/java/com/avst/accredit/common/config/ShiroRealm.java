@@ -2,7 +2,7 @@ package com.avst.accredit.common.config;
 
 
 import com.avst.accredit.common.entity.User;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -85,8 +85,8 @@ public class ShiroRealm extends AuthorizingRealm {
         UsernamePasswordToken usernamePasswordToken=(UsernamePasswordToken )authenticationToken;
 
         //假设数据库的用户名和密码
-        String loginaccount = "root";
-        String password = "123456";
+        String loginaccount = "admin";
+        String password = "admin";
         Integer adminbool = 1;
 
         User user = new User();
@@ -94,11 +94,11 @@ public class ShiroRealm extends AuthorizingRealm {
         user.setPassword(password);
         user.setAdminbool(adminbool);
 
-        if (StringUtils.isEmpty(user.getUsername()) || StringUtils.isEmpty(user.getPassword())){  throw new UnknownAccountException();}
+        if (StringUtils.isEmpty(user.getLoginaccount()) || StringUtils.isEmpty(user.getPassword())){  throw new UnknownAccountException();}
 
         if (user.getAdminbool()==1){
             SecurityUtils.getSubject().getSession().setAttribute(user.getLoginaccount(), user);
-            ByteSource credentialsSalt = ByteSource.Util.bytes(user.getUsername());
+            ByteSource credentialsSalt = ByteSource.Util.bytes(user.getLoginaccount());
             SimpleAuthenticationInfo  simpleAuthenticationInfo = new SimpleAuthenticationInfo(
                     user,
                     user.getPassword(),

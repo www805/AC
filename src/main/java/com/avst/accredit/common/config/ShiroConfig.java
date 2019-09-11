@@ -79,6 +79,7 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
 
+        System.out.println("shiro工厂过滤");
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 
         //设置安全管理器
@@ -96,11 +97,15 @@ public class ShiroConfig {
         Map<String, String> filterMap = new LinkedHashMap<String, String>();
 
         //设置无需登录就可以访问
-        filterMap.put("/static/*", "anon");
-        filterMap.put("/templates/*", "anon");
+        filterMap.put("/static/**", "anon");
+        filterMap.put("/img/**", "anon");
+        filterMap.put("/js/**", "anon");
+        filterMap.put("/css/**", "anon");
+        filterMap.put("/templates/**", "anon");
+        filterMap.put("/loginCaChe", "anon");
 
         //设置必须要登录才可以访问的页面
-        filterMap.put("/index", "authc");
+        filterMap.put("/**", "authc");
 
         //授权过滤器
         filterMap.put("/getUser", "perms[user:getUser]");
