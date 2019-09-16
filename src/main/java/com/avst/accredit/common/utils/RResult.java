@@ -80,7 +80,11 @@ public class RResult<T> {
 		this.message = message;
 	}
 
-
+	public void setSuccess(){
+		endtime= DateUtil.getDateAndMinute();
+		this.setActioncode(Code.SUCCESS.toString());
+		this.setMessage("请求成功");
+	}
 
 	
 }

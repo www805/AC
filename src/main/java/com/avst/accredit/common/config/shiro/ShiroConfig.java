@@ -1,4 +1,4 @@
-package com.avst.accredit.common.config;
+package com.avst.accredit.common.config.shiro;
 
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
@@ -103,6 +103,9 @@ public class ShiroConfig {
         filterMap.put("/css/**", "anon");
         filterMap.put("/templates/**", "anon");
         filterMap.put("/loginCaChe", "anon");
+        filterMap.put("/logout", "anon");
+        filterMap.put("/ai", "anon");
+        filterMap.put("/getai", "anon");
 
         //设置必须要登录才可以访问的页面
         filterMap.put("/**", "authc");

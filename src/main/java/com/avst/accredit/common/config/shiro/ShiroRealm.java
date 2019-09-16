@@ -1,4 +1,4 @@
-package com.avst.accredit.common.config;
+package com.avst.accredit.common.config.shiro;
 
 
 import com.avst.accredit.common.entity.User;
@@ -11,10 +11,6 @@ import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShiroRealm extends AuthorizingRealm {
 //    @Autowired
