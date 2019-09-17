@@ -8,30 +8,17 @@ package com.avst.accredit.common.utils;
  */
 public class RResult<T> {
 
-	
+
 	private String version ;
-	
+
 	private String actioncode;
-	
+
 	private T data;
-	
+
 	private String endtime;
-	
+
 	private String message;
 
-	/**
-	 * 下个页面的id，可能不变，与传过来的pageid一样
-     * 所有的处理都是service中进行，action中要判断pageid是否一致，从而进行跳页面操作
-	 */
-	private String nextpageid;//
-
-	public String getNextpageid() {
-		return nextpageid;
-	}
-
-	public void setNextpageid(String nextpageid) {
-		this.nextpageid = nextpageid;
-	}
 
 	public RResult(){
 		endtime= DateUtil.getDateAndMinute();
@@ -39,7 +26,20 @@ public class RResult<T> {
 		actioncode=Code.FAIL.toString();
 	}
 
-	
+	public void changeToTrue(){
+		endtime= DateUtil.getDateAndMinute();
+		message="请求成功";
+		actioncode=Code.SUCCESS.toString();
+	}
+
+	public void changeToTrue(T t){
+		endtime= DateUtil.getDateAndMinute();
+		data=t;
+		message="请求成功";
+		actioncode=Code.SUCCESS.toString();
+	}
+
+
 	public String getVersion() {
 		return version;
 	}
@@ -80,11 +80,7 @@ public class RResult<T> {
 		this.message = message;
 	}
 
-	public void setSuccess(){
-		endtime= DateUtil.getDateAndMinute();
-		this.setActioncode(Code.SUCCESS.toString());
-		this.setMessage("请求成功");
-	}
 
-	
+
+
 }

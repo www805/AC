@@ -1,7 +1,10 @@
 package com.avst.accredit.web.action;
 
 import com.avst.accredit.common.utils.RResult;
+import com.avst.accredit.web.req.GetAccreditListParam;
 import com.avst.accredit.web.req.UserParam;
+import com.avst.accredit.web.service.MainService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -15,17 +18,24 @@ import javax.validation.Valid;
 @RestController
 public class MainAction {
 
+    @Autowired
+    private MainService mainService;
+
     @RequestMapping({"/", "main"})
     public ModelAndView Home(Model model){
         model.addAttribute("title", "首页系统");
         return new ModelAndView("main", "getMain", model);
     }
 
-
-    @RequestMapping("/ai")
-    public RResult getTest(){
-        int i = 1 / 0;
+    /**
+     * 获取所有授权记录
+     * @param param
+     * @return
+     */
+    @RequestMapping("/getAccreditList")
+    public RResult getAccreditList(@RequestBody GetAccreditListParam param){
         RResult result = new RResult();
+        mainService.getAccreditList(result, param);
         return result;
     }
 
@@ -34,8 +44,7 @@ public class MainAction {
     public RResult getAi(@RequestBody @Valid UserParam userParam){
 
         RResult result = new RResult();
-        result.setData(userParam);
-        result.setSuccess();
+        result.changeToTrue(userParam);
 
         return result;
     }

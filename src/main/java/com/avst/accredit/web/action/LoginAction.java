@@ -56,8 +56,7 @@ public class LoginAction {
             return result;
         }
 
-        result.setSuccess();
-        result.setEndtime(DateUtil.getDateAndMinute());
+        result.changeToTrue();
         return result;
     }
 
@@ -69,8 +68,7 @@ public class LoginAction {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
 
-        result.setSuccess();
-        result.setEndtime(DateUtil.getDateAndMinute());
+        result.changeToTrue();
         return result;
     }
 

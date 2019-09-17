@@ -108,7 +108,7 @@ public class ShiroConfig {
         filterMap.put("/getai", "anon");
 
         //设置必须要登录才可以访问的页面
-        filterMap.put("/**", "authc");
+//        filterMap.put("/**", "authc");
 
         //授权过滤器
         filterMap.put("/getUser", "perms[user:getUser]");

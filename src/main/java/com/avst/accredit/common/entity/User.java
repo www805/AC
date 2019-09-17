@@ -99,4 +99,17 @@ public class User implements Serializable {
     public void setSsid(String ssid) {
         this.ssid = ssid;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", loginaccount='" + loginaccount + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", adminbool=" + adminbool +
+                ", lastlogintime=" + lastlogintime +
+                ", ssid='" + ssid + '\'' +
+                '}';
+    }
 }
