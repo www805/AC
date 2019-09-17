@@ -181,9 +181,10 @@ function opneModal_1() {
         '                    <li>授权码授权</li>\n' +
         '                    <li><span style="color: red;">*</span>权限管理</li>\n' +
         '                </ul>\n' +
-        '                <div class="layui-tab-content" style="height: 100px;">\n' +
-        '                    <div class="layui-tab-item layui-show" style="margin-left: 155px;">\n' +
-        '                        <div class="layui-upload-drag" id="test10">\n' +
+        '                <div class="layui-tab-content" style="height: 100px;padding-top: 15px;">\n' +
+        '                    <div class="layui-tab-item layui-show" style="margin-left: 60px;">\n' +
+        '                        <input type="hidden" id="updateCpuCode" name="updateCpuCode" value=""/>\n' +
+        '                        <div class="layui-upload-drag" id="test10" style="width: 400px;">\n' +
         '                            <i class="layui-icon"></i>\n' +
         '                            <p>点击上传，或将文件拖拽到此处</p>\n' +
         '                        </div>\n' +
@@ -212,8 +213,9 @@ function opneModal_1() {
         '        </form>';
 
 
-    layui.use('form', function(){
+    layui.use(['form', 'upload'], function () {
         var form = layui.form;
+        var upload = layui.upload;
 
         var index = layer.open({
             type: 1,
@@ -224,15 +226,34 @@ function opneModal_1() {
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
                 layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '');//将按钮弄成能提交的
+                //拖拽上传
+                upload.render({
+                    elem: '#test10'
+                    ,url: '/uploadBytxt/'
+                    ,acceptMime: '.txt' //只允许上传图片文件
+                    ,exts: 'txt' //只允许上传压缩文件
+                    , before: function (obj) {
+                        $("#updateCpuCode").val("");
+                    }
+                    ,done: function(res){
+                        //上传成功，把授权码放到指定的name里面
+                        console.log(res)
+
+                        if (res.actioncode == "SUCCESS") {
+                            $("#updateCpuCode").val(res.data);
+                            layer.msg("授权文件加载成功",{icon: 6});
+                        }
+                    }
+                });
                 form.render();
             },
             yes: function (index, layero) {
                 //自定义验证规则
                 form.verify({
-                    typename:[/\S/,'请输入问题类型名称'], ordernum: [/\S/,'请输入问题排序号']
+                    typename: [/\S/, '请输入问题类型名称'], ordernum: [/\S/, '请输入问题排序号']
                 });
                 //监听提交
-                form.on('submit(fromContent)', function(data){
+                form.on('submit(fromContent)', function (data) {
 
                     //提交
                 });
