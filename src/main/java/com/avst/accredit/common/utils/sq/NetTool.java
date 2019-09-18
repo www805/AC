@@ -579,7 +579,8 @@ public static String getLocalMac() {
 
 			int exitvalue=process.waitFor();
 			if(exitvalue!=0){
-				throw new Exception("exitvalue is not 0, 说明代码有错");
+//				throw new Exception("exitvalue is not 0, 说明代码有错");
+				LogUtil.intoLog(3, NetTool.class.getClass(), "exitvalue is not 0, 说明代码有错");
 			}
 
 		} catch (Exception e) {

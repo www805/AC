@@ -20,7 +20,7 @@
         .top_button {
             margin-top: 50px;
             width: 500px;
-            height: 50px;
+            height: 60px;
             font-size: 24px;
         }
         .layui-btn-normal {
@@ -85,10 +85,10 @@
             <form class="layui-form" >
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="text-align: right;padding: 9px;">单位名称：</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="keyword" id="casename" lay-verify="required" placeholder="请输入类型名称" autocomplete="off" class="layui-input" >
+                    <div class="layui-input-block">
+                        <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" style="width: 90%;float: left;margin-right: 10px" class="layui-input" >
+                        <input type="button" class="layui-btn layui-btn-normal " style="float: left;" value="查询" onclick="getAccreditList_init(1,10);" >
                     </div>
-                    <input type="button" class="layui-btn layui-btn-normal" value="查询" onclick="getProblemTypeList_init(1,10);" >
                 </div>
             </form>
 
@@ -111,7 +111,11 @@
 
     <table class="layui-table">
         <colgroup>
-            <col width="100">
+            <col width="60">
+            <col>
+            <col>
+            <col>
+            <col>
             <col>
             <col>
             <col>
@@ -120,21 +124,32 @@
         <thead>
         <tr>
             <th>序号</th>
-            <th>类型名称</th>
-            <th>创建时间</th>
-            <th>排序</th>
-            <th>操作</th>
+            <th>单位名称</th>
+            <th>单位简称</th>
+            <th>授权总天数</th>
+            <th>授权几台客户端</th>
+            <th>是否永久授权</th>
+            <th>授权服务类型</th>
+            <th>授权码</th>
+            <th>授予权限</th>
         </tr>
         </thead>
         <tbody id="pagelisttemplates_tbody">
         {{#  layui.each(pagelist, function(index, value){ }}
         <tr>
             <td>{{index+1}}</td>
-            <td>{{value.typename}}</td>
-            <td>{{value.createtime}}</td>
-            <td>{{value.ordernum}}</td>
+            <td>{{value.clientName==null?"":value.clientName}}</td>
+            <td>{{value.unitCode==null?"":value.unitCode}}</td>
+            <td>{{value.sqDay==null?"":value.sqDay}}</td>
+            <td>{{value.sortNum==null?"":value.sortNum}}</td>
+            <td>{{value.foreverBool==null?"":value.foreverBool==true?'<span class="layui-badge layui-bg-cyan">永久</span>':'<span class="layui-badge ">临时</span>'}}</td>
+            <td>{{value.serverType==null?"":value.serverType}}</td>
+            <td>{{value.cpuCode==null?"":value.cpuCode}}</td>
             <td>
-                <a  class="layui-btn layui-btn-normal layui-btn-sm" onclick="getProblemTypeById('{{value.ssid}}');">修改</a>
+                {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); console.log(gnlist) }}
+                {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} }}
+                {{# } }}
+                {{roles}}
             </td>
         </tr>
         {{#  }); }}
@@ -153,17 +168,19 @@
 <script th:inline="javascript">
     $(function(){
 
-        // document.onkeydown = function (event) {
-        //     var e = event || window.event;
-        //     if (e && e.keyCode == 13) { //回车键的键值为13
-        //         event.preventDefault();
-        //         getProblemTypeList_init(1,10);
-        //     }
-        // };
+        getAccreditList_init(1, 2);
 
-        // $('#casename').on('input propertychange', function() {
-        //     getProblemTypeList_init(1,10);
-        // });
+        document.onkeydown = function (event) {
+            var e = event || window.event;
+            if (e && e.keyCode == 13) { //回车键的键值为13
+                event.preventDefault();
+                getAccreditList_init(1,10);
+            }
+        };
+
+        $('#keyword').on('input propertychange', function() {
+            getAccreditList_init(1,10);
+        });
     });
     layui.use(['layer', 'element', 'form'], function () {
         var layer = layui.layer; //获得layer模块
@@ -171,7 +188,14 @@
         var form = layui.form;
         //使用模块
 
-
+        form.on('switch(foreverBool)', function (data) {
+            console.log(data);
+            if(this.checked){
+                $("input[name='sqDay']").attr("disabled", "disabled").css("background","#eee").removeAttr("lay-verify").val("");
+            }else{
+                $("input[name='sqDay']").removeAttr("disabled").css("background", "").attr("lay-verify", "required|number");
+            }
+        });
 
         form.render();
     });

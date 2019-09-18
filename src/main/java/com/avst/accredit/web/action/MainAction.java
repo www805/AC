@@ -40,13 +40,4 @@ public class MainAction {
     }
 
 
-    @RequestMapping("/getai")
-    public RResult getAi(@RequestBody @Valid UserParam userParam){
-
-        RResult result = new RResult();
-        result.changeToTrue(userParam);
-
-        return result;
-    }
-
 }

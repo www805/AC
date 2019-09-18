@@ -39,7 +39,7 @@ public class ShiroConfig {
     public DefaultWebSecurityManager  securityManager(@Qualifier("myShiroRealm") ShiroRealm myShiroRealm, @Qualifier("ehCacheManager") EhCacheManager ehCacheManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myShiroRealm);//配置自定义验证类
-        securityManager.setCacheManager(ehCacheManager);//配置缓存
+//        securityManager.setCacheManager(ehCacheManager);//配置缓存
         return securityManager;
     }
 
@@ -79,7 +79,7 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("securityManager")DefaultWebSecurityManager securityManager){
 
-        System.out.println("shiro工厂过滤");
+//        System.out.println("shiro工厂过滤");
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
 
         //设置安全管理器

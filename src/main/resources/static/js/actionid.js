@@ -8,6 +8,11 @@ function getactionid_manage() {
 
         loginCaChe:"/loginCaChe",
 
+        addAccredit:"/addAccredit",
+        uploadBytxt:"/uploadBytxt",
+        getPrivilege:"/getPrivilege",
+        getAccreditList:"/getAccreditList",
+
 
 
     };
