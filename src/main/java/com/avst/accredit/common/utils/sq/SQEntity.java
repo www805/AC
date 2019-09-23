@@ -2,7 +2,12 @@ package com.avst.accredit.common.utils.sq;
 
 import com.avst.accredit.common.utils.DateUtil;
 
-public class SQEntity {
+import java.io.Serializable;
+
+public class SQEntity implements Serializable {
+
+    private static final long serialVersionUID = 4897030184678176486L;
+
     /**
      *  授权服务类型
      */
@@ -47,6 +52,18 @@ public class SQEntity {
      * 用 | 隔开
      */
     private String gnlist;//功能列表
+
+    private String ssid;
+
+    private String state = "1";
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getServerType() {
         return serverType;
@@ -120,6 +137,14 @@ public class SQEntity {
         this.gnlist = gnlist;
     }
 
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+    }
+
     @Override
     public String toString() {
         return  serverType + ";" +
@@ -130,6 +155,7 @@ public class SQEntity {
                 clientName + ";" +
                 unitCode + ";" +
                 sortNum  + ";" +
+                ssid  + ";" +
                 gnlist ;
     }
 

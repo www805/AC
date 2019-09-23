@@ -8,7 +8,8 @@ import java.util.List;
 
 public class SqCache {
 
-    private static List<SQEntity> SqCacheList = new ArrayList();
+    private static List<SQEntity> SqCacheList;
+    private static String sqJson;
 
     /**
      * 获取所有笔录状态缓存
@@ -40,22 +41,23 @@ public class SqCache {
             SqCacheList.add(sqEntity);
         }else{
             boolean cunzai = false;
-//            for (SQEntity sq : SqCacheList) {
-//                if (sq.getCpuCode().equals(sqEntity.getCpuCode())) {
-//                    cunzai = true;
-//                    sq.setClientName(sqEntity.getClientName());
-//                    sq.setUnitCode(sqEntity.getUnitCode());
-//                    sq.setSqDay(sqEntity.getSqDay());
-//                    sq.setSortNum(sqEntity.getSortNum());
-//                    sq.setServerType(sqEntity.getServerType());
-//                    sq.setForeverBool(sqEntity.isForeverBool());
-//                    sq.setGnlist(sqEntity.getGnlist());
-//                    sq.setStartTime(sqEntity.getStartTime());
-//                    break;
-//                }else{
-//                    cunzai = false;
-//                }
-//            }
+            for (SQEntity sq : SqCacheList) {
+                if (sq.getSsid().equals(sqEntity.getSsid())) {
+                    cunzai = true;
+                    sq.setClientName(sqEntity.getClientName());
+                    sq.setUnitCode(sqEntity.getUnitCode());
+                    sq.setSqDay(sqEntity.getSqDay());
+                    sq.setSortNum(sqEntity.getSortNum());
+                    sq.setCpuCode(sqEntity.getCpuCode());
+                    sq.setServerType(sqEntity.getServerType());
+                    sq.setForeverBool(sqEntity.isForeverBool());
+                    sq.setGnlist(sqEntity.getGnlist());
+                    sq.setStartTime(sqEntity.getStartTime());
+                    break;
+                }else{
+                    cunzai = false;
+                }
+            }
             if(cunzai == false){
                 SqCacheList.add(sqEntity);
             }
@@ -64,9 +66,9 @@ public class SqCache {
 
     /**
      * 移除某个
-     * @param cpuCode
+     * @param ssid
      */
-    public static synchronized void removeSqCacheByCpuCode(String cpuCode){
+    public static synchronized void removeSqCacheBySsid(String ssid){
 
         if(null==SqCacheList||SqCacheList.size() == 0){
             return ;
@@ -74,8 +76,9 @@ public class SqCache {
         Iterator<SQEntity> iterator = SqCacheList.iterator();
         while (iterator.hasNext()) {
             SQEntity param = iterator.next();
-            if (param.getCpuCode().equals(cpuCode)) {
-                iterator.remove();
+            if (param.getSsid().equals(ssid)) {
+                param.setState("0");
+//                iterator.remove();
                 break;
             }
         }
@@ -89,4 +92,18 @@ public class SqCache {
     }
 
 
+    /**
+     * 设置授权json（增、删的时候使用）
+     * @param sqjsonstr
+     */
+    public static synchronized void setSqJson(String sqjsonstr) {
+        sqJson = sqjsonstr;
+    }
+
+    /**
+     * 获取授权的json
+     */
+    public static synchronized String getSqJson() {
+        return sqJson;
+    }
 }

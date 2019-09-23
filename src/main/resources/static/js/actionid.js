@@ -10,6 +10,7 @@ function getactionid_manage() {
 
         addAccredit:"/addAccredit",
         uploadBytxt:"/uploadBytxt",
+        delAccredit:"/delAccredit",
         getPrivilege:"/getPrivilege",
         getAccreditList:"/getAccreditList",
 

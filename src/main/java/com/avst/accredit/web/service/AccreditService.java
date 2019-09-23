@@ -1,5 +1,9 @@
 package com.avst.accredit.web.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.avst.accredit.common.cache.PrivilegeCache;
+import com.avst.accredit.common.cache.SqCache;
 import com.avst.accredit.common.utils.DateUtil;
 import com.avst.accredit.common.utils.INI4j;
 import com.avst.accredit.common.utils.OpenUtil;
@@ -8,19 +12,16 @@ import com.avst.accredit.common.utils.properties.PropertiesListenerConfig;
 import com.avst.accredit.common.utils.sq.CreateSQ;
 import com.avst.accredit.common.utils.sq.NetTool;
 import com.avst.accredit.common.utils.sq.SQEntity;
+import com.avst.accredit.web.dao.SQEntityRoom_R_W_XML;
 import com.avst.accredit.web.req.GetAccreditParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AccreditService {
@@ -67,33 +68,28 @@ public class AccreditService {
 
     public void addAccredit(RResult result, GetAccreditParam param) {
 
-        if(StringUtils.isEmpty(param.getClientName())){
-            result.setMessage("单位名称不能为空");
-            return ;
+        Integer sortNum = 0;
+
+        //读出缓存判断，排序
+        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        for (SQEntity sqEntity : sqCacheList) {
+
+            if (param.getUnitCode().equals(sqEntity.getUnitCode())) {
+                ArrayList<Integer> sortNumList = new ArrayList<>();
+                sortNumList.add(sqEntity.getSortNum() + 1);
+                Collections.sort(sortNumList);
+                sortNum = sortNumList.get(0);
+            }
+
         }
-        if(StringUtils.isEmpty(param.getUnitCode())){
-            result.setMessage("单位简称不能为空");
-            return ;
-        }
-        if(StringUtils.isEmpty(param.getServerType())){
-            result.setMessage("授权服务类型不能为空");
-            return ;
-        }
-        if(StringUtils.isEmpty(param.getGnlist())){
-            result.setMessage("授权功能列表不能为空");
-            return ;
-        }
-        if(StringUtils.isEmpty(param.getCpuCode())){
-            result.setMessage("授权码不能为空");
-            return ;
-        }
+
 
         SQEntity sqEntity= new SQEntity();
         //授权的UnitCode一定是有规则的，例如：最上面的服务器是hb,下一级hb_wh,hb_wh_hk,最下级的客户端服务器也是hb_wh_hk；
         // 当前的节点服务器和该节点的下级服务器（客户端服务器）UnitCode一致，只是SortNum不同，节点是0，其他自动在上一个数值上加1
         sqEntity.setUnitCode(param.getUnitCode());
         sqEntity.setSqDay(param.getSqDay());
-        sqEntity.setSortNum(param.getSortNum());
+        sqEntity.setSortNum(sortNum);//排序
         sqEntity.setServerType(param.getServerType());
         sqEntity.setForeverBool(param.getForeverBool());//是否永久授权
         sqEntity.setClientName(param.getClientName());
@@ -101,6 +97,7 @@ public class AccreditService {
 
         sqEntity.setGnlist(param.getGnlist()); //通过集合转成字符串，以|的方式分割
         sqEntity.setStartTime(DateUtil.getDateAndMinute());
+        sqEntity.setSsid(OpenUtil.getUUID_32());
 
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
         String startTime = df.format(new Date());
@@ -136,13 +133,18 @@ public class AccreditService {
         LinkedHashMap<String, LinkedHashMap<String, String>> map = null;
         HashMap hashMap = new HashMap();
         try {
-            INI4j ini4j = new INI4j(new File(path));
+            hashMap = PrivilegeCache.getPrivilegeList();
 
-            map = ini4j.get();
+            if (null == hashMap || hashMap.size() == 0) {
+                INI4j ini4j = new INI4j(new File(path));
+                map = ini4j.get();
 
-            hashMap.put("serverType", map.get("serverType"));
-            map.remove("serverType");
-            hashMap.put("shouquan", map);
+                hashMap.put("serverType", map.get("serverType"));
+                map.remove("serverType");
+                hashMap.put("shouquan", map);
+
+                PrivilegeCache.setPrivilegeCacheList(hashMap);
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -153,5 +155,30 @@ public class AccreditService {
         result.changeToTrue(hashMap);
     }
 
+    public void delAccredit(RResult result, GetAccreditParam param) {
 
+        String ssid = param.getSsid();
+
+        System.out.println(ssid);
+
+        //获取xml保存路径
+        String filename= PropertiesListenerConfig.getProperty("file.data.url");
+
+        //xml保存的固定地址
+        String page = OpenUtil.getXMSoursePath() + filename;
+
+        //把json转换成集合
+        String sqJson = SqCache.getSqJson();
+        if(StringUtils.isNotEmpty(sqJson)){
+            List<SQEntity> sqEntities = JSON.parseObject(sqJson, new TypeReference<List<SQEntity>>() {});
+            SqCache.setSqCacheList(sqEntities);
+            SqCache.setSqJson("");
+        }
+
+        SqCache.removeSqCacheBySsid(ssid);
+        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqCacheList);
+
+        result.changeToTrue();
+    }
 }

@@ -1,11 +1,6 @@
 package com.avst.accredit.web.dao;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +8,13 @@ import java.util.List;
 import com.avst.accredit.common.utils.DateUtil;
 import com.avst.accredit.common.utils.OpenUtil;
 import com.avst.accredit.common.utils.sq.SQEntity;
+import org.dom4j.io.OutputFormat;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.InputSource;
 
@@ -25,6 +22,15 @@ public class SQEntityRoom_R_W_XML {
 
 	public static List<SQEntity> readXml(String xmlurl) {
 		try {
+
+			List<SQEntity> xmls=new ArrayList<SQEntity>();
+
+			//判断如果xml不存在就返回
+			File file = new File(xmlurl);
+			if (!file.exists()) {
+				return xmls;
+			}
+
 			// 1. 创建org.jdom.input.SAXBuilder对象
 			SAXBuilder saxBuilder = new SAXBuilder();
 			// 2. 创建一个输入流, 用来加载xml文件
@@ -34,8 +40,7 @@ public class SQEntityRoom_R_W_XML {
 			// 3. 获取根节点
 			Element rootElement = document.getRootElement();
 
-			List<SQEntity> xmls=new ArrayList<SQEntity>();
-			
+
 			// 4. 获取根节点下的子节点
 			List<Element> lists = rootElement.getChildren();
 			
@@ -75,6 +80,10 @@ public class SQEntityRoom_R_W_XML {
 						xml.setGnlist(object.getValue());
 					}else if(i==8){
 						xml.setStartTime(object.getValue());
+					}else if(i==9){
+						xml.setSsid(object.getValue());
+					}else if(i==10){
+						xml.setState(object.getValue());
 					}
 					i++;
 				}
@@ -131,6 +140,10 @@ public class SQEntityRoom_R_W_XML {
 					xml.setGnlist(str);
 				}else if(i==8){
 					xml.setStartTime(str);
+				}else if(i==9){
+					xml.setSsid(str);
+				}else if(i==10){
+					xml.setState(str);
 				}
 				i++;
 			}
@@ -184,12 +197,25 @@ public class SQEntityRoom_R_W_XML {
 					element.addContent(new Element("cpuCode()").setText(sqEntity.getCpuCode()));
 					element.addContent(new Element("gnlist").setText(sqEntity.getGnlist()));
 					element.addContent(new Element("startTime").setText(sqEntity.getStartTime()));
+					element.addContent(new Element("ssid").setText(sqEntity.getSsid()));
+					element.addContent(new Element("state").setText(sqEntity.getState()));
 
 					//将已经设置好值的elements赋给root
 					root.addContent(element);  
 					
 					//定义一个用于输出xml文档的类
-					XMLOutputter XMLOut = new XMLOutputter();  
+					XMLOutputter XMLOut = new XMLOutputter();
+
+
+
+					// 设置生成xml的格式
+					Format format = Format.getPrettyFormat();
+
+					// 设置编码格式
+					format.setEncoding("UTF-8");
+
+					XMLOut.setFormat(format);
+
 					
 					//将生成的xml文档Doc输出到文件
 					XMLOut.output(Doc, new FileOutputStream(xmlurl));
@@ -228,6 +254,8 @@ public class SQEntityRoom_R_W_XML {
 			elements.addContent(new Element("cpuCode").setText(SQEntity.getCpuCode()));
 			elements.addContent(new Element("gnlist").setText(SQEntity.getGnlist()));
 			elements.addContent(new Element("startTime").setText(SQEntity.getStartTime()));
+			elements.addContent(new Element("ssid").setText(SQEntity.getSsid()));
+			elements.addContent(new Element("state").setText(SQEntity.getState()));
 			//将已经设置好值的elements赋给root
 			root.addContent(elements);  
 		} 
@@ -235,8 +263,16 @@ public class SQEntityRoom_R_W_XML {
 		XMLOutputter XMLOut = new XMLOutputter();  
 
 		try {
+
+			// 设置生成xml的格式
+			Format format = Format.getPrettyFormat();
+
+			// 设置编码格式
+			format.setEncoding("UTF-8");
 			
 			OpenUtil.createpath_file(xmlurl);
+
+			XMLOut.setFormat(format);
 			
 			//将生成的xml文档Doc输出到文件
 			XMLOut.output(Doc, new FileOutputStream(xmlurl));

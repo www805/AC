@@ -2,6 +2,7 @@ package com.avst.accredit.common.utils;
 
 import com.avst.accredit.common.utils.sq.SQEntity;
 import com.avst.accredit.web.req.GetAccreditListParam;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,25 +23,13 @@ public class FuzzyQueryUtils {
         Integer currPage = param.getCurrPage();
         Integer pageSize = param.getPageSize();
 
-        if (currPage == 1) {
-            currPage = 0;
-        } else if (currPage == 2) {
-
-        } else if (currPage >= 3) {
-            currPage = (currPage * pageSize) - 1;
+        if(currPage == 1){
+            currPage--;
+        }else if (currPage >= 2) {
+            currPage = (currPage - 1) * pageSize;
         }
 
-//        currPage = (currPage * pageSize) - 1;
-
-//        if (currPage < 1) {
-//            currPage = 0;
-//        } else if (currPage > 1) {
-////            currPage--;
-//
-//        }
-
         int j = 1;
-
         for (int i = 0; i < list.size(); i++) {
             if (i >= currPage && j <= pageSize) {
                 fuzzyQuery.add(list.get(i));
@@ -67,5 +56,62 @@ public class FuzzyQueryUtils {
             }
         }
         return fuzzyQuery;
+    }
+
+    /**
+     * 模糊分页查询
+     * @param param
+     * @param list
+     * @return
+     */
+    public static List<SQEntity> fuzzyQueryPage (GetAccreditListParam param, List<SQEntity> list){
+        List<SQEntity> fuzzyQuery = new ArrayList();
+        //大小写不敏感的时候，多加一个条件
+        Pattern pattern = Pattern.compile(param.getClientName(), Pattern.CASE_INSENSITIVE);
+
+        Integer currPage = param.getCurrPage();
+        Integer pageSize = param.getPageSize();
+
+        if(currPage == 1){
+            currPage--;
+        }else if (currPage >= 2) {
+            currPage = (currPage - 1) * pageSize;
+        }
+
+        int j = 1;
+
+        for(int i=0; i < list.size(); i++){
+            Matcher matcher = pattern.matcher((list.get(i)).getClientName().toString());
+            if(i >= currPage && j <= pageSize && matcher.find()){
+                fuzzyQuery.add(list.get(i));
+                j++;
+            }
+        }
+        return fuzzyQuery;
+    }
+
+
+    /**
+     * 条件查询获取总数
+     * @param name
+     * @param list
+     * @return
+     */
+    public static Integer fuzzyQueryCount (String name, List<SQEntity> list){
+
+        if(StringUtils.isEmpty(name)){
+            return list.size();
+        }
+
+        List<SQEntity> fuzzyQuery = new ArrayList();
+        //大小写不敏感的时候，多加一个条件
+        Pattern pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
+        for(int i=0; i < list.size(); i++){
+            Matcher matcher = pattern.matcher((list.get(i)).getClientName().toString());
+            if(matcher.find()){
+                fuzzyQuery.add(list.get(i));
+            }
+        }
+        return fuzzyQuery.size();
     }
 }

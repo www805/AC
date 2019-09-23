@@ -25,6 +25,7 @@ public class BaseExceptionHandler {
     //拦截后台所有代码中的异常
     @ExceptionHandler(value = Exception.class)
     public RResult exception(Exception e) {
+        e.printStackTrace();
         LogUtil.intoLog(4, e.getClass(), e.getMessage());
         RResult result = new RResult();
         result.setMessage("系统繁忙,请稍后再试");

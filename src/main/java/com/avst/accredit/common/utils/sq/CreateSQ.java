@@ -30,7 +30,7 @@ public class CreateSQ {
             String rr= EncodeUtil.encoderByDES(sqcode);
             LogUtil.intoLog(CreateSQ.class,"授权创建后 rr:"+rr);
 
-            String path=basepath+"\\"+ DateUtil.getSeconds() +"_"+javakeyname;
+            String path=basepath+"\\"+ javakeyname;
             ReadWriteFile.writeTxtFile(rr,path);
 
             return true;

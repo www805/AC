@@ -1,4 +1,5 @@
 var gnlist = "";
+var loadIndex;
 
 function getAccreditList_init(currPage,pageSize) {
     var url = getactionid_manage().getAccreditList;
@@ -8,6 +9,12 @@ function getAccreditList_init(currPage,pageSize) {
         currPage:currPage,
         pageSize:pageSize
     };
+
+    loadIndex = layer.msg("加载中，请稍后...", {
+        icon: 16,
+        time:10000,
+        shade: [0.1,"#fff"]
+    });
     ajaxSubmitByJson(url,data,callGetAccreditList);
 }
 
@@ -18,6 +25,11 @@ function getProblemTypeList(keyword, currPage, pageSize) {
         currPage:currPage,
         pageSize:pageSize
     };
+    loadIndex = layer.msg("加载中，请稍后...", {
+        icon: 16,
+        time:10000,
+        shade: [0.1,"#fff"]
+    });
     ajaxSubmitByJson(url, data, callGetAccreditList);
 }
 
@@ -33,7 +45,6 @@ function addAccredit() {
 
     var clientName = $("input[name='clientName']").val();
     var unitCode = $("input[name='unitCode']").val();
-    var sortNum = $("input[name='sortNum']").val();
     var sqDay = $("input[name='sqDay']").val();
     var serverType = $("input[name='serverType']").val();
 
@@ -62,24 +73,62 @@ function addAccredit() {
     if(!isNotEmpty(sqDay)){
         sqDay = "0";
     }
-    if(!isNotEmpty(sortNum)){
-        sortNum = "0";
-    }
 
     var data = {
         clientName: clientName,
         unitCode: unitCode,
         sqDay: parseInt(sqDay),
-        sortNum: parseInt(sortNum),
         foreverBool: foreverBool,
         serverType: serverType,
         gnlist: gnlist,
         cpuCode: cpuCode
     };
-    ajaxSubmitByJson(url, data, callAddOrUpdate);
+
+
+    $.ajax({
+        url : url,
+        type : "POST",
+        async : true,
+        dataType : "json",
+        contentType: "application/json",
+        data : JSON.stringify(data),
+        timeout : 60000,
+        success :function (data) {
+            callAddOrDelete(data)
+        },
+        error : function (data) {
+            console.log(data);
+        }
+    });
+
+
+    // ajaxSubmitByJson(url, data, callAddOrDelete());
 }
 
-function callAddOrUpdate(data){
+//删除一条授权记录
+function deleteAccreditBySsid(ssid) {
+    if (!isNotEmpty(ssid)){
+        layer.msg("系统异常",{icon: 5});
+        return;
+    }
+
+    layer.confirm('确定要作废该条授权记录吗', {
+        btn: ['确认','取消'], //按钮
+        shade: [0.1,'#fff'], //不显示遮罩
+    }, function(index){
+        var url = getactionid_manage().delAccredit;
+        var data={
+            ssid:ssid
+        };
+        ajaxSubmitByJson(url,data,callAddOrDelete);
+
+        layer.close(index);
+    }, function(index){
+        layer.close(index);
+    });
+}
+
+function callAddOrDelete(data){
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
             layer.msg("操作成功",{icon: 6});
@@ -91,17 +140,18 @@ function callAddOrUpdate(data){
 }
 
 function callGetAccreditList(data){
+    layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
             pageshow(data);
-            // var listcountsize = data.data.pageparam.recordCount;
-            // if (listcountsize == 0) {
-            //     $("#wushuju").show();
-            //     $("#pagelistview").hide();
-            // } else {
-            //     $("#wushuju").hide();
-            //     $("#pagelistview").show();
-            // }
+            var listcountsize = data.data.pagelist;
+            if (listcountsize == null || listcountsize.length == 0) {
+                $("#wushuju").show();
+                $("#pagelistview").hide();
+            } else {
+                $("#wushuju").hide();
+                $("#pagelistview").show();
+            }
         }
     }else{
         layer.msg(data.message,{icon: 5});
@@ -131,10 +181,37 @@ function callGetPrivilege(data){
                 '   <div class="layui-input-block">';
 
                 var inpitHTML = "";
-
+                var indexKey = 0;
                 for (var pro in item){
                     var value = item[pro];
-                    inpitHTML += '       <input type="checkbox" name="' + pro + '" title="' + value + '">';
+
+                    if (keys[i].indexOf("OEM版本") != -1) {
+                        if (indexKey == 0) {
+                            inpitHTML += '       <input type="radio" name="oem" value="' + pro + '" title="' + value + '" checked>';
+                        } else {
+                            inpitHTML += '       <input type="radio" name="oem" value="' + pro + '" title="' + value + '">';
+                        }
+                    }else if (keys[i].indexOf("分支") != -1) {
+                        if (indexKey == 0) {
+                            inpitHTML += '       <input type="radio" name="fen" value="' + pro + '" title="' + value + '" checked>';
+                        }else{
+                            inpitHTML += '       <input type="radio" name="fen" value="' + pro + '" title="' + value + '">';
+                        }
+                    }else if (keys[i].indexOf("单机版") != -1) {
+                        if (indexKey == 0) {
+                            inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '" checked>';
+                        }else{
+                            inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '">';
+                        }
+                    }else {
+                        if (indexKey == 0) {
+                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + pro + '" title="' + value + '" checked>';
+                        }else{
+                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + pro + '" title="' + value + '">';
+                        }
+                    }
+
+                    indexKey++;
                 }
 
                 quanxianHTML += itemHTML + inpitHTML + '   </div>' +
@@ -201,13 +278,13 @@ function opneModal_1() {
         '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>单位名称</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="clientName" lay-verify="required" required  autocomplete="off" placeholder="请输入单位名称" class="layui-input" >\n' +
+        '                    <input type="text" name="clientName"  required lay-verify="required" autocomplete="off" placeholder="请输入单位名称" class="layui-input" >\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>单位简称</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>单位代码</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="unitCode" lay-verify="required" required  autocomplete="off" placeholder="请输入单位简称如：avst" class="layui-input" >\n' +
+        '                    <input type="text" name="unitCode" required  lay-verify="required" autocomplete="off" placeholder="请输入单位代码如：avst" class="layui-input" >\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
@@ -216,13 +293,6 @@ function opneModal_1() {
         '                    <input type="number" name="sqDay" lay-verify="required|number" required  autocomplete="off" placeholder="请输入授权总天数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
         '                </div>\n' +
         '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>授权几台客户端</label>\n' +
-        '                <div class="layui-input-block">\n' +
-        '                    <input type="number" name="sortNum" lay-verify="required|number" required  autocomplete="off" placeholder="请输入授权几台客户端" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-
         '            <div class="layui-form-item">\n' +
         '                    <label class="layui-form-label"><span style="color: red;">*</span>授权服务类型</label>\n' +
         '                    <div class="layui-input-block">\n' +
@@ -237,11 +307,10 @@ function opneModal_1() {
         '                        <input type="checkbox" name="foreverBool" id="foreverBool" lay-filter="foreverBool" lay-skin="switch">\n' +
         '                    </div>\n' +
         '            </div>\n' +
-        '            <div id="guanli" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="margin-left: 20px;">\n' +
+        '            <div id="guanli" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="margin-left: 20px;margin-bottom: 60px;">\n' +
         '                <ul class="layui-tab-title">\n' +
         '                    <li class="layui-this"><span style="color: red;">*</span>上传授权文件</li>\n' +
         '                    <li>授权码授权</li>\n' +
-        '                    <li><span style="color: red;">*</span>权限管理</li>\n' +
         '                </ul>\n' +
         '                <div class="layui-tab-content" style="height: 100px;padding-top: 15px;">\n' +
         '                    <div class="layui-tab-item layui-show" >\n' +
@@ -259,18 +328,16 @@ function opneModal_1() {
         '                            </div>\n' +
         '                        </div>\n' +
         '                    </div>\n' +
-        '                    <div class="layui-tab-item" id="quanxian">\n' +
-        '                        <div class="layui-form-item">\n' +
-        '                            <label class="layui-form-label"><span style="color: red;">*</span>授予权限</label>\n' +
-        '                            <div class="layui-input-block">\n' +
-        '                                <input type="checkbox" name="record" title="笔录制作" checked>\n' +
-        '                                <input type="checkbox" name="asr" title="语音识别">\n' +
-        '                                <input type="checkbox" name="fd" title="设备控制">\n' +
-        '                                <input type="checkbox" name="ph" title="不知道是啥">\n' +
-        '                            </div>\n' +
-        '                        </div>\n' +
-        '                    </div>\n' +
         '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item" id="quanxian">\n' +
+        '                  <label class="layui-form-label"><span style="color: red;">*</span>授予权限</label>\n' +
+        '                  <div class="layui-input-block">\n' +
+        '                       <input type="checkbox" name="record" title="笔录制作" checked>\n' +
+        '                       <input type="checkbox" name="asr" title="语音识别">\n' +
+        '                       <input type="checkbox" name="fd" title="设备控制">\n' +
+        '                       <input type="checkbox" name="ph" title="不知道是啥">\n' +
+        '                  </div>\n' +
         '            </div>\n' +
         '        </form>';
 
@@ -287,7 +354,7 @@ function opneModal_1() {
             btn: ['确定', '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
-                layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '');//将按钮弄成能提交的
+                layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '').css("border-color","#4A77D4").css("background-color","#4A77D4");//将按钮弄成能提交的
                 //拖拽上传
                 var url = getactionid_manage().uploadBytxt;
                 upload.render({
@@ -300,7 +367,6 @@ function opneModal_1() {
                     }
                     ,done: function(res){
                         //上传成功，把授权码放到指定的name里面
-                        console.log(res)
 
                         if (res.actioncode == "SUCCESS") {
                             $("#updateCpuCode").val(res.data);
@@ -324,6 +390,14 @@ function opneModal_1() {
                             gnlist += "|" + this.name;
                         }else{
                             gnlist += this.name;
+                        }
+                    });
+                    $("#quanxian input[type='radio']:checked").each(function(index, element){
+
+                        if(isNotEmpty(gnlist)){
+                            gnlist += "|" + this.value;
+                        }else{
+                            gnlist += this.value;
                         }
                     });
 

@@ -66,9 +66,16 @@
             border-color: #4A77D4;
             background-color: #4A77D4;
         }
+        .layui-main {
+            width: 1350px;
+        }
+        #paging {
+            float: right;
+            margin-bottom: 50px;
+        }
     </style>
 </head>
-<body>
+<body style="background: url('/img/body.png');">
 
 <div class="layui-row">
     <div class="layui-col-xs12 layui-col-md12">
@@ -87,7 +94,7 @@
                     <label class="layui-form-label" style="text-align: right;padding: 9px;">单位名称：</label>
                     <div class="layui-input-block">
                         <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" style="width: 90%;float: left;margin-right: 10px" class="layui-input" >
-                        <input type="button" class="layui-btn layui-btn-normal " style="float: left;" value="查询" onclick="getAccreditList_init(1,10);" >
+                        <input type="button" class="layui-btn layui-btn-normal " id="chaxun" style="float: left;" value="查询" onclick="getAccreditList_init(1,10);" >
                     </div>
                 </div>
             </form>
@@ -112,14 +119,16 @@
     <table class="layui-table">
         <colgroup>
             <col width="60">
+            <col width="120">
             <col>
             <col>
             <col>
             <col>
             <col>
             <col>
-            <col>
+            <col width="170">
             <col width="200">
+            <col width="60">
         </colgroup>
         <thead>
         <tr>
@@ -127,15 +136,18 @@
             <th>单位名称</th>
             <th>单位简称</th>
             <th>授权总天数</th>
-            <th>授权几台客户端</th>
+            <th>授权排序</th>
             <th>是否永久授权</th>
             <th>授权服务类型</th>
             <th>授权码</th>
+            <th>授权时间</th>
             <th>授予权限</th>
+            <th>操作</th>
         </tr>
         </thead>
         <tbody id="pagelisttemplates_tbody">
         {{#  layui.each(pagelist, function(index, value){ }}
+        {{#  if(value.state == 1 ){  }}
         <tr>
             <td>{{index+1}}</td>
             <td>{{value.clientName==null?"":value.clientName}}</td>
@@ -145,13 +157,16 @@
             <td>{{value.foreverBool==null?"":value.foreverBool==true?'<span class="layui-badge layui-bg-cyan">永久</span>':'<span class="layui-badge ">临时</span>'}}</td>
             <td>{{value.serverType==null?"":value.serverType}}</td>
             <td>{{value.cpuCode==null?"":value.cpuCode}}</td>
+            <td>{{value.startTime==null?"":value.startTime}}</td>
             <td>
-                {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); console.log(gnlist) }}
+                {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); }}
                 {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} }}
                 {{# } }}
                 {{roles}}
             </td>
+            <td><input type="button" onclick="deleteAccreditBySsid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="作废"/> </td>
         </tr>
+        {{#  }  }}
         {{#  }); }}
         </tbody>
     </table>
@@ -168,7 +183,6 @@
 <script th:inline="javascript">
     $(function(){
 
-        getAccreditList_init(1, 2);
 
         document.onkeydown = function (event) {
             var e = event || window.event;
@@ -181,6 +195,10 @@
         $('#keyword').on('input propertychange', function() {
             getAccreditList_init(1,10);
         });
+
+
+        setTimeout("$(\"#chaxun\").click();",300);
+
     });
     layui.use(['layer', 'element', 'form'], function () {
         var layer = layui.layer; //获得layer模块
@@ -189,7 +207,6 @@
         //使用模块
 
         form.on('switch(foreverBool)', function (data) {
-            console.log(data);
             if(this.checked){
                 $("input[name='sqDay']").attr("disabled", "disabled").css("background","#eee").removeAttr("lay-verify").val("");
             }else{

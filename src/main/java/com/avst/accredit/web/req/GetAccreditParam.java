@@ -1,15 +1,28 @@
 package com.avst.accredit.web.req;
 
+import com.avst.accredit.common.config.check.Create;
+import com.avst.accredit.common.config.check.Delete;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 public class GetAccreditParam {
 
+    @NotEmpty(message = "单位名称不能为空", groups = Create.class)
     private String clientName;
+    @NotEmpty(message = "单位简称不能为空", groups = Create.class)
     private String unitCode;
     private Integer sqDay;
     private Integer sortNum;
     private Boolean foreverBool;
+    @NotEmpty(message = "授权服务类型不能为空", groups = Create.class)
     private String serverType;
+    @NotEmpty(message = "授权码不能为空", groups = Create.class)
     private String cpuCode;
+    @NotEmpty(message = "授权功能列表不能为空", groups = Create.class)
     private String gnlist;
+    @NotBlank(message = "ssid不能为空", groups = Delete.class)
+    private String ssid;
 
     public String getClientName() {
         return clientName;
@@ -73,5 +86,13 @@ public class GetAccreditParam {
 
     public void setGnlist(String gnlist) {
         this.gnlist = gnlist;
+    }
+
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
     }
 }

@@ -35,7 +35,7 @@ public class MainAction {
     @RequestMapping("/getAccreditList")
     public RResult getAccreditList(@RequestBody GetAccreditListParam param){
         RResult result = new RResult();
-        mainService.getAccreditList(result, param);
+        result = mainService.getAccreditList(result, param);
         return result;
     }
 
