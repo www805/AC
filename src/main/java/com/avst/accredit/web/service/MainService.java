@@ -43,11 +43,14 @@ public class MainService {
             sqCacheList = SqCache.getSqCacheList();
         }
 
-        //如果没有就把对象转成json
-        String sqJson = SqCache.getSqJson();
-        if(StringUtils.isEmpty(sqJson)){
-            sqJson = JSON.toJSONString(sqCacheList);
-            SqCache.setSqJson(sqJson);
+        //如果没有就把gn集合放进缓存里
+        List<String> gnList = SqCache.getSqGnList();
+        if (null == gnList || gnList.size() == 0) {
+            ArrayList<String> gns = new ArrayList<>();
+            for (SQEntity entity : sqCacheList) {
+                gns.add(entity.getGnlist());
+            }
+            SqCache.setSqGnList(gns);
         }
 
         for (SQEntity sqEntity : sqCacheList) {
@@ -107,16 +110,31 @@ public class MainService {
         String page = OpenUtil.getXMSoursePath() + filename;
 
         //把json转换成集合
-        String sqJson = SqCache.getSqJson();
-        if(StringUtils.isNotEmpty(sqJson)){
-            List<SQEntity> sqEntities = JSON.parseObject(sqJson, new TypeReference<List<SQEntity>>() {});
-            SqCache.setSqCacheList(sqEntities);
-            SqCache.setSqJson("");
+        List<String> gnList = SqCache.getSqGnList();
+
+        List<SQEntity> sqEntityList = SqCache.getSqCacheList();
+
+        if (null != gnList && gnList.size() > 0 && null != sqEntityList && sqEntityList.size() > 0) {
+
+            for (int i = 0; i < sqEntityList.size(); i++) {
+                SQEntity entity = sqEntityList.get(i);
+                entity.setGnlist(gnList.get(i));
+            }
+
+            SqCache.setSqCacheList(sqEntityList);
+            SqCache.setSqGnList(null);//清空功能缓存
         }
 
         //放入缓存
         SqCache.setSqCacheByEntity(sqEntity);
-        List<SQEntity> sqEntityList = SqCache.getSqCacheList();
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }).start();
+
         SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqEntityList);
 //        SQEntityRoom_R_W_XML.writeXml_courtRoom(page, sqEntity);
     }

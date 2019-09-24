@@ -84,6 +84,12 @@ function addAccredit() {
         cpuCode: cpuCode
     };
 
+    loadIndex = layer.msg("提交中，请稍后...", {
+        icon: 16,
+        time:60000,
+        shade: [0.1,"#fff"]
+    });
+
 
     $.ajax({
         url : url,
@@ -120,6 +126,13 @@ function deleteAccreditBySsid(ssid) {
         var data={
             ssid:ssid
         };
+
+        loadIndex = layer.msg("加载中，请稍后...", {
+            icon: 16,
+            time:10000,
+            shade: [0.1,"#fff"]
+        });
+
         ajaxSubmitByJson(url,data,callAddOrDelete);
 
         layer.close(index);
@@ -129,6 +142,7 @@ function deleteAccreditBySsid(ssid) {
 }
 
 function callAddOrDelete(data){
+    layer.close(loadIndex);
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
             layer.msg("操作成功",{icon: 6});

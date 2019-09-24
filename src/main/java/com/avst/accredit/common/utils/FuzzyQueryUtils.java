@@ -31,7 +31,7 @@ public class FuzzyQueryUtils {
 
         int j = 1;
         for (int i = 0; i < list.size(); i++) {
-            if (i >= currPage && j <= pageSize) {
+            if (i >= currPage && j <= pageSize){
                 fuzzyQuery.add(list.get(i));
                 j++;
             }
@@ -51,7 +51,7 @@ public class FuzzyQueryUtils {
         Pattern pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
         for(int i=0; i < list.size(); i++){
             Matcher matcher = pattern.matcher((list.get(i)).getClientName().toString());
-            if(matcher.find()){
+            if(matcher.find() ){
                 fuzzyQuery.add(list.get(i));
             }
         }

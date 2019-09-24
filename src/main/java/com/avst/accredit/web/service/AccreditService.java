@@ -72,17 +72,20 @@ public class AccreditService {
 
         //读出缓存判断，排序
         List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        ArrayList<Integer> sortNumList = new ArrayList<>();
         for (SQEntity sqEntity : sqCacheList) {
 
             if (param.getUnitCode().equals(sqEntity.getUnitCode())) {
-                ArrayList<Integer> sortNumList = new ArrayList<>();
-                sortNumList.add(sqEntity.getSortNum() + 1);
-                Collections.sort(sortNumList);
-                sortNum = sortNumList.get(0);
+                sortNumList.add(sqEntity.getSortNum());
             }
 
         }
 
+        if (sortNumList.size() > 0) {
+            Collections.sort(sortNumList);
+            sortNum = sortNumList.get(sortNumList.size() - 1);
+            sortNum++;
+        }
 
         SQEntity sqEntity= new SQEntity();
         //授权的UnitCode一定是有规则的，例如：最上面的服务器是hb,下一级hb_wh,hb_wh_hk,最下级的客户端服务器也是hb_wh_hk；
@@ -102,13 +105,13 @@ public class AccreditService {
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
         String startTime = df.format(new Date());
 
-        String path = OpenUtil.getXMSoursePath() + "\\shouquan\\" + startTime;
+        String path = OpenUtil.getXMSoursePath() + "\\shouquan\\" + param.getClientName() + startTime;
 
         System.out.println(path);
         boolean b = CreateSQ.deSQ(sqEntity, path);
 
         if (b) {
-            //把授权信息保存到xml文件中，保存到缓存中
+            //把授权信息保存到xml文件中，保存到缓存中(为了提高处理速度，用了多线程)
             mainService.setSqInfo(sqEntity);
             result.changeToTrue(b);
             NetTool.executeCMD("explorer " + path);//打开文件夹
@@ -168,16 +171,22 @@ public class AccreditService {
         String page = OpenUtil.getXMSoursePath() + filename;
 
         //把json转换成集合
-        String sqJson = SqCache.getSqJson();
-        if(StringUtils.isNotEmpty(sqJson)){
-            List<SQEntity> sqEntities = JSON.parseObject(sqJson, new TypeReference<List<SQEntity>>() {});
-            SqCache.setSqCacheList(sqEntities);
-            SqCache.setSqJson("");
+        List<String> gnList = SqCache.getSqGnList();
+        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        if (null != gnList && gnList.size() > 0 && null != sqCacheList && sqCacheList.size() > 0) {
+
+            for (int i = 0; i < sqCacheList.size(); i++) {
+                SQEntity entity = sqCacheList.get(i);
+                entity.setGnlist(gnList.get(i));
+            }
+            SqCache.setSqCacheList(sqCacheList);
+            SqCache.setSqGnList(null);
         }
 
         SqCache.removeSqCacheBySsid(ssid);
-        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
         SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqCacheList);
+
+        SqCache.delSqCacheList();//清空缓存
 
         result.changeToTrue();
     }

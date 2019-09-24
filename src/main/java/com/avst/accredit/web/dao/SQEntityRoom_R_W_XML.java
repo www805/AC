@@ -87,7 +87,10 @@ public class SQEntityRoom_R_W_XML {
 					}
 					i++;
 				}
-				xmls.add(xml);
+				//状态是1的就加入集合中
+				if("1".equals(xml.getState())){
+					xmls.add(xml);
+				}
 			}
 			return xmls;
 

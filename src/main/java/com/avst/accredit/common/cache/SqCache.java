@@ -9,7 +9,7 @@ import java.util.List;
 public class SqCache {
 
     private static List<SQEntity> SqCacheList;
-    private static String sqJson;
+    private static List<String> SqGnList;
 
     /**
      * 获取所有笔录状态缓存
@@ -88,22 +88,23 @@ public class SqCache {
      * 清空所有
      */
     public static synchronized void delSqCacheList(){
-        SqCacheList = null;
+        SqCache.SqCacheList = null;
     }
 
 
     /**
-     * 设置授权json（增、删的时候使用）
-     * @param sqjsonstr
+     * 设置授权list（增、删的时候使用）
+     * @param sqGnList
      */
-    public static synchronized void setSqJson(String sqjsonstr) {
-        sqJson = sqjsonstr;
+    public static synchronized void setSqGnList(List<String> sqGnList) {
+        SqCache.SqGnList = sqGnList;
     }
 
     /**
-     * 获取授权的json
+     * 获取授权的list
      */
-    public static synchronized String getSqJson() {
-        return sqJson;
+    public static synchronized List<String> getSqGnList() {
+        return SqCache.SqGnList;
     }
+
 }
