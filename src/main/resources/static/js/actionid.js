@@ -8,10 +8,12 @@ function getactionid_manage() {
 
         loginCaChe:"/loginCaChe",
 
-        addAccredit:"/addAccredit",
-        uploadBytxt:"/uploadBytxt",
-        delAccredit:"/delAccredit",
-        getPrivilege:"/getPrivilege",
+        addAccredit:"/ac/addAccredit",
+        uploadBytxt:"/ac/uploadBytxt",
+        delAccredit:"/ac/delAccredit",
+        getPrivilege:"/ac/getPrivilege",
+        downloadSQFile:"/ac/downloadSQFile",
+
         getAccreditList:"/getAccreditList",
 
 

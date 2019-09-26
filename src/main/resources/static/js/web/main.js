@@ -114,7 +114,7 @@ function addAccredit() {
 //删除一条授权记录
 function deleteAccreditBySsid(ssid) {
     if (!isNotEmpty(ssid)){
-        layer.msg("系统异常",{icon: 5});
+        layer.msg("ssid不为空，系统异常",{icon: 5});
         return;
     }
 
@@ -139,6 +139,25 @@ function deleteAccreditBySsid(ssid) {
     }, function(index){
         layer.close(index);
     });
+}
+
+//下载授权文件
+function downloadFileByPath(clientName, startTime) {
+
+    startTime = startTime.replace(/-|:| /g, "");
+
+    var url = getactionid_manage().downloadSQFile;
+    var path = clientName + startTime;
+
+    loadIndex = layer.msg("加载中，请稍后...", {
+        icon: 16,
+        time: 10000,
+        shade: [0.1, "#fff"]
+    });
+
+    window.location.href = url + "/" + path;
+
+    layer.close(loadIndex);
 }
 
 function callAddOrDelete(data){

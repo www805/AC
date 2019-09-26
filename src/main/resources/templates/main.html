@@ -123,12 +123,12 @@
             <col>
             <col>
             <col>
-            <col>
+            <col width="70">
             <col>
             <col>
             <col width="170">
             <col width="200">
-            <col width="60">
+            <col width="190"><!---->
         </colgroup>
         <thead>
         <tr>
@@ -164,7 +164,10 @@
                 {{# } }}
                 {{roles}}
             </td>
-            <td><input type="button" onclick="deleteAccreditBySsid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="作废"/> </td>
+            <td>
+                <input type="button" onclick="deleteAccreditBySsid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="作废"/>
+                <input type="button" onclick="downloadFileByPath('{{value.clientName}}','{{value.startTime}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="下载授权文件"/>
+            </td>
         </tr>
         {{#  }  }}
         {{#  }); }}
