@@ -1,8 +1,8 @@
 var gnlist = "";
 var loadIndex;
 
-function getAccreditList_init(currPage,pageSize) {
-    var url = getactionid_manage().getAccreditList;
+function getAuthorizeList_init(currPage,pageSize) {
+    var url = getauthorize_manage().getAuthorizeList;
     var keyword=$("input[name='keyword']").val();
     var data={
         clientName: keyword,
@@ -15,11 +15,11 @@ function getAccreditList_init(currPage,pageSize) {
         time:10000,
         shade: [0.1,"#fff"]
     });
-    ajaxSubmitByJson(url,data,callGetAccreditList);
+    ajaxSubmitByJson(url,data,callGetAuthorizeList);
 }
 
 function getProblemTypeList(keyword, currPage, pageSize) {
-    var url = getactionid_manage().getAccreditList;
+    var url = getauthorize_manage().getAuthorizeList;
     var data={
         clientName: keyword,
         currPage:currPage,
@@ -30,18 +30,18 @@ function getProblemTypeList(keyword, currPage, pageSize) {
         time:10000,
         shade: [0.1,"#fff"]
     });
-    ajaxSubmitByJson(url, data, callGetAccreditList);
+    ajaxSubmitByJson(url, data, callGetAuthorizeList);
 }
 
 //获取授权信息
 function getPrivilege() {
-    var url = getactionid_manage().getPrivilege;
+    var url = getauthorize_manage().getPrivilege;
     ajaxSubmitByJson(url, null, callGetPrivilege);
 }
 
 //添加授权
-function addAccredit() {
-    var url = getactionid_manage().addAccredit;
+function addAuthorize() {
+    var url = getauthorize_manage().addAuthorize;
 
     var clientName = $("input[name='clientName']").val();
     var unitCode = $("input[name='unitCode']").val();
@@ -112,7 +112,7 @@ function addAccredit() {
 }
 
 //删除一条授权记录
-function deleteAccreditBySsid(ssid) {
+function deleteAuthorizeBySsid(ssid) {
     if (!isNotEmpty(ssid)){
         layer.msg("ssid不为空，系统异常",{icon: 5});
         return;
@@ -122,7 +122,7 @@ function deleteAccreditBySsid(ssid) {
         btn: ['确认','取消'], //按钮
         shade: [0.1,'#fff'], //不显示遮罩
     }, function(index){
-        var url = getactionid_manage().delAccredit;
+        var url = getauthorize_manage().delAuthorize;
         var data={
             ssid:ssid
         };
@@ -146,7 +146,7 @@ function downloadFileByPath(clientName, startTime) {
 
     startTime = startTime.replace(/-|:| /g, "");
 
-    var url = getactionid_manage().downloadSQFile;
+    var url = getauthorize_manage().downloadSQFile;
     var path = clientName + startTime;
 
     loadIndex = layer.msg("加载中，请稍后...", {
@@ -172,7 +172,7 @@ function callAddOrDelete(data){
     }
 }
 
-function callGetAccreditList(data){
+function callGetAuthorizeList(data){
     layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
@@ -389,7 +389,7 @@ function opneModal_1() {
                 layero.addClass('layui-form');//添加form标识
                 layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '').css("border-color","#4A77D4").css("background-color","#4A77D4");//将按钮弄成能提交的
                 //拖拽上传
-                var url = getactionid_manage().uploadBytxt;
+                var url = getauthorize_manage().uploadBytxt;
                 upload.render({
                     elem: '#test10'
                     ,url: url
@@ -435,7 +435,7 @@ function opneModal_1() {
                     });
 
                     //提交
-                    addAccredit();
+                    addAuthorize();
                 });
 
             },
