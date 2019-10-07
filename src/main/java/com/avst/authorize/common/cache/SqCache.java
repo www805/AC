@@ -1,5 +1,6 @@
 package com.avst.authorize.common.cache;
 
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.sq.SQEntity;
 
 import java.util.ArrayList;
@@ -8,16 +9,16 @@ import java.util.List;
 
 public class SqCache {
 
-    private static List<SQEntity> SqCacheList;
+    private static List<SQEntityPlus> SqCacheList;
     private static List<String> SqGnList;
 
     /**
      * 获取所有笔录状态缓存
      * @return
      */
-    public static synchronized List<SQEntity> getSqCacheList() {
+    public static synchronized List<SQEntityPlus> getSqCacheList() {
         if(null==SqCacheList||SqCacheList.size() == 0) {
-            SqCacheList = new ArrayList<SQEntity>();
+            SqCacheList = new ArrayList<SQEntityPlus>();
         }
         return SqCacheList;
     }
@@ -26,7 +27,7 @@ public class SqCache {
      * 设置授权集合缓存
      * @param sqEntitys
      */
-    public static synchronized void setSqCacheList(List<SQEntity> sqEntitys) {
+    public static synchronized void setSqCacheList(List<SQEntityPlus> sqEntitys) {
         SqCacheList = null;
         SqCacheList = sqEntitys;
     }
@@ -35,13 +36,13 @@ public class SqCache {
      * 设置授权缓存
      * @param sqEntity
      */
-    public static synchronized void setSqCacheByEntity(SQEntity sqEntity) {
+    public static synchronized void setSqCacheByEntity(SQEntityPlus sqEntity) {
         if(null==SqCacheList || SqCacheList.size() == 0){
-            SqCacheList=new ArrayList<SQEntity>();
+            SqCacheList=new ArrayList<SQEntityPlus>();
             SqCacheList.add(sqEntity);
         }else{
             boolean cunzai = false;
-            for (SQEntity sq : SqCacheList) {
+            for (SQEntityPlus sq : SqCacheList) {
                 if (sq.getSsid().equals(sqEntity.getSsid())) {
                     cunzai = true;
                     sq.setClientName(sqEntity.getClientName());
@@ -73,9 +74,9 @@ public class SqCache {
         if(null==SqCacheList||SqCacheList.size() == 0){
             return ;
         }
-        Iterator<SQEntity> iterator = SqCacheList.iterator();
+        Iterator<SQEntityPlus> iterator = SqCacheList.iterator();
         while (iterator.hasNext()) {
-            SQEntity param = iterator.next();
+            SQEntityPlus param = iterator.next();
             if (param.getSsid().equals(ssid)) {
                 param.setState("0");
 //                iterator.remove();

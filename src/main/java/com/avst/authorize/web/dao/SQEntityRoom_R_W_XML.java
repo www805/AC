@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.sq.SQEntity;
 import org.jdom.Document;
@@ -16,10 +17,10 @@ import org.jdom.output.XMLOutputter;
 
 public class SQEntityRoom_R_W_XML {
 
-	public static List<SQEntity> readXml(String xmlurl) {
+	public static List<SQEntityPlus> readXml(String xmlurl) {
 		try {
 
-			List<SQEntity> xmls=new ArrayList<SQEntity>();
+			List<SQEntityPlus> xmls=new ArrayList<SQEntityPlus>();
 
 			//判断如果xml不存在就返回
 			File file = new File(xmlurl);
@@ -44,8 +45,8 @@ public class SQEntityRoom_R_W_XML {
 				return null;
 			}
 			for (Element people : lists) {
-				
-				SQEntity xml=new SQEntity();
+
+				SQEntityPlus xml=new SQEntityPlus();
 				// A.获取所有的属性
 				// System.out.println("====属性值："+people.getAttributeValue("id"));
 //				List<Attribute> attributeList = people.getAttributes();
@@ -101,7 +102,7 @@ public class SQEntityRoom_R_W_XML {
 		return null;
 	}
 	
-	public static SQEntity readXml_equipment(String xml_req) {
+	public static SQEntityPlus readXml_equipment(String xml_req) {
 		try {
 //			StringReader sr = new StringReader(xml_req);
 //			InputSource is = new InputSource(sr);
@@ -117,7 +118,7 @@ public class SQEntityRoom_R_W_XML {
 			if(null==lists||lists.size() ==0){
 				return null;
 			}
-			SQEntity xml=new SQEntity();
+			SQEntityPlus xml=new SQEntityPlus();
 			int i=0;
 			for (Element et : lists) {
 				String str=et.getText();
@@ -159,7 +160,7 @@ public class SQEntityRoom_R_W_XML {
 		return null;
 	}
 
-	public static void writeXml_courtRoom(String xmlurl,SQEntity sqEntity) {
+	public static void writeXml_courtRoom(String xmlurl,SQEntityPlus sqEntity) {
 		
 		try {
 		
@@ -170,7 +171,7 @@ public class SQEntityRoom_R_W_XML {
 			InputStream ins = new FileInputStream(xmlurl);
 			int i=ins.read();
 			if(i<=0){
-				List<SQEntity> SQEntity_List=new ArrayList<SQEntity>();
+				List<SQEntityPlus> SQEntity_List=new ArrayList<SQEntityPlus>();
 				SQEntity_List.add(sqEntity);
 				writeXml_courtRoomList(xmlurl,SQEntity_List);
 			}else{
@@ -231,14 +232,14 @@ public class SQEntityRoom_R_W_XML {
 		}
 	}
 	
-	public static void writeXml_courtRoomList(String xmlurl,List<SQEntity> SQEntity_List) {
+	public static void writeXml_courtRoomList(String xmlurl,List<SQEntityPlus> SQEntity_List) {
 		//定义一个root作为xml文档的根元素
 		Element root = new Element("sqs");
 		//生成一个文档
 		Document Doc = new Document(root);   
-		for (int j = 0; j < SQEntity_List.size(); j++) { 
-			
-			SQEntity SQEntity=SQEntity_List.get(j);
+		for (int j = 0; j < SQEntity_List.size(); j++) {
+
+			SQEntityPlus SQEntity=SQEntity_List.get(j);
 			
 			Element elements = new Element("sq");
 			//设置属性名和属性值
@@ -311,7 +312,7 @@ public class SQEntityRoom_R_W_XML {
 //		writeXml_courtRoom("D:/courtrooms.xml",sqEntity);
 
 
-		List<SQEntity> sqEntities = readXml("D:/courtrooms.xml");
+		List<SQEntityPlus> sqEntities = readXml("D:/courtrooms.xml");
 //		System.out.println(sqEntities);
 
 		for (SQEntity sqEntity : sqEntities) {

@@ -2,6 +2,7 @@ package com.avst.authorize.web.service;
 
 import com.avst.authorize.common.cache.PrivilegeCache;
 import com.avst.authorize.common.cache.SqCache;
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.DateUtil;
 import com.avst.authorize.common.utils.INI4j;
 import com.avst.authorize.common.utils.OpenUtil;
@@ -69,9 +70,9 @@ public class AuthorizeService {
         Integer sortNum = 0;
 
         //读出缓存判断，排序
-        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
         ArrayList<Integer> sortNumList = new ArrayList<>();
-        for (SQEntity sqEntity : sqCacheList) {
+        for (SQEntityPlus sqEntity : sqCacheList) {
 
             if (param.getUnitCode().equals(sqEntity.getUnitCode())) {
                 sortNumList.add(sqEntity.getSortNum());
@@ -85,7 +86,7 @@ public class AuthorizeService {
             sortNum++;
         }
 
-        SQEntity sqEntity= new SQEntity();
+        SQEntityPlus sqEntity= new SQEntityPlus();
         //授权的UnitCode一定是有规则的，例如：最上面的服务器是hb,下一级hb_wh,hb_wh_hk,最下级的客户端服务器也是hb_wh_hk；
         // 当前的节点服务器和该节点的下级服务器（客户端服务器）UnitCode一致，只是SortNum不同，节点是0，其他自动在上一个数值上加1
         sqEntity.setUnitCode(param.getUnitCode());
@@ -170,7 +171,7 @@ public class AuthorizeService {
 
         //把json转换成集合
         List<String> gnList = SqCache.getSqGnList();
-        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
         if (null != gnList && gnList.size() > 0 && null != sqCacheList && sqCacheList.size() > 0) {
 
             for (int i = 0; i < sqCacheList.size(); i++) {

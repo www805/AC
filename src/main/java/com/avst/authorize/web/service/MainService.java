@@ -2,6 +2,7 @@ package com.avst.authorize.web.service;
 
 import com.avst.authorize.common.cache.PrivilegeCache;
 import com.avst.authorize.common.cache.SqCache;
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.FuzzyQueryUtils;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.RResult;
@@ -28,7 +29,7 @@ public class MainService {
         GetAuthorizeListVO authorizeListVO = new GetAuthorizeListVO();
 
         //读取所有xml数据，分页
-        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
 
         //时间排序
         ListSort(sqCacheList);
@@ -43,13 +44,13 @@ public class MainService {
         List<String> gnList = SqCache.getSqGnList();
         if (null == gnList || gnList.size() == 0) {
             ArrayList<String> gns = new ArrayList<>();
-            for (SQEntity entity : sqCacheList) {
+            for (SQEntityPlus entity : sqCacheList) {
                 gns.add(entity.getGnlist());
             }
             SqCache.setSqGnList(gns);
         }
 
-        for (SQEntity sqEntity : sqCacheList) {
+        for (SQEntityPlus sqEntity : sqCacheList) {
             String gn = sqEntity.getGnlist();
             //判断是哪个就替换成中文
             gn = getZW(gn);
@@ -71,7 +72,7 @@ public class MainService {
             }
         }
 
-        List<SQEntity> list = null;
+        List<SQEntityPlus> list = null;
 
         //判断是否有条件
         if (StringUtils.isNotEmpty(param.getClientName())) {
@@ -90,10 +91,10 @@ public class MainService {
     }
 
     //新增xml
-    public void setSqInfo(SQEntity sqEntity){
+    public void setSqInfo(SQEntityPlus sqEntity){
 
         //先获取缓存里是否为空，如果为空，从xml读取数据
-        List<SQEntity> sqCacheList = SqCache.getSqCacheList();
+        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
         if (null == sqCacheList || sqCacheList.size() == 0) {
             //读取xml文件
             getSqXmltoCache();
@@ -108,12 +109,12 @@ public class MainService {
         //把json转换成集合
         List<String> gnList = SqCache.getSqGnList();
 
-        List<SQEntity> sqEntityList = SqCache.getSqCacheList();
+        List<SQEntityPlus> sqEntityList = SqCache.getSqCacheList();
 
         if (null != gnList && gnList.size() > 0 && null != sqEntityList && sqEntityList.size() > 0) {
 
             for (int i = 0; i < sqEntityList.size(); i++) {
-                SQEntity entity = sqEntityList.get(i);
+                SQEntityPlus entity = sqEntityList.get(i);
                 entity.setGnlist(gnList.get(i));
             }
 
@@ -144,7 +145,7 @@ public class MainService {
         //xml保存的固定地址
         String page = OpenUtil.getXMSoursePath() + filename;
 
-        List<SQEntity> sqEntitieList = SQEntityRoom_R_W_XML.readXml(page);
+        List<SQEntityPlus> sqEntitieList = SQEntityRoom_R_W_XML.readXml(page);
         SqCache.setSqCacheList(sqEntitieList);
     }
 
@@ -187,7 +188,7 @@ public class MainService {
 
 
     //按时间排序
-    private void ListSort(List<SQEntity> list) {
+    private void ListSort(List<SQEntityPlus> list) {
         Collections.sort(list, new Comparator<SQEntity>() {
             @Override
             //定义一个比较器

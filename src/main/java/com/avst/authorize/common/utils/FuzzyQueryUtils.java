@@ -1,5 +1,6 @@
 package com.avst.authorize.common.utils;
 
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.sq.SQEntity;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +18,8 @@ public class FuzzyQueryUtils {
      * @param list
      * @return
      */
-    public static List<SQEntity> getPage (GetAuthorizeListParam param, List<SQEntity> list){
-        List<SQEntity> fuzzyQuery = new ArrayList();
+    public static List<SQEntityPlus> getPage (GetAuthorizeListParam param, List<SQEntityPlus> list){
+        List<SQEntityPlus> fuzzyQuery = new ArrayList();
 
         Integer currPage = param.getCurrPage();
         Integer pageSize = param.getPageSize();
@@ -45,8 +46,8 @@ public class FuzzyQueryUtils {
      * @param list
      * @return
      */
-    public static List<SQEntity> fuzzyQuery (String name, List<SQEntity> list){
-        List<SQEntity> fuzzyQuery = new ArrayList();
+    public static List<SQEntityPlus> fuzzyQuery (String name, List<SQEntityPlus> list){
+        List<SQEntityPlus> fuzzyQuery = new ArrayList();
         //大小写不敏感的时候，多加一个条件
         Pattern pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
         for(int i=0; i < list.size(); i++){
@@ -64,8 +65,8 @@ public class FuzzyQueryUtils {
      * @param list
      * @return
      */
-    public static List<SQEntity> fuzzyQueryPage (GetAuthorizeListParam param, List<SQEntity> list){
-        List<SQEntity> fuzzyQuery = new ArrayList();
+    public static List<SQEntityPlus> fuzzyQueryPage (GetAuthorizeListParam param, List<SQEntityPlus> list){
+        List<SQEntityPlus> fuzzyQuery = new ArrayList();
         //大小写不敏感的时候，多加一个条件
         Pattern pattern = Pattern.compile(param.getClientName(), Pattern.CASE_INSENSITIVE);
 
@@ -97,13 +98,13 @@ public class FuzzyQueryUtils {
      * @param list
      * @return
      */
-    public static Integer fuzzyQueryCount (String name, List<SQEntity> list){
+    public static Integer fuzzyQueryCount (String name, List<SQEntityPlus> list){
 
         if(StringUtils.isEmpty(name)){
             return list.size();
         }
 
-        List<SQEntity> fuzzyQuery = new ArrayList();
+        List<SQEntityPlus> fuzzyQuery = new ArrayList();
         //大小写不敏感的时候，多加一个条件
         Pattern pattern = Pattern.compile(name, Pattern.CASE_INSENSITIVE);
         for(int i=0; i < list.size(); i++){

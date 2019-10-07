@@ -1,6 +1,6 @@
 package com.avst.authorize.web.vo;
 
-import com.avst.authorize.common.utils.sq.SQEntity;
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 
 import java.util.List;
@@ -9,7 +9,7 @@ public class GetAuthorizeListVO {
 
     private GetAuthorizeListParam pageparam;
 
-    private List<SQEntity> pagelist;
+    private List<SQEntityPlus> pagelist;
 
     public GetAuthorizeListParam getPageparam() {
         return pageparam;
@@ -19,11 +19,11 @@ public class GetAuthorizeListVO {
         this.pageparam = pageparam;
     }
 
-    public List<SQEntity> getPagelist() {
+    public List<SQEntityPlus> getPagelist() {
         return pagelist;
     }
 
-    public void setPagelist(List<SQEntity> pagelist) {
+    public void setPagelist(List<SQEntityPlus> pagelist) {
         this.pagelist = pagelist;
     }
 }

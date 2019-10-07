@@ -256,10 +256,9 @@ public class AnalysisSQ {
 
         try {
 
-            sq=decode_uid(sq);
-            String sqcode=sq.split(";")[0];
-            int usetime=Integer.parseInt(sq.split(";")[1]);
-            String[] sqcodearr= DeCodeUtil.decoderByDES(sqcode).split(";");
+
+
+            String[] sqcodearr= DeCodeUtil.decoderByDES(sq).split(";");
             String serverType=sqcodearr[0];
             String foreverBool=sqcodearr[1];
             String startTime=sqcodearr[2];
@@ -270,14 +269,7 @@ public class AnalysisSQ {
             String sortNum=sqcodearr[7];
             String gnlist=sqcodearr[8];
 
-            if(foreverBool.equals("true")){//永久授权不用检查使用剩余时间
 
-            }else{
-                int sqDay_int=Integer.parseInt(sqDay);
-                if((sqDay_int-usetime) < 0){ //还剩多少使用时间
-                    return null;
-                }
-            }
 
             SQEntity sqEntity=new SQEntity();
             sqEntity.setClientName(clientName);
@@ -343,8 +335,8 @@ public class AnalysisSQ {
 
     public static void main(String[] args) {
 
-//        SQEntity sqEntity=AnalysisSQ.getSQEntity();
-//        LogUtil.intoLog(AnalysisSQ.class,sqEntity.getStartTime());
+        SQEntity sqEntity=AnalysisSQ.getSQEntity("4e90a81a033898689a09e644ee48dbe75f542f3feae58b591e86245c06319a1b1ca4a33c3e2614760bafb96952505a501baaaff482216ec6a88310ff9dca990eac7dc6c5c29900af670e756b2b1c9bc1d608c9aafe330d83207a512c0069527a5749311f593f3f6faa2e38e53255b0059cf94b2e725e2c4de07c086a551967088afe11efca2305d422759eddc9f8fec2");
+        LogUtil.intoLog(AnalysisSQ.class,sqEntity.getStartTime());
 
     }
 

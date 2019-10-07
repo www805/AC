@@ -57,7 +57,7 @@ public class CreateSQ {
         sqEntity.setGnlist("record|asr|fd|ph"); //通过集合转成字符串，以|的方式分割
         sqEntity.setStartTime(DateUtil.getDateAndMinute());
 
-        LogUtil.intoLog(CreateSQ.class,deSQ(sqEntity,"E:\\trmshouquan"));//最后生成
+        LogUtil.intoLog(CreateSQ.class,deSQ(sqEntity,"D:\\trmshouquan"));//最后生成
 
 
     }

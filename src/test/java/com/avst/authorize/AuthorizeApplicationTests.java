@@ -3,9 +3,7 @@ package com.avst.authorize;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import com.avst.authorize.common.entity.User;
 import com.avst.authorize.common.utils.Page;
-import com.avst.authorize.web.dao.UserXML;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -30,7 +28,7 @@ public class AuthorizeApplicationTests {
 //        System.out.println("运行时间："+ (System.currentTimeMillis() - start));
 
 
-        UserXML userXML = new UserXML();
+//        UserXML userXML = new UserXML();
 //
 //        List<User> list = new ArrayList<User>();
 //
@@ -43,8 +41,8 @@ public class AuthorizeApplicationTests {
 //
 //        userXML.writeXML("D:\\123.xml",list);
 
-        List<User> users = userXML.readXml("D:\\123.xml");
-        System.out.println(users);
+//        List<User> users = userXML.readXml("D:\\123.xml");
+//        System.out.println(users);
 
         Page page = new Page();
 
