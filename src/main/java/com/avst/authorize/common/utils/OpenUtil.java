@@ -1067,7 +1067,7 @@ public static String numtoStr(int digit,Integer num){
 		try {
 			String filePath = System.getProperty("user.dir");
 
-			if(filePath.endsWith("authorize")||filePath.endsWith("Authorize")){
+			if(filePath.endsWith("authorize")||filePath.endsWith("Authorize")||filePath.endsWith("AC")||filePath.endsWith("ac")){
 				if(filePath.indexOf("/") > -1){//Linux截取
 					filePath=filePath.substring(0,filePath.lastIndexOf("/"));//win的截取方式
 				}else{
