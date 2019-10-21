@@ -12,7 +12,7 @@ function getAuthorizeList_init(currPage,pageSize) {
 
     loadIndex = layer.msg("加载中，请稍后...", {
         icon: 16,
-        time:10000,
+        time:30000,
         shade: [0.1,"#fff"]
     });
     ajaxSubmitByJson(url,data,callGetAuthorizeList);
@@ -27,7 +27,7 @@ function getProblemTypeList(keyword, currPage, pageSize) {
     };
     loadIndex = layer.msg("加载中，请稍后...", {
         icon: 16,
-        time:10000,
+        time:30000,
         shade: [0.1,"#fff"]
     });
     ajaxSubmitByJson(url, data, callGetAuthorizeList);
@@ -60,7 +60,7 @@ function addAuthorize() {
     }
 
     if (!isNotEmpty(gnlist)) {
-        layer.msg("尚未选择授权功能，请点击【权限管理】选取后提交", {icon: 5});
+        layer.msg("尚未选择授权功能，选取后提交", {icon: 5});
         return false;
     }
 
@@ -129,7 +129,7 @@ function deleteAuthorizeBySsid(ssid) {
 
         loadIndex = layer.msg("加载中，请稍后...", {
             icon: 16,
-            time:10000,
+            time:30000,
             shade: [0.1,"#fff"]
         });
 
@@ -151,7 +151,7 @@ function downloadFileByPath(clientName, startTime) {
 
     loadIndex = layer.msg("加载中，请稍后...", {
         icon: 16,
-        time: 10000,
+        time: 30000,
         shade: [0.1, "#fff"]
     });
 
@@ -235,6 +235,12 @@ function callGetPrivilege(data){
                             inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '" checked>';
                         }else{
                             inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '">';
+                        }
+                    }else if (keys[i].indexOf("客户端版") != -1) {
+                        if (indexKey == 0) {
+                            inpitHTML += '       <input type="radio" name="duan" value="' + pro + '" title="' + value + '" checked>';
+                        }else{
+                            inpitHTML += '       <input type="radio" name="duan" value="' + pro + '" title="' + value + '">';
                         }
                     }else {
                         if (indexKey == 0) {
