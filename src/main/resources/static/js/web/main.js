@@ -64,6 +64,17 @@ function addAuthorize() {
         return false;
     }
 
+    var companyname = $("input[name='companyname']").val();
+    var companymsg = $("textarea[name='companymsg']").val();
+    if(isNotEmpty(companyname) && isNotEmpty(companymsg)){
+        var company = "{companyname:" + companyname + ",companymsg:" + companymsg + "}";
+        if(isNotEmpty(gnlist)){
+            gnlist += "|" +company ;
+        }else{
+            gnlist += company;
+        }
+    }
+
     // $("#burnbool").prop("checked", flushbonading.burnbool == 1);
     // $("#burntime").find("option[value='" + flushbonading.burntime + "']").attr("selected", true);
 
@@ -315,6 +326,12 @@ function opneModal_1() {
 
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
         '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>公司名称</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="text" name="companyname" required  lay-verify="required" autocomplete="off" placeholder="请输入公司名称" class="layui-input" >\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>单位名称</label>\n' +
         '                <div class="layui-input-block">\n' +
         '                    <input type="text" name="clientName"  required lay-verify="required" autocomplete="off" placeholder="请输入单位名称" class="layui-input" >\n' +
@@ -338,6 +355,12 @@ function opneModal_1() {
         '                        <select name="serverType" id="serverType" lay-verify="required">\n' +
         '                            <option value="police">police</option>\n' +
         '                        </select>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <textarea name="companymsg" placeholder="请输入公司简介" lay-verify="required" class="layui-textarea"></textarea>\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +

@@ -160,7 +160,7 @@
             <td>{{value.startTime==null?"":value.startTime}}</td>
             <td>
                 {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); }}
-                {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} }}
+                {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; if(rs.indexOf("{com") == -1){ roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} } }}
                 {{# } }}
                 {{roles}}
             </td>

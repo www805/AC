@@ -82,9 +82,10 @@ public class FuzzyQueryUtils {
         int j = 1;
 
         for(int i=0; i < list.size(); i++){
-            Matcher matcher = pattern.matcher((list.get(i)).getClientName().toString());
+            SQEntityPlus sqEntityPlus = list.get(i);
+            Matcher matcher = pattern.matcher((sqEntityPlus).getClientName().toString());
             if(i >= currPage && j <= pageSize && matcher.find()){
-                fuzzyQuery.add(list.get(i));
+                fuzzyQuery.add(sqEntityPlus);
                 j++;
             }
         }

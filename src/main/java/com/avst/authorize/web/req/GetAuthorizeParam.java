@@ -8,6 +8,8 @@ import javax.validation.constraints.NotEmpty;
 
 public class GetAuthorizeParam {
 
+    @NotBlank(message = "公司名称不能为空", groups = Delete.class)
+    private String companyname;
     @NotEmpty(message = "单位名称不能为空", groups = Create.class)
     private String clientName;
     @NotEmpty(message = "单位简称不能为空", groups = Create.class)
@@ -23,6 +25,24 @@ public class GetAuthorizeParam {
     private String gnlist;
     @NotBlank(message = "ssid不能为空", groups = Delete.class)
     private String ssid;
+    @NotBlank(message = "公司简介不能为空", groups = Delete.class)
+    private String companymsg;
+
+    public String getCompanyname() {
+        return companyname;
+    }
+
+    public void setCompanyname(String companyname) {
+        this.companyname = companyname;
+    }
+
+    public String getCompanymsg() {
+        return companymsg;
+    }
+
+    public void setCompanymsg(String companymsg) {
+        this.companymsg = companymsg;
+    }
 
     public String getClientName() {
         return clientName;

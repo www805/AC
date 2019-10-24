@@ -12,6 +12,11 @@ public class SQEntityPlus extends SQEntity implements Serializable {
 
     private String state = "1";
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+
     public String getSsid() {
         return ssid;
     }

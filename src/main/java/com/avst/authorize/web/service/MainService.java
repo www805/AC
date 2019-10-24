@@ -133,7 +133,7 @@ public class MainService {
 //        }).start();
 
         //如果外部xml文件读出来的没有数据，就把当前新增的添进去
-        if (null == sqEntityList || sqEntityList.size() == 0) {
+        if (null != sqEntityList && sqEntityList.size() == 0) {
             sqEntityList.add(sqEntity);
         }
 

@@ -1,6 +1,7 @@
 package com.avst.authorize.common.utils.sq;
 
 
+import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.DateUtil;
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.ReadWriteFile;
@@ -22,7 +23,7 @@ public class CreateSQ {
      * @param basepath
      * @return
      */
-    public static boolean deSQ(SQEntity sqEntity,String basepath){
+    public static boolean deSQ(SQEntityPlus sqEntity, String basepath){
 
         try {
             String sqcode=sqEntity.toString();
@@ -43,7 +44,7 @@ public class CreateSQ {
 
     public static void main(String[] args) {
 
-        SQEntity sqEntity= new SQEntity();
+        SQEntityPlus sqEntity= new SQEntityPlus();
         //授权的UnitCode一定是有规则的，例如：最上面的服务器是hb,下一级hb_wh,hb_wh_hk,最下级的客户端服务器也是hb_wh_hk；
         // 当前的节点服务器和该节点的下级服务器（客户端服务器）UnitCode一致，只是SortNum不同，节点是0，其他自动在上一个数值上加1
         sqEntity.setUnitCode("avst");
