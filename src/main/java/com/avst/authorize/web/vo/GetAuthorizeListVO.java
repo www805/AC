@@ -8,7 +8,6 @@ import java.util.List;
 public class GetAuthorizeListVO {
 
     private GetAuthorizeListParam pageparam;
-
     private List<SQEntityPlus> pagelist;
 
     public GetAuthorizeListParam getPageparam() {

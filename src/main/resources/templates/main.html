@@ -18,7 +18,6 @@
             padding: 5px 0;
         }
         .top_button {
-            margin-top: 50px;
             width: 500px;
             height: 60px;
             font-size: 24px;
@@ -73,39 +72,113 @@
             float: right;
             margin-bottom: 50px;
         }
+        .sqbianhao{
+            width: 50px;padding: 9px 9px 9px 0px;
+        }
+        .td_right{
+            float: right;
+        }
+        #sqinif td{
+            padding: 3px;
+        }
     </style>
 </head>
 <body style="background: url('/img/body.png');">
 
-<div class="layui-row">
+<table id="sqinif" style="display: none;margin: 15px 40px;">
+</table>
+
+<div class="layui-row" id="da_row">
     <div class="layui-col-xs12 layui-col-md12">
-
-
-
 
         <div class="layui-main">
             <div class="center">
-                <h1 style="font-weight: bold;">欢迎来到笔录授权系统</h1>
-                <input type="button" class="layui-btn layui-btn-normal top_button" onclick="opneModal_1();" value="添加授权">
+                <h1 style="font-weight: bold;">授权申请表</h1>
             </div>
 
-            <form class="layui-form" >
+            <form class="layui-form" action="">
+
                 <div class="layui-form-item">
-                    <label class="layui-form-label" style="text-align: right;padding: 9px;">单位名称：</label>
+                    <label class="layui-form-label"><span style="color: red;">*</span>申请人名称</label>
                     <div class="layui-input-block">
-                        <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" style="width: 90%;float: left;margin-right: 10px" class="layui-input" >
-                        <input type="button" class="layui-btn layui-btn-normal " id="chaxun" style="float: left;" value="查询" onclick="getAuthorizeList_init(1,10);" >
+                        <input type="text" name="username" required="" lay-verify="required" autocomplete="off" placeholder="请输入申请人名称" class="layui-input">
                     </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>授权公司名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="companyname" required="" lay-verify="required" autocomplete="off" placeholder="请输入授权公司的名称" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>单位名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="clientName" required="" lay-verify="required" autocomplete="off" placeholder="请输入单位名称（部署使用的单位）" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>单位代码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="unitCode" required="" lay-verify="required" autocomplete="off" placeholder="请输入单位代码如：avst" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>授权台数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="sqNum" lay-verify="required|number" required="" autocomplete="off" placeholder="请输入授权台数" class="layui-input" value="1" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>授权总天数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="sqDay" lay-verify="required|number" required="" autocomplete="off" placeholder="请输入授权总天数" class="layui-input" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)))">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>是否永久授权</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="foreverBool" id="foreverBool" lay-filter="foreverBool" lay-skin="switch"><div class="layui-unselect layui-form-switch" lay-skin="_switch"><em></em><i></i></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div id="jiaru">
+                        <label class="layui-form-label">授权码编号</label>
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-normal" onclick="addsqinfo();">添加授权码</button>
+                    <span style="color: #999;">（非必填）</span>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>
+                    <div class="layui-input-block">
+                        <textarea name="companymsg" placeholder="请输入公司简介" lay-verify="required" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" id="sqgns">
+                    <label class="layui-form-label"><span style="color: red;">*</span>客户端的功能列表</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" lay-filter="checkbox" name="record_f" title="笔录管理" checked="">
+                        <input type="checkbox" lay-filter="checkbox" name="asr_f" title="语音识别">
+                        <input type="checkbox" lay-filter="checkbox" name="tts_f" title="语音播报">
+                        <input type="checkbox" lay-filter="checkbox" name="fd_f" title="设备控制">
+                    </div>
+                </div>
+
+                <div class="layui-form-item center">
+                    <input type="button" class="layui-btn layui-btn-normal top_button" lay-submit lay-filter="formDemo" value="立即提交">
+                    <button type="button" class="layui-btn layui-btn-normal" style="margin-left:50px;height: 60px;" onclick="location.reload();">刷新</button>
+                    <!--您的申请已经提交后台审核，若审核通过，将在5个工作日内联系您! onclick="formSubmit()" -->
                 </div>
             </form>
 
-            <div id="wushuju" style="display: none;font-size: 24px;color: #90a2bc;text-align: center;margin-top: 30px;">暂无授权记录...</div>
-            <div th:replace="page :: page">...</div>
 
         </div>
-
-        <!--<a href="/logout">退出</a>-->
-        <!--<button onclick="login_logout();">退出</button>-->
 
     </div>
 </div>
@@ -113,68 +186,6 @@
     <!-- 底部固定区域 -->
     <p id="bottom_mian" class="bottom_mian">授权系统</p>
 </div>
-
-<script id="pagelisttemplates" type="text/html">
-
-    <table class="layui-table">
-        <colgroup>
-            <col width="60">
-            <col width="120">
-            <col>
-            <col>
-            <col>
-            <col width="70">
-            <col>
-            <col>
-            <col width="170">
-            <col width="200">
-            <col width="190"><!---->
-        </colgroup>
-        <thead>
-        <tr>
-            <th>序号</th>
-            <th>单位名称</th>
-            <th>单位简称</th>
-            <th>授权总天数</th>
-            <th>授权排序</th>
-            <th>是否永久授权</th>
-            <th>授权服务类型</th>
-            <th>授权码</th>
-            <th>授权时间</th>
-            <th>授予权限</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody id="pagelisttemplates_tbody">
-        {{#  layui.each(pagelist, function(index, value){ }}
-        {{#  if(value.state == 1 ){  }}
-        <tr>
-            <td>{{index+1}}</td>
-            <td>{{value.clientName==null?"":value.clientName}}</td>
-            <td>{{value.unitCode==null?"":value.unitCode}}</td>
-            <td>{{value.sqDay==null?"":value.sqDay}}</td>
-            <td>{{value.sortNum==null?"":value.sortNum}}</td>
-            <td>{{value.foreverBool==null?"":value.foreverBool==true?'<span class="layui-badge layui-bg-cyan">永久</span>':'<span class="layui-badge ">临时</span>'}}</td>
-            <td>{{value.serverType==null?"":value.serverType}}</td>
-            <td>{{value.cpuCode==null?"":value.cpuCode}}</td>
-            <td>{{value.startTime==null?"":value.startTime}}</td>
-            <td>
-                {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); }}
-                {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; if(rs.indexOf("{com") == -1){ roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} } }}
-                {{# } }}
-                {{roles}}
-            </td>
-            <td>
-                <input type="button" onclick="deleteAuthorizeBySsid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="作废"/>
-                <input type="button" onclick="downloadFileByPath('{{value.clientName}}','{{value.startTime}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="下载授权文件"/>
-            </td>
-        </tr>
-        {{#  }  }}
-        {{#  }); }}
-        </tbody>
-    </table>
-
-</script>
 
 <script language="JavaScript" src="/js/jquery-1.11.1.js"></script>
 <script language="JavaScript" src="/js/common.js"></script>
@@ -184,20 +195,28 @@
 <script th:src="@{/layui/lay/modules/laytpl.js}" type="text/javascript"></script>
 <script th:src="@{/js/web/main.js}"type="text/javascript"></script>
 <script th:inline="javascript">
-    $(function(){
 
+
+    var sqinfo = {
+        name:"",
+        value: ""
+    };
+
+    $(function(){
 
         document.onkeydown = function (event) {
             var e = event || window.event;
             if (e && e.keyCode == 13) { //回车键的键值为13
                 event.preventDefault();
-                getAuthorizeList_init(1,10);
+                // getAuthorizeList_init(1,10);
             }
         };
 
         $('#keyword').on('input propertychange', function() {
-            getAuthorizeList_init(1,10);
+            // getAuthorizeList_init(1,10);
         });
+
+
 
 
         setTimeout("$(\"#chaxun\").click();",300);
@@ -215,6 +234,33 @@
             }else{
                 $("input[name='sqDay']").removeAttr("disabled").css("background", "").attr("lay-verify", "required|number");
             }
+        });
+
+        form.on('submit(formDemo)', function (data) {
+            $("#sqgns input[type='checkbox']:checked").each(function(index, element){
+                if(isNotEmpty(sqgnlist)){
+                    if (sqgnlist.indexOf(this.title) == -1) {
+                        sqgnlist += "，" + this.title;
+                    }
+                }else{
+                    sqgnlist += this.title;
+                }
+            });
+
+            $("#jiaru input[type='text']").each(function (index,element) {
+
+                //sqnum  sqCode
+                if (index % 2 == 0) {
+                    sqinfo['name'] = this.value;
+                }else{
+                    sqinfo['value'] = this.value;
+                    sqinfolist.push(sqinfo);
+                    sqinfo = {name:"",value: ""};
+                }
+
+            });
+
+            formSubmit();
         });
 
         form.render();

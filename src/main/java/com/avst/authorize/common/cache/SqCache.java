@@ -51,9 +51,15 @@ public class SqCache {
                     sq.setSortNum(sqEntity.getSortNum());
                     sq.setCpuCode(sqEntity.getCpuCode());
                     sq.setServerType(sqEntity.getServerType());
-                    sq.setForeverBool(sqEntity.isForeverBool());
+                    sq.setForeverBool(sqEntity.getForeverBool());
                     sq.setGnlist(sqEntity.getGnlist());
                     sq.setStartTime(sqEntity.getStartTime());
+                    sq.setSsid(sqEntity.getSsid());
+                    sq.setState(sqEntity.getState());
+                    sq.setInteger1(sqEntity.getInteger1());
+                    sq.setInteger2(sqEntity.getInteger2());
+                    sq.setString1(sqEntity.getString1());
+                    sq.setString2(sqEntity.getString2());
                     break;
                 }else{
                     cunzai = false;
@@ -78,7 +84,7 @@ public class SqCache {
         while (iterator.hasNext()) {
             SQEntityPlus param = iterator.next();
             if (param.getSsid().equals(ssid)) {
-                param.setState("0");
+                param.setState(0);
 //                iterator.remove();
                 break;
             }

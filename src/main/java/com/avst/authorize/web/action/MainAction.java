@@ -16,10 +16,16 @@ public class MainAction {
     @Autowired
     private MainService mainService;
 
-    @RequestMapping({"/", "main"})
+    @RequestMapping({"/", "main", "index"})
     public ModelAndView Home(Model model){
         model.addAttribute("title", "首页系统");
         return new ModelAndView("main", "getMain", model);
+    }
+
+    @RequestMapping("/admin")
+    public ModelAndView admin(Model model){
+        model.addAttribute("title", "后台管理");
+        return new ModelAndView("admin", "getAdmin", model);
     }
 
     /**

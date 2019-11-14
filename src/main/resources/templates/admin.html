@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
+<head>
+    <meta charset="UTF-8">
+    <title>笔录授权系统</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style type="text/css">
+        .center{
+            margin: 60px auto;
+            text-align: center;
+        }
+        .bottom_mian{
+            text-align:center;
+            background-color: #eee;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 5px 0;
+        }
+        .top_button {
+            margin-top: 50px;
+            width: 500px;
+            height: 60px;
+            font-size: 24px;
+        }
+        .layui-btn-normal {
+            background-color: #4A77D4;
+        }
+        .layui-input-block {
+            margin-left: 150px;
+        }
+        .layui-form-label {
+            width: 120px;
+        }
+        #guanli .layui-input-block {
+            margin-left: 110px;
+        }
+        #guanli .layui-form-label {
+            width: 80px;
+        }
+        .layui-form-onswitch {
+            border-color: #4A77D4;
+            background-color: #4A77D4;
+        }
+        .layui-form-select dl dd.layui-this {
+            background-color: #4A77D4;
+            color: #fff;
+        }
+        .layui-tab-brief>.layui-tab-title .layui-this {
+            color: #4A77D4;
+        }
+        .layui-upload-drag .layui-icon {
+            font-size: 50px;
+            color: #4A77D4;
+        }
+        .layui-tab-brief>.layui-tab-title .layui-this {
+            color: #4A77D4;
+        }
+        .layui-form-checked span, .layui-form-checked:hover span {
+            background-color: #4A77D4;
+        }
+        .layui-form-checked i, .layui-form-checked:hover i {
+            color: #4A77D4;
+        }
+        .layui-layer-btn .layui-layer-btn0 {
+            border-color: #4A77D4;
+            background-color: #4A77D4;
+        }
+        .layui-main {
+            width: 1500px;
+        }
+        #paging {
+            float: right;
+            margin-bottom: 50px;
+        }
+        .td-left{
+            text-align: right;
+            padding-right: 0;
+        }
+        #tableId td{
+            padding: 5px;
+        }
+        #tableId a{
+            color: red;
+        }
+    </style>
+</head>
+<body style="background: url('/img/body.png');">
+
+<div class="layui-row">
+    <div class="layui-col-xs12 layui-col-md12">
+
+
+
+
+
+
+        <div class="layui-main">
+            <div class="center">
+                <h1 style="font-weight: bold;">欢迎来到后台授权系统</h1>
+                <input type="button" class="layui-btn layui-btn-normal top_button" onclick="opneModal_1();" value="添加授权">
+                <!--<input type="button" class="layui-btn layui-btn-normal top_button" onclick="opneModal_2();" value="授权详情">-->
+            </div>
+
+            <form class="layui-form" >
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="padding-left: 0;">申请人名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="sq_username" id="sq_username" lay-verify="required" placeholder="请输入申请人名称" autocomplete="off" class="layui-input">
+                    </div>
+
+                    <label class="layui-form-label" style="padding-left: 0;">单位名称：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
+                    </div>
+                    <input type="button" id="chaxun" class="layui-btn layui-btn-normal" value="查询" onclick="getAuthorizeList_init(1,10);" >
+
+                </div>
+
+
+            </form>
+
+            <div id="wushuju" style="display: none;font-size: 24px;color: #90a2bc;text-align: center;margin-top: 30px;">暂无授权记录...</div>
+            <div th:replace="page :: page">...</div>
+
+        </div>
+
+        <!--<a href="/logout">退出</a>-->
+        <!--<button onclick="login_logout();">退出</button>-->
+
+    </div>
+</div>
+<div class="layui-footer">
+    <!-- 底部固定区域 -->
+    <p id="bottom_mian" class="bottom_mian">授权系统</p>
+</div>
+
+<script id="pagelisttemplates" type="text/html">
+
+    <table class="layui-table">
+        <colgroup>
+            <col width="60">
+            <col width="100">
+            <col width="150">
+            <col width="120">
+            <col width="100">
+            <col width="300">
+            <col width="100">
+            <col width="90">
+            <col width="170">
+            <col width="120">
+            <col width="150"><!---->
+        </colgroup>
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>申请人名称</th>
+            <th>公司名称</th>
+            <th>单位名称</th>
+            <th>单位代码</th>
+            <th>申请权限功能</th>
+            <th>授权总天数</th>
+            <th>申请台数</th>
+            <th>授权时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="pagelisttemplates_tbody">
+        {{#  layui.each(pagelist, function(index, value){ }}
+        {{#  if(value.state == 1 ){  }}
+        <tr>
+            <td>{{index+1}}</td>
+            <td>{{value.username==null?"":value.username}}</td>
+            <td>{{value.companyname==null?"":value.companyname}}</td>
+            <td>{{value.clientName==null?"":value.clientName}}</td>
+            <td>{{value.unitCode==null?"":value.unitCode}}</td>
+            <td>
+                {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); }}
+                {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; if(rs.indexOf("{com") == -1){ roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} } }}
+                {{# } }}
+                {{roles}}
+            </td>
+            <td>{{value.foreverBool==null?"":value.foreverBool==true?'<span class="layui-badge layui-bg-cyan">永久</span>':'<span class="layui-badge ">'+value.sqDay==null?"":value.sqDay+'</span>'}}</td>
+            <td>{{value.sqsize==null?"":value.sqsize}}</td>
+            <td>{{value.startTime==null?"":value.startTime}}</td>
+            <td>{{value.state == 1?"已处理":""}}</td>
+            <td>
+                <input type="button" onclick="opneModal_2('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="详情"/>
+                <input type="button" onclick="deleteAuthorizeBySsid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="删除"/>
+            </td>
+        </tr>
+        {{#  }  }}
+        {{#  }); }}
+        </tbody>
+    </table>
+
+</script>
+
+<script language="JavaScript" src="/js/jquery-1.11.1.js"></script>
+<script language="JavaScript" src="/js/common.js"></script>
+<script language="JavaScript" src="/js/authorize.js"></script>
+<script language="JavaScript" src="/js/web/login.js"></script>
+<script th:src="@{/layui/layui.js}"type="text/javascript"></script>
+<script th:src="@{/layui/lay/modules/laytpl.js}" type="text/javascript"></script>
+<script th:src="@{/js/web/main.js}"type="text/javascript"></script>
+<script th:inline="javascript">
+    $(function(){
+        document.onkeydown = function (event) {
+            var e = event || window.event;
+            if (e && e.keyCode == 13) { //回车键的键值为13
+                event.preventDefault();
+                getAuthorizeList_init(1,10);
+            }
+        };
+
+        $('#keyword,#sq_username').on('input propertychange', function() {
+            getAuthorizeList_init(1,10);
+        });
+
+        setTimeout("$(\"#chaxun\").click();",300);
+
+    });
+    layui.use(['layer', 'element', 'form'], function () {
+        var layer = layui.layer; //获得layer模块
+        var element = layui.element;
+        var form = layui.form;
+        //使用模块
+
+        form.on('switch(foreverBool)', function (data) {
+            if(this.checked){
+                $("input[name='sqDay']").attr("disabled", "disabled").css("background","#eee").removeAttr("lay-verify").val("");
+            }else{
+                $("input[name='sqDay']").removeAttr("disabled").css("background", "").attr("lay-verify", "required|number");
+            }
+        });
+
+        form.render();
+    });
+</script>
+</body>
+</html>

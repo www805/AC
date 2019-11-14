@@ -5,6 +5,15 @@ import com.avst.authorize.common.utils.Page;
 public class GetAuthorizeListParam extends Page {
 
     private String clientName;
+    private String username;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public String getClientName() {
         return clientName;

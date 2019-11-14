@@ -1,10 +1,16 @@
 var gnlist = "";
 var loadIndex;
+var sqgnlist = "";
+var sqinfolist = [];
+var jiarunum = 0;
+var sqinfodata = "";
 
 function getAuthorizeList_init(currPage,pageSize) {
     var url = getauthorize_manage().getAuthorizeList;
+    var sq_username=$("input[name='sq_username']").val();
     var keyword=$("input[name='keyword']").val();
     var data={
+        username: sq_username,
         clientName: keyword,
         currPage:currPage,
         pageSize:pageSize
@@ -134,7 +140,7 @@ function deleteAuthorizeBySsid(ssid) {
         return;
     }
 
-    layer.confirm('确定要作废该条授权记录吗', {
+    layer.confirm('确定要删除该条授权记录吗', {
         btn: ['确认','取消'], //按钮
         shade: [0.1,'#fff'], //不显示遮罩
     }, function(index){
@@ -174,6 +180,120 @@ function downloadFileByPath(clientName, startTime) {
     window.location.href = url + "/" + path;
 
     layer.close(loadIndex);
+}
+
+
+//申请页提交表格
+function formSubmit() {
+    var username=$("input[name='username']").val();
+    var companyname=$("input[name='companyname']").val();
+    var clientName=$("input[name='clientName']").val();
+    var unitCode=$("input[name='unitCode']").val();
+    var sqNum=$("input[name='sqNum']").val();
+    var sqDay=$("input[name='sqDay']").val();
+    var companymsg=$("textarea[name='companymsg']").val();
+
+    if($("#foreverBool").prop('checked')){
+        sqDay = "永久";//选中就是永久
+    }
+
+    var sqinfoentity = "";
+
+    if (isNotEmpty(sqinfolist) && sqinfolist.length > 0) {
+        for (var i = 0; i < sqinfolist.length; i++) {
+            var entity = sqinfolist[i];
+
+            sqinfoentity += entity.name + "&nbsp;&nbsp;&nbsp;" + entity.value + "<br/>";
+
+        }
+    }
+
+    var data={
+        username: username,
+        companyname:companyname,
+        clientName:clientName,
+        unitCode:unitCode,
+        sqNum:sqNum,
+        sqDay:sqDay,
+        sqgnlist:sqgnlist,
+        companymsg:companymsg,
+        sqinfolist:sqinfoentity
+    };
+
+    var dataName={
+        username: "申请人名称：",
+        companyname:"授权公司名称：",
+        clientName:"单位名称：",
+        unitCode:"单位代码：",
+        sqNum:"授权台数：",
+        sqDay:"授权总天数：",
+        sqgnlist:"客户端的功能列表：",
+        companymsg:"公司简介：",
+        sqinfolist:"授权码编号："
+    };
+
+    var formHTML = "";
+    sqinfodata = "";
+
+    for (var key in data) {
+        formHTML += '<tr>\n' +
+            '        <td class="td_right">' + dataName[key] + '</td>\n' +
+            '        <td>' + data[key] + '</td>\n' +
+            '    </tr>';
+
+        sqinfodata += dataName[key] + data[key] + "\n";
+    }
+
+    sqinfodata = sqinfodata.replace(/&nbsp;/g," ");
+    sqinfodata = sqinfodata.replace(/<br\/>/g,"\n");
+
+    formHTML += '<tr>\n' +
+        '        <td colspan="2" style="padding-top: 20px;">\n' +
+        '            <button style="float: right;" class="layui-btn layui-btn-normal" onclick="copysqinfo();">点我复制</button>\n' +
+        '            <button style="float: right;margin-right: 50px;" onclick=\'$("#sqinif").hide();$("#da_row").show();\' class="layui-btn layui-btn-normal" >返回</button>\n' +
+        '        </td>\n' +
+        '    </tr>';
+
+
+    $("#sqinif").html(formHTML).show();
+    $("#da_row").hide();
+    sqinfolist = [];
+    // console.log(sqinfodata);
+}
+
+//新增一行授权码
+function addsqinfo() {
+
+    jiarunum++;
+
+    var jiaruHTML = "";
+
+    if (jiarunum == 1) {
+        jiaruHTML = '<div class="layui-input-inline">\n' +
+            '                            <input type="text" name="sqnum' + jiarunum + '" required="" lay-verify="" autocomplete="off" placeholder="请输入编号如：' + jiarunum + '号" class="layui-input">\n' +
+            '                        </div>\n' +
+            '                        <label class="layui-form-label sqbianhao" >授权码</label>\n' +
+            '                        <div class="layui-input-inline " style="width: 350px;margin-bottom: 5px;">\n' +
+            '                            <input type="text" name="sqCode' + jiarunum + '" required="" lay-verify="" autocomplete="off" placeholder="请输入授权码，用户的机器授权码" class="layui-input">\n' +
+            '                        </div>';
+    }else{
+        jiaruHTML = '<div id="sqkuang' + jiarunum + '"><label class="layui-form-label" style="clear:both;"></label>\n' +
+            '                        <div class="layui-input-inline">\n' +
+            '                            <input type="text" name="sqnum' + jiarunum + '" required="" lay-verify="" autocomplete="off" placeholder="请输入编号如：' + jiarunum + '号" class="layui-input">\n' +
+            '                        </div>\n' +
+            '                        <label class="layui-form-label sqbianhao" >授权码</label>\n' +
+            '                        <div class="layui-input-inline" style="width: 350px;margin-bottom: 5px;">\n' +
+            '                            <input type="text" name="sqCode' + jiarunum + '" required="" lay-verify="" autocomplete="off" placeholder="请输入授权码，用户的机器授权码" class="layui-input">\n' +
+            '                        </div>\n' +
+            '                        <div class="layui-input-inline" >\n' +
+            '                            <input type="button" class="layui-btn layui-btn-danger" value="删除" onclick="$(\'#sqkuang' + jiarunum + '\').remove();">\n' +
+            '                        </div>' +
+            '</div>';
+    }
+
+
+
+    $("#jiaru").append(jiaruHTML);
 }
 
 function callAddOrDelete(data){
@@ -294,6 +414,7 @@ function callGetPrivilege(data){
     }
 }
 
+
 /**
  * 局部刷新
  */
@@ -326,10 +447,37 @@ function showpagetohtml(){
     }
 }
 
+/**
+ * 复制
+ */
+function copysqinfo() {
+
+    // var val = document.querySelector("p").innerText; // 要复制的内容
+    document.addEventListener('copy', save); // 监听浏览器copy事件
+    document.execCommand('copy'); // 执行copy事件，这时监听函数会执行save函数。
+    document.removeEventListener('copy', save); // 移除copy事件
+    console.log(sqinfodata);
+    // 保存方法
+    function save(e) {
+        e.clipboardData.setData('text/plain', sqinfodata); // 剪贴板内容设置
+        e.preventDefault();
+        layer.msg("已经复制到剪辑版",{icon: 6});
+    }
+}
+
+/**
+ * 自用弹框
+ */
 function opneModal_1() {
 
 
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>申请人名称</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="text" name="username" required  lay-verify="required" autocomplete="off" placeholder="请输入申请人名称" class="layui-input" >\n' +
+        '                </div>\n' +
+        '            </div>\n' +
         '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>公司名称</label>\n' +
         '                <div class="layui-input-block">\n' +
@@ -355,17 +503,9 @@ function opneModal_1() {
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
-        '                    <label class="layui-form-label"><span style="color: red;">*</span>授权服务类型</label>\n' +
-        '                    <div class="layui-input-block">\n' +
-        '                        <select name="serverType" id="serverType" lay-verify="required">\n' +
-        '                            <option value="police">police</option>\n' +
-        '                        </select>\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>申请台数</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <textarea name="companymsg" placeholder="请输入公司简介" lay-verify="required" class="layui-textarea"></textarea>\n' +
+        '                    <input type="number" name="sqsize" lay-verify="required|number" required  autocomplete="off" placeholder="请输入申请台数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
@@ -373,6 +513,12 @@ function opneModal_1() {
         '                    <div class="layui-input-block">\n' +
         '                        <input type="checkbox" name="foreverBool" id="foreverBool" lay-filter="foreverBool" lay-skin="switch">\n' +
         '                    </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <textarea name="companymsg" placeholder="请输入公司简介" lay-verify="required" class="layui-textarea"></textarea>\n' +
+        '                </div>\n' +
         '            </div>\n' +
         '            <div id="guanli" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="margin-left: 20px;margin-bottom: 60px;">\n' +
         '                <ul class="layui-tab-title">\n' +
@@ -384,14 +530,14 @@ function opneModal_1() {
         '                        <input type="hidden" id="updateCpuCode" name="updateCpuCode" value=""/>\n' +
         '                        <div class="layui-upload-drag" id="test10" style="width: 510px;height: 90px;">\n' +
         '                            <i class="layui-icon"></i>\n' +
-        '                            <p>点击上传，或将文件拖拽到此处</p>\n' +
+        '                            <p>点击上传，或将文件拖拽到此处(可上传zip，rar格式)</p>\n' +
         '                        </div>\n' +
         '                    </div>\n' +
         '                    <div class="layui-tab-item">\n' +
         '                        <div class="layui-form-item">\n' +
         '                            <label class="layui-form-label"><span style="color: red;">*</span>授权号码</label>\n' +
         '                            <div class="layui-input-block">\n' +
-        '                                <input type="text" name="cpuCode" autocomplete="off" placeholder="请输入授权号码" class="layui-input" >\n' +
+        '                                <textarea name="cpuCode2" id="cpuCode2" placeholder="请输入授权号码，换行可以设置多个授权码&#13;&#10;例子：&#13;&#10;aaaaaaaaaaaaaaaaaaaaaaaaa&#13;&#10;bbbbbbbbbbbbbbbbbbbbbbbbb&#13;&#10;cccccccccccccccccccccccccccc" class="layui-textarea"></textarea>\n' +
         '                            </div>\n' +
         '                        </div>\n' +
         '                    </div>\n' +
@@ -472,6 +618,107 @@ function opneModal_1() {
                     addAuthorize();
                 });
 
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            }
+        });
+
+    });
+
+
+}
+
+/**
+ * 授权详情弹框
+ */
+function opneModal_2(ssid) {
+
+    var html = '<table class="layui-table" lay-even="" lay-skin="nob">\n' +
+        '            <colgroup>\n' +
+        '                <col width="160">\n' +
+        '                <col>\n' +
+        '            </colgroup>\n' +
+        '            <tbody>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">申请人名称：</td>\n' +
+        '                    <td>销售李四</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">授权公司名称：</td>\n' +
+        '                    <td>阿里巴巴</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">单位名称：</td>\n' +
+        '                    <td>淘宝</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">单位代码：</td>\n' +
+        '                    <td>taobao</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">授权台数：</td>\n' +
+        '                    <td>10台</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">授权总天数：</td>\n' +
+        '                    <td>100天</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">客户端的功能列表：</td>\n' +
+        '                    <td>笔录管理，语音识别，语音播报，设备控制</td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">公司简介：</td>\n' +
+        '                    <td>是中国最大的IT公司</td>\n' +
+        '                </tr>\n' +
+        '            </tbody>\n' +
+        '        </table>\n' +
+        '<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">\n' +
+        '  <ul class="layui-tab-title">\n' +
+        '    <li class="layui-this">授权文件列表</li>\n' +
+        '  </ul>\n' +
+        '  <div class="layui-tab-content">' +
+            '        <div style="margin-left: 30px;overflow: hidden;">\n' +
+        '            <table border="0" id="tableId">\n' +
+        '                <tr>\n' +
+        '                    <td>1号</td>\n' +
+        '                    <td>aaaaaaaaaaaaaaaaaaaaaaaaa</td>\n' +
+        '                    <td><a href="#">下载授权文件</a></td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td>2333号</td>\n' +
+        '                    <td>bbbbbbbbbbbbbbbbbbbbbbbbb</td>\n' +
+        '                    <td><a href="#">下载授权文件</a></td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td>3号</td>\n' +
+        '                    <td>cccccccccccccccccccccccccccc</td>\n' +
+        '                    <td><a href="#">下载授权文件</a></td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td colspan="3"><button class="layui-btn layui-btn-normal" style="float: right;margin-top: 5px;">打包下载</button></td>\n' +
+        '                </tr>\n' +
+        '            </table>\n' +
+        '        </div>' +
+        '   </div>\n' +
+        '</div>\n';
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form;
+        var upload = layui.upload;
+
+        var index = layer.open({
+            type: 1,
+            title: '授权详情',
+            content: html,
+            area: ['630px', '650px'],
+            btn: ['返回'],
+            success: function (layero, index) {
+
+            },
+            yes: function (index, layero) {
+                layer.close(index);
             },
             btn2: function (index, layero) {
                 layer.close(index);

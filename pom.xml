@@ -16,6 +16,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <mybatisplus.version>2.2.0</mybatisplus.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!--关于mybatis plus 数据库连接-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+            <version>5.1.34</version>
+        </dependency>
+
+        <!--mybatisplus-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatisplus.version}</version>
         </dependency>
 
         <!--字符串工具类-->

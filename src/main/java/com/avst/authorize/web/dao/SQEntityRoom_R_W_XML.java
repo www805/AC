@@ -80,7 +80,7 @@ public class SQEntityRoom_R_W_XML {
 					}else if(i==9){
 						xml.setSsid(object.getValue());
 					}else if(i==10){
-						xml.setState(object.getValue());
+						xml.setState(Integer.parseInt(object.getValue()));
 					}
 					i++;
 				}
@@ -143,7 +143,7 @@ public class SQEntityRoom_R_W_XML {
 				}else if(i==9){
 					xml.setSsid(str);
 				}else if(i==10){
-					xml.setState(str);
+					xml.setState(Integer.parseInt(str));
 				}
 				i++;
 			}
@@ -193,12 +193,12 @@ public class SQEntityRoom_R_W_XML {
 					element.addContent(new Element("sqDay").setText(sqEntity.getSqDay() + ""));
 					element.addContent(new Element("sortNum").setText(sqEntity.getSortNum() + ""));
 					element.addContent(new Element("serverType").setText(sqEntity.getServerType()));
-					element.addContent(new Element("foreverBool").setText(sqEntity.isForeverBool() + ""));
+					element.addContent(new Element("foreverBool").setText(sqEntity.getForeverBool() + ""));
 					element.addContent(new Element("cpuCode()").setText(sqEntity.getCpuCode()));
 					element.addContent(new Element("gnlist").setText(sqEntity.getGnlist()));
 					element.addContent(new Element("startTime").setText(sqEntity.getStartTime()));
 					element.addContent(new Element("ssid").setText(sqEntity.getSsid()));
-					element.addContent(new Element("state").setText(sqEntity.getState()));
+					element.addContent(new Element("state").setText(sqEntity.getState()+""));
 
 					//将已经设置好值的elements赋给root
 					root.addContent(element);  
@@ -250,12 +250,12 @@ public class SQEntityRoom_R_W_XML {
 			elements.addContent(new Element("sqDay").setText(SQEntity.getSqDay() + ""));
 			elements.addContent(new Element("sortNum").setText(SQEntity.getSortNum() + ""));
 			elements.addContent(new Element("serverType").setText(SQEntity.getServerType()));
-			elements.addContent(new Element("foreverBool").setText(SQEntity.isForeverBool() + ""));
+			elements.addContent(new Element("foreverBool").setText(SQEntity.getForeverBool() + ""));
 			elements.addContent(new Element("cpuCode").setText(SQEntity.getCpuCode()));
 			elements.addContent(new Element("gnlist").setText(SQEntity.getGnlist()));
 			elements.addContent(new Element("startTime").setText(SQEntity.getStartTime()));
 			elements.addContent(new Element("ssid").setText(SQEntity.getSsid()));
-			elements.addContent(new Element("state").setText(SQEntity.getState()));
+			elements.addContent(new Element("state").setText(SQEntity.getState()+""));
 			//将已经设置好值的elements赋给root
 			root.addContent(elements);  
 		} 

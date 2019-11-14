@@ -10,7 +10,7 @@ public class SQEntity {
     /**
      * 是否是永久授权
      */
-    private boolean foreverBool=false;
+    private Boolean foreverBool=false;
 
     /**
      * 授权开始时间
@@ -27,7 +27,7 @@ public class SQEntity {
     /**
      * 授权总天数
      */
-    private int sqDay=1;
+    private Integer sqDay=1;
 
     /**
      * 单位名称
@@ -40,7 +40,7 @@ public class SQEntity {
     /**
      * 排序，多台客户端的时候
      */
-    private int sortNum=1;
+    private Integer sortNum=1;
 
     /**
      * 客户端的功能列表，暂时只有：record、asr、tts、fd、ph(笔录管理、语音识别、语音播报、设备控制、测谎仪)
@@ -56,11 +56,11 @@ public class SQEntity {
         this.serverType = serverType;
     }
 
-    public boolean isForeverBool() {
+    public Boolean getForeverBool() {
         return foreverBool;
     }
 
-    public void setForeverBool(boolean foreverBool) {
+    public void setForeverBool(Boolean foreverBool) {
         this.foreverBool = foreverBool;
     }
 
@@ -80,11 +80,11 @@ public class SQEntity {
         this.cpuCode = cpuCode;
     }
 
-    public int getSqDay() {
+    public Integer getSqDay() {
         return sqDay;
     }
 
-    public void setSqDay(int sqDay) {
+    public void setSqDay(Integer sqDay) {
         this.sqDay = sqDay;
     }
 
@@ -104,11 +104,11 @@ public class SQEntity {
         this.unitCode = unitCode;
     }
 
-    public int getSortNum() {
+    public Integer getSortNum() {
         return sortNum;
     }
 
-    public void setSortNum(int sortNum) {
+    public void setSortNum(Integer sortNum) {
         this.sortNum = sortNum;
     }
 

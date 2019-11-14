@@ -2,14 +2,18 @@ package com.avst.authorize.web.service;
 
 import com.avst.authorize.common.cache.PrivilegeCache;
 import com.avst.authorize.common.cache.SqCache;
+import com.avst.authorize.common.entity.BaseGninfo;
 import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.*;
 import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.common.utils.sq.CreateSQ;
 import com.avst.authorize.common.utils.sq.NetTool;
 import com.avst.authorize.common.utils.sq.SQEntity;
+import com.avst.authorize.web.dao.BaseGninfoDao;
+import com.avst.authorize.web.dao.SQEntityDao;
 import com.avst.authorize.web.dao.SQEntityRoom_R_W_XML;
 import com.avst.authorize.web.req.GetAuthorizeParam;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -33,6 +37,11 @@ public class AuthorizeService {
     @Autowired
     private MainService mainService;
 
+    @Autowired
+    private BaseGninfoDao baseGninfoDao;
+
+    @Autowired
+    private SQEntityDao sqEntityDao;
 
     public void uploadBytxt(RResult result, MultipartFile file) {
 
@@ -111,7 +120,7 @@ public class AuthorizeService {
         String startTime = df.format(new Date());
 
         String sqFileName= PropertiesListenerConfig.getProperty("sq.fileName");
-        String path = OpenUtil.getXMSoursePath() + sqFileName + param.getClientName() + startTime;
+        String path = OpenUtil.getXMSoursePath() + sqFileName + startTime + "\\" + param.getUnitCode();
 
         System.out.println(path);
         boolean b = CreateSQ.deSQ(sqEntity, path);
@@ -120,7 +129,7 @@ public class AuthorizeService {
             //把授权信息保存到xml文件中，保存到缓存中(为了提高处理速度，用了多线程)
             mainService.setSqInfo(sqEntity);
             result.changeToTrue(b);
-            NetTool.executeCMD("explorer " + path);//打开文件夹
+//            NetTool.executeCMD("explorer " + path);//打开文件夹
         }
     }
 
@@ -137,33 +146,36 @@ public class AuthorizeService {
          * @return
          */
 
-        String filename= PropertiesListenerConfig.getProperty("file.ini.name");
+        List<BaseGninfo> baseGninfos = baseGninfoDao.selectList(null);
 
-        String path = OpenUtil.getXMSoursePath() + "\\" + filename;
 
-        LinkedHashMap<String, LinkedHashMap<String, String>> map = null;
-        HashMap hashMap = new HashMap();
-        try {
-            hashMap = PrivilegeCache.getPrivilegeList();
+//        String filename= PropertiesListenerConfig.getProperty("file.ini.name");
+//
+//        String path = OpenUtil.getXMSoursePath() + "\\" + filename;
+//
+//        LinkedHashMap<String, LinkedHashMap<String, String>> map = null;
+//        HashMap hashMap = new HashMap();
+//        try {
+//            hashMap = PrivilegeCache.getPrivilegeList();
+//
+//            if (null == hashMap || hashMap.size() == 0) {
+//                INI4j ini4j = new INI4j(new File(path));
+//                map = ini4j.get();
+//
+//                hashMap.put("serverType", map.get("serverType"));
+//                map.remove("serverType");
+//                hashMap.put("shouquan", map);
+//
+//                PrivilegeCache.setPrivilegeCacheList(hashMap);
+//            }
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
 
-            if (null == hashMap || hashMap.size() == 0) {
-                INI4j ini4j = new INI4j(new File(path));
-                map = ini4j.get();
-
-                hashMap.put("serverType", map.get("serverType"));
-                map.remove("serverType");
-                hashMap.put("shouquan", map);
-
-                PrivilegeCache.setPrivilegeCacheList(hashMap);
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        result.changeToTrue(hashMap);
+        result.changeToTrue(baseGninfos);
     }
 
     public void delAuthorize(RResult result, GetAuthorizeParam param) {
@@ -172,31 +184,40 @@ public class AuthorizeService {
 
         System.out.println(ssid);
 
-        //获取xml保存路径
-        String filename= PropertiesListenerConfig.getProperty("file.data.url");
+        EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
+        ew.eq("ssid", ssid);
 
-        //xml保存的固定地址
-        String page = OpenUtil.getXMSoursePath() + filename;
+        SQEntityPlus sqEntityPlus = new SQEntityPlus();
+        sqEntityPlus.setState(0);
 
-        //把json转换成集合
-        List<String> gnList = SqCache.getSqGnList();
-        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
-        if (null != gnList && gnList.size() > 0 && null != sqCacheList && sqCacheList.size() > 0) {
+        Integer update = sqEntityDao.update(sqEntityPlus, ew);
+        
 
-            for (int i = 0; i < sqCacheList.size(); i++) {
-                SQEntity entity = sqCacheList.get(i);
-                entity.setGnlist(gnList.get(i));
-            }
-            SqCache.setSqCacheList(sqCacheList);
-            SqCache.setSqGnList(null);
-        }
+//        //获取xml保存路径
+//        String filename= PropertiesListenerConfig.getProperty("file.data.url");
+//
+//        //xml保存的固定地址
+//        String page = OpenUtil.getXMSoursePath() + filename;
+//
+//        //把json转换成集合
+//        List<String> gnList = SqCache.getSqGnList();
+//        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
+//        if (null != gnList && gnList.size() > 0 && null != sqCacheList && sqCacheList.size() > 0) {
+//
+//            for (int i = 0; i < sqCacheList.size(); i++) {
+//                SQEntity entity = sqCacheList.get(i);
+//                entity.setGnlist(gnList.get(i));
+//            }
+//            SqCache.setSqCacheList(sqCacheList);
+//            SqCache.setSqGnList(null);
+//        }
+//
+//        SqCache.removeSqCacheBySsid(ssid);
+//        SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqCacheList);
+//
+//        SqCache.delSqCacheList();//清空缓存
 
-        SqCache.removeSqCacheBySsid(ssid);
-        SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqCacheList);
-
-        SqCache.delSqCacheList();//清空缓存
-
-        result.changeToTrue();
+        result.changeToTrue(update);
     }
 
     public ResponseEntity<Resource> downloadSQFile(String fileName) {
