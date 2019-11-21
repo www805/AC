@@ -7,16 +7,15 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.util.List;
 
-@TableName("base_gninfo")
-public class BaseGninfo extends Model<BaseGninfo> {
+@TableName("base_type")
+public class BaseType extends Model<BaseType> {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     private String name;
-    private String title;
-    private Integer type;
-    private String btypessid;
+    private String typecode;
     private String ssid;
     private String string1;
     private String string2;
@@ -24,14 +23,22 @@ public class BaseGninfo extends Model<BaseGninfo> {
     private Integer integer2;
 
     @TableField(exist = false)
-    private BaseType baseType;
+    private List<BaseGninfo> baseGninfo;
 
-    public BaseType getBaseType() {
-        return baseType;
+    public List<BaseGninfo> getBaseGninfo() {
+        return baseGninfo;
     }
 
-    public void setBaseType(BaseType baseType) {
-        this.baseType = baseType;
+    public void setBaseGninfo(List<BaseGninfo> baseGninfo) {
+        this.baseGninfo = baseGninfo;
+    }
+
+    public String getTypecode() {
+        return typecode;
+    }
+
+    public void setTypecode(String typecode) {
+        this.typecode = typecode;
     }
 
     public Integer getId() {
@@ -48,30 +55,6 @@ public class BaseGninfo extends Model<BaseGninfo> {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public String getBtypessid() {
-        return btypessid;
-    }
-
-    public void setBtypessid(String btypessid) {
-        this.btypessid = btypessid;
     }
 
     public String getSsid() {

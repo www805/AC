@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.avst.authorize.web.mapper.SQEntityMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.avst.authorize.common.entity.SQEntityPlus">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="servertype" property="serverType" />
+        <result column="foreverBool" property="foreverBool" />
+        <result column="startTime" property="startTime" />
+        <result column="cpuCode" property="cpuCode" />
+        <result column="sqsize" property="sqsize" />
+        <result column="sqDay" property="sqDay" />
+        <result column="companyname" property="companyname" />
+        <result column="clientName" property="clientName" />
+        <result column="unitCode" property="unitCode" />
+        <result column="sortNum" property="sortNum" />
+        <result column="gnlist" property="gnlist" />
+        <result column="companymsg" property="companymsg" />
+        <result column="state" property="state" />
+        <result column="ssid" property="ssid" />
+        <result column="string1" property="string1" />
+        <result column="string2" property="string2" />
+        <result column="integer1" property="integer1" />
+        <result column="integer2" property="integer2" />
+        <collection property="sqCodeList" ofType="com.avst.authorize.common.entity.SQCode">
+            <id column="cid" property="id"/>
+            <result column="cname" property="name"/>
+            <result column="csqcode" property="sqcode"/>
+            <result column="crealpath" property="realpath"/>
+            <result column="csqentityssid" property="sqentityssid"/>
+            <result column="cssid" property="ssid"/>
+            <result column="cstring1" property="string1"/>
+            <result column="cstring2" property="string2"/>
+            <result column="cinteger1" property="integer1"/>
+            <result column="cinteger2" property="integer2"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getFindByssid" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+            s.*,
+            c.id cid,
+            c.name cname,
+            c.sqcode csqcode,
+            c.realpath crealpath,
+            c.sqentityssid csqentityssid,
+            c.ssid cssid,
+            c.string1 cstring1,
+            c.string2 cstring2,
+            c.integer1 cinteger1,
+            c.integer2 cinteger2
+        FROM
+            ac_sqentityplus s
+            LEFT JOIN ac_sqcode c ON s.ssid = c.sqentityssid
+        <where>
+            <if test="null != ssid">
+                s.ssid = #{ssid}
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,16 +1,14 @@
 package com.avst.authorize.web.service;
 
-import com.avst.authorize.common.cache.PrivilegeCache;
 import com.avst.authorize.common.cache.SqCache;
 import com.avst.authorize.common.entity.BaseGninfo;
 import com.avst.authorize.common.entity.SQEntityPlus;
-import com.avst.authorize.common.utils.FuzzyQueryUtils;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.RResult;
 import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.common.utils.sq.SQEntity;
-import com.avst.authorize.web.dao.SQEntityDao;
-import com.avst.authorize.web.dao.SQEntityRoom_R_W_XML;
+import com.avst.authorize.web.mapper.SQEntityMapper;
+import com.avst.authorize.web.mapper.SQEntityRoom_R_W_XML;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.vo.GetAuthorizeListVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
@@ -29,7 +27,7 @@ public class MainService {
     private AuthorizeService authorizeService;
 
     @Autowired
-    private SQEntityDao sqEntityDao;
+    private SQEntityMapper sqEntityDao;
 
     public RResult getAuthorizeList(RResult result, GetAuthorizeListParam param) {
 
@@ -90,16 +88,18 @@ public class MainService {
 
         EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
         if(StringUtils.isNotEmpty(param.getUsername())){
-            ew.eq("username", param.getUsername());
+            ew.like("username", param.getUsername());
         }
         if(StringUtils.isNotEmpty(param.getClientName())){
-            ew.eq("clientname", param.getClientName());
+            ew.like("clientname", param.getClientName());
         }
+
+        ew.orderBy("startTime", false);
 
         Integer count = sqEntityDao.selectCount(ew);
         param.setRecordCount(count);
 
-        Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageCount());
+        Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageSize());
         List<SQEntityPlus> sqCacheList = sqEntityDao.selectPage(page, ew);
 
         for (SQEntityPlus sqEntity : sqCacheList) {

@@ -16,8 +16,8 @@ function login_login(){
 function callLogin_login(data){
 
     if(null!=data&&data.actioncode=='SUCCESS'){
-        // var url=getActionURL(getactionid_manage().login_main);
-        window.location.href = "/";
+        var url = getactionid_manage().admin_index;
+        window.location.href = url;
     }else{
         // layer.msg(data.message, {icon: 2});
         alert(data.message);

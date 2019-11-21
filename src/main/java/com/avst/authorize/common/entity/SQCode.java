@@ -1,38 +1,27 @@
 package com.avst.authorize.common.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
 
-@TableName("base_gninfo")
-public class BaseGninfo extends Model<BaseGninfo> {
+
+@TableName("ac_sqcode")
+public class SQCode extends Model<SQCode>{
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private String name;
-    private String title;
-    private Integer type;
-    private String btypessid;
+    private String name;//授权名称
+    private String sqcode;//授权码
+    private String realpath;//真实文件存放地址
+    private String sqentityssid;//关联授权信息ssid
     private String ssid;
     private String string1;
     private String string2;
     private Integer integer1;
     private Integer integer2;
-
-    @TableField(exist = false)
-    private BaseType baseType;
-
-    public BaseType getBaseType() {
-        return baseType;
-    }
-
-    public void setBaseType(BaseType baseType) {
-        this.baseType = baseType;
-    }
 
     public Integer getId() {
         return id;
@@ -40,6 +29,22 @@ public class BaseGninfo extends Model<BaseGninfo> {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getSqcode() {
+        return sqcode;
+    }
+
+    public void setSqcode(String sqcode) {
+        this.sqcode = sqcode;
+    }
+
+    public String getRealpath() {
+        return realpath;
+    }
+
+    public void setRealpath(String realpath) {
+        this.realpath = realpath;
     }
 
     public String getName() {
@@ -50,28 +55,12 @@ public class BaseGninfo extends Model<BaseGninfo> {
         this.name = name;
     }
 
-    public String getTitle() {
-        return title;
+    public String getSqentityssid() {
+        return sqentityssid;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public String getBtypessid() {
-        return btypessid;
-    }
-
-    public void setBtypessid(String btypessid) {
-        this.btypessid = btypessid;
+    public void setSqentityssid(String sqentityssid) {
+        this.sqentityssid = sqentityssid;
     }
 
     public String getSsid() {

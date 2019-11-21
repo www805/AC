@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.avst.authorize.web.mapper.BaseTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.avst.authorize.common.entity.BaseType">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="typecode" property="typecode" />
+        <result column="ssid" property="ssid" />
+        <result column="string1" property="string1" />
+        <result column="string2" property="string2" />
+        <result column="integer1" property="integer1" />
+        <result column="integer2" property="integer2" />
+        <collection property="baseGninfo" ofType="com.avst.authorize.common.entity.BaseGninfo">
+            <id column="gid" property="id" />
+            <result column="gname" property="name" />
+            <result column="gtitle" property="title" />
+            <result column="gtype" property="type" />
+            <result column="gbtypessid" property="btypessid" />
+            <result column="gssid" property="ssid" />
+        </collection>
+    </resultMap>
+
+    <select id="getBaseType" resultMap="BaseResultMap">
+        SELECT
+            t.*,
+            g.id gid,
+            g.NAME gname,
+            g.title gtitle,
+            g.type gtype,
+            g.btypessid gtypessid
+        FROM
+            base_type t
+            LEFT JOIN base_gninfo g ON t.ssid = g.btypessid
+    </select>
+
+
+</mapper>

@@ -3,6 +3,7 @@ package com.avst.authorize.common.config;
 
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.RResult;
+import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -64,12 +65,18 @@ public class BaseExceptionHandler {
 //    }
 
 
-
-
-
-
-
-
+    /**
+     * 返回shiro需要身份验证才能访问的接口
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(UnauthenticatedException.class)
+    public RResult nauthenticatedException(UnauthenticatedException e) {
+        RResult result = new RResult();
+        result.changeToTrue();
+        result.setMessage("请登录后再进行操作");
+        return result;
+    }
 
     /**
      * 处理自定义异常

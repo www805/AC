@@ -4,9 +4,10 @@ var sqgnlist = "";
 var sqinfolist = [];
 var jiarunum = 0;
 var sqinfodata = "";
+var sqEntityInfo = "";
 
 function getAuthorizeList_init(currPage,pageSize) {
-    var url = getauthorize_manage().getAuthorizeList;
+    var url = getactionid_manage().getAuthorizeList;
     var sq_username=$("input[name='sq_username']").val();
     var keyword=$("input[name='keyword']").val();
     var data={
@@ -25,7 +26,7 @@ function getAuthorizeList_init(currPage,pageSize) {
 }
 
 function getProblemTypeList(keyword, currPage, pageSize) {
-    var url = getauthorize_manage().getAuthorizeList;
+    var url = getactionid_manage().getAuthorizeList;
     var data={
         clientName: keyword,
         currPage:currPage,
@@ -41,20 +42,21 @@ function getProblemTypeList(keyword, currPage, pageSize) {
 
 //获取授权信息
 function getPrivilege() {
-    var url = getauthorize_manage().getPrivilege;
+    var url = getactionid_manage().getPrivilege;
     ajaxSubmitByJson(url, null, callGetPrivilege);
 }
 
 //添加授权
 function addAuthorize() {
-    var url = getauthorize_manage().addAuthorize;
+    var url = getactionid_manage().addAuthorize;
 
+    var username = $("input[name='username']").val();
     var clientName = $("input[name='clientName']").val();
     var unitCode = $("input[name='unitCode']").val();
     var sqDay = $("input[name='sqDay']").val();
-    var serverType = $("input[name='serverType']").val();
+    var sqsize = $("input[name='sqsize']").val();
 
-    var cpuCode = $("input[name='cpuCode']").val();
+    var cpuCode = $("#cpuCode2").val();
     var updateCpuCode = $("#updateCpuCode").val();
 
     if (!isNotEmpty(updateCpuCode) && !isNotEmpty(cpuCode)) {
@@ -97,13 +99,17 @@ function addAuthorize() {
     }
 
     var data = {
+        username: username,
+        companyname: companyname,
         clientName: clientName,
         unitCode: unitCode,
+        sqsize: sqsize,
         sqDay: parseInt(sqDay),
         foreverBool: foreverBool,
         serverType: serverType,
         gnlist: gnlist,
-        cpuCode: cpuCode
+        cpuCode: cpuCode,
+        companymsg: companymsg
     };
 
     loadIndex = layer.msg("提交中，请稍后...", {
@@ -112,6 +118,8 @@ function addAuthorize() {
         shade: [0.1,"#fff"]
     });
 
+
+    // console.log(data);
 
     $.ajax({
         url : url,
@@ -144,7 +152,7 @@ function deleteAuthorizeBySsid(ssid) {
         btn: ['确认','取消'], //按钮
         shade: [0.1,'#fff'], //不显示遮罩
     }, function(index){
-        var url = getauthorize_manage().delAuthorize;
+        var url = getactionid_manage().delAuthorize;
         var data={
             ssid:ssid
         };
@@ -168,7 +176,7 @@ function downloadFileByPath(clientName, startTime) {
 
     startTime = startTime.replace(/-|:| /g, "");
 
-    var url = getauthorize_manage().downloadSQFile;
+    var url = getactionid_manage().downloadSQFile;
     var path = clientName + startTime;
 
     loadIndex = layer.msg("加载中，请稍后...", {
@@ -182,6 +190,16 @@ function downloadFileByPath(clientName, startTime) {
     layer.close(loadIndex);
 }
 
+//获取指定ssid的授权信息
+function getFindByssid(ssid) {
+    var url = getactionid_manage().getFindByssid;
+
+    var data = {
+        ssid: ssid
+    };
+
+    ajaxSubmitByJson(url, data, callGetFindByssid);
+}
 
 //申请页提交表格
 function formSubmit() {
@@ -203,10 +221,12 @@ function formSubmit() {
         for (var i = 0; i < sqinfolist.length; i++) {
             var entity = sqinfolist[i];
 
-            sqinfoentity += entity.name + "&nbsp;&nbsp;&nbsp;" + entity.value + "<br/>";
+            sqinfoentity += entity.name + "|" + entity.value + "<br/>";//&nbsp;&nbsp;&nbsp;
 
         }
     }
+    //textarea转换换行符
+    companymsg = companymsg.replace(/\n/g,"<br/>");
 
     var data={
         username: username,
@@ -216,8 +236,8 @@ function formSubmit() {
         sqNum:sqNum,
         sqDay:sqDay,
         sqgnlist:sqgnlist,
-        companymsg:companymsg,
-        sqinfolist:sqinfoentity
+        sqinfolist:sqinfoentity,
+        companymsg:companymsg
     };
 
     var dataName={
@@ -228,8 +248,8 @@ function formSubmit() {
         sqNum:"授权台数：",
         sqDay:"授权总天数：",
         sqgnlist:"客户端的功能列表：",
-        companymsg:"公司简介：",
-        sqinfolist:"授权码编号："
+        sqinfolist:"授权码编号：",
+        companymsg:"公司简介："
     };
 
     var formHTML = "";
@@ -293,7 +313,46 @@ function addsqinfo() {
 
 
 
-    $("#jiaru").append(jiaruHTML);
+    $("#jiaru,#sqcodelists").append(jiaruHTML);
+}
+
+function callGetFindByssid(data){
+    if(null!=data&&data.actioncode=='SUCCESS'){
+        if (isNotEmpty(data.data)){
+            sqEntityInfo = data.data;
+
+            var url = getactionid_manage().downloadSQFile;
+
+            $("#sqinifo_username").html(sqEntityInfo.username);
+            $("#sqinifo_companyname").html(sqEntityInfo.companyname);
+            $("#sqinifo_clientName").html(sqEntityInfo.clientName);
+            $("#sqinifo_unitCode").html(sqEntityInfo.unitCode);
+            $("#sqinifo_sqsize").html(sqEntityInfo.sqsize);
+            $("#sqinifo_sqDay").html(sqEntityInfo.sqDay == 0 ? '永久' : sqEntityInfo.sqDay);
+            $("#sqinifo_gnlist").html(sqEntityInfo.gnlist);
+            $("#sqinifo_companymsg").html(sqEntityInfo.companymsg);
+
+            var sqCodeList = sqEntityInfo.sqCodeList;
+            var sqCodeListHTML = "";
+            if (isNotEmpty(sqCodeList)) {
+                for (var i = 0; i < sqCodeList.length; i++) {
+                    var sqCode = sqCodeList[i];
+
+                    //输出授权码
+                    sqCodeListHTML += '<tr>\n' +
+                        '        <td>' + sqCode.name + '</td>\n' +
+                        '        <td>' + sqCode.sqcode + '</td>\n' +
+                        '        <td><a href="' + url + '/' + sqCode.ssid + '">下载授权文件</a></td>\n' +
+                        '</tr>';
+                }
+
+            }
+
+            $("#sqinifo_tableId").prepend(sqCodeListHTML);
+        }
+    }else{
+        layer.msg(data.message,{icon: 5});
+    }
 }
 
 function callAddOrDelete(data){
@@ -331,58 +390,35 @@ function callGetPrivilege(data){
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
 
-            var privilege = data.data.shouquan;
-            var serverType = data.data.serverType;
+            // var privilege = data.data;
+            var serverType = data.data;
             var quanxianHTML = "";
 
-            //获取所有key
-            var keys = [];
-            for (var property in privilege){
-                keys.push(property);
-            }
+            for (var i = 0; i < serverType.length; i++) {
 
-            for (var i = 0; i < keys.length; i++) {
-
-                var item = privilege[keys[i]];
+                var item = serverType[i];
+                var gninfoList = serverType[i].baseGninfo;
 
                 var itemHTML = '<div class="layui-form-item">' +
-                '   <label class="layui-form-label"><span style="color: red;">*</span>' + keys[i] + '</label>' +
+                '   <label class="layui-form-label"><span style="color: red;">*</span>' + item.name + '</label>' +
                 '   <div class="layui-input-block">';
 
                 var inpitHTML = "";
                 var indexKey = 0;
-                for (var pro in item){
-                    var value = item[pro];
+                for (var num in gninfoList){
+                    var gninfo = gninfoList[num];
 
-                    if (keys[i].indexOf("OEM版本") != -1) {
+                    if(gninfo.type == 1){
                         if (indexKey == 0) {
-                            inpitHTML += '       <input type="radio" name="oem" value="' + pro + '" title="' + value + '" checked>';
+                            inpitHTML += '       <input type="radio" name="' + item.typecode + '" value="' + gninfo.name + '" title="' + gninfo.title + '" checked>';
                         } else {
-                            inpitHTML += '       <input type="radio" name="oem" value="' + pro + '" title="' + value + '">';
+                            inpitHTML += '       <input type="radio" name="' + item.typecode + '" value="' + gninfo.name + '" title="' + gninfo.title + '">';
                         }
-                    }else if (keys[i].indexOf("分支") != -1) {
+                    }else{
                         if (indexKey == 0) {
-                            inpitHTML += '       <input type="radio" name="fen" value="' + pro + '" title="' + value + '" checked>';
+                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + gninfo.name + '" title="' + gninfo.title + '" checked>';
                         }else{
-                            inpitHTML += '       <input type="radio" name="fen" value="' + pro + '" title="' + value + '">';
-                        }
-                    }else if (keys[i].indexOf("单机版") != -1) {
-                        if (indexKey == 0) {
-                            inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '" checked>';
-                        }else{
-                            inpitHTML += '       <input type="radio" name="version" value="' + pro + '" title="' + value + '">';
-                        }
-                    }else if (keys[i].indexOf("客户端版") != -1) {
-                        if (indexKey == 0) {
-                            inpitHTML += '       <input type="radio" name="duan" value="' + pro + '" title="' + value + '" checked>';
-                        }else{
-                            inpitHTML += '       <input type="radio" name="duan" value="' + pro + '" title="' + value + '">';
-                        }
-                    }else {
-                        if (indexKey == 0) {
-                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + pro + '" title="' + value + '" checked>';
-                        }else{
-                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + pro + '" title="' + value + '">';
+                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + gninfo.name + '" title="' + gninfo.title + '">';
                         }
                     }
 
@@ -393,15 +429,8 @@ function callGetPrivilege(data){
                     '</div>';
             }
 
-            //输出类型serverType
-            var serverTypeHTML = "";
-            for (var item in serverType){
-                var value = serverType[item];
-                serverTypeHTML += '<option value="' + item + '">' + value + '</option>';
-            }
-
-            $("#quanxian").html(quanxianHTML);
-            $("#serverType").html(serverTypeHTML);
+            $("#sqgns,#quanxian").html(quanxianHTML);
+            // $("#serverType").html(serverTypeHTML);
 
             layui.use('form', function () {
                 var form = layui.form;
@@ -497,15 +526,15 @@ function opneModal_1() {
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>授权总天数</label>\n' +
-        '                <div class="layui-input-block">\n' +
-        '                    <input type="number" name="sqDay" lay-verify="required|number" required  autocomplete="off" placeholder="请输入授权总天数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>申请台数</label>\n' +
         '                <div class="layui-input-block">\n' +
         '                    <input type="number" name="sqsize" lay-verify="required|number" required  autocomplete="off" placeholder="请输入申请台数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>授权总天数</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="number" name="sqDay" lay-verify="required|number" required  autocomplete="off" placeholder="请输入授权总天数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
@@ -534,10 +563,10 @@ function opneModal_1() {
         '                        </div>\n' +
         '                    </div>\n' +
         '                    <div class="layui-tab-item">\n' +
-        '                        <div class="layui-form-item">\n' +
+        '                        <div class="layui-form-item" id="sqcodelists">\n' +
         '                            <label class="layui-form-label"><span style="color: red;">*</span>授权号码</label>\n' +
         '                            <div class="layui-input-block">\n' +
-        '                                <textarea name="cpuCode2" id="cpuCode2" placeholder="请输入授权号码，换行可以设置多个授权码&#13;&#10;例子：&#13;&#10;aaaaaaaaaaaaaaaaaaaaaaaaa&#13;&#10;bbbbbbbbbbbbbbbbbbbbbbbbb&#13;&#10;cccccccccccccccccccccccccccc" class="layui-textarea"></textarea>\n' +
+        '                                <textarea name="cpuCode2" id="cpuCode2" placeholder="请输入授权号码，换行可以设置多个授权码&#13;&#10;例子：&#13;&#10;11|aaaaaaaaaaaaaaaaaaaaaaaaa&#13;&#10;22|bbbbbbbbbbbbbbbbbbbbbbbbb&#13;&#10;33|cccccccccccccccccccccccccccc" class="layui-textarea"></textarea>\n' +
         '                            </div>\n' +
         '                        </div>\n' +
         '                    </div>\n' +
@@ -569,7 +598,7 @@ function opneModal_1() {
                 layero.addClass('layui-form');//添加form标识
                 layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '').css("border-color","#4A77D4").css("background-color","#4A77D4");//将按钮弄成能提交的
                 //拖拽上传
-                var url = getauthorize_manage().uploadBytxt;
+                var url = getactionid_manage().uploadBytxt;
                 upload.render({
                     elem: '#test10'
                     ,url: url
@@ -642,35 +671,35 @@ function opneModal_2(ssid) {
         '            <tbody>\n' +
         '                <tr>\n' +
         '                    <td align="right">申请人名称：</td>\n' +
-        '                    <td>销售李四</td>\n' +
+        '                    <td id="sqinifo_username"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">授权公司名称：</td>\n' +
-        '                    <td>阿里巴巴</td>\n' +
+        '                    <td id="sqinifo_companyname"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">单位名称：</td>\n' +
-        '                    <td>淘宝</td>\n' +
+        '                    <td id="sqinifo_clientName"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">单位代码：</td>\n' +
-        '                    <td>taobao</td>\n' +
+        '                    <td id="sqinifo_unitCode"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">授权台数：</td>\n' +
-        '                    <td>10台</td>\n' +
+        '                    <td id="sqinifo_sqsize"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">授权总天数：</td>\n' +
-        '                    <td>100天</td>\n' +
+        '                    <td id="sqinifo_sqDay"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">客户端的功能列表：</td>\n' +
-        '                    <td>笔录管理，语音识别，语音播报，设备控制</td>\n' +
+        '                    <td id="sqinifo_gnlist"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
         '                    <td align="right">公司简介：</td>\n' +
-        '                    <td>是中国最大的IT公司</td>\n' +
+        '                    <td id="sqinifo_companymsg"></td>\n' +
         '                </tr>\n' +
         '            </tbody>\n' +
         '        </table>\n' +
@@ -680,22 +709,7 @@ function opneModal_2(ssid) {
         '  </ul>\n' +
         '  <div class="layui-tab-content">' +
             '        <div style="margin-left: 30px;overflow: hidden;">\n' +
-        '            <table border="0" id="tableId">\n' +
-        '                <tr>\n' +
-        '                    <td>1号</td>\n' +
-        '                    <td>aaaaaaaaaaaaaaaaaaaaaaaaa</td>\n' +
-        '                    <td><a href="#">下载授权文件</a></td>\n' +
-        '                </tr>\n' +
-        '                <tr>\n' +
-        '                    <td>2333号</td>\n' +
-        '                    <td>bbbbbbbbbbbbbbbbbbbbbbbbb</td>\n' +
-        '                    <td><a href="#">下载授权文件</a></td>\n' +
-        '                </tr>\n' +
-        '                <tr>\n' +
-        '                    <td>3号</td>\n' +
-        '                    <td>cccccccccccccccccccccccccccc</td>\n' +
-        '                    <td><a href="#">下载授权文件</a></td>\n' +
-        '                </tr>\n' +
+        '            <table border="0" id="sqinifo_tableId">\n' +
         '                <tr>\n' +
         '                    <td colspan="3"><button class="layui-btn layui-btn-normal" style="float: right;margin-top: 5px;">打包下载</button></td>\n' +
         '                </tr>\n' +
@@ -715,7 +729,7 @@ function opneModal_2(ssid) {
             area: ['630px', '650px'],
             btn: ['返回'],
             success: function (layero, index) {
-
+                getFindByssid(ssid);
             },
             yes: function (index, layero) {
                 layer.close(index);

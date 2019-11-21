@@ -6,6 +6,8 @@ import com.avst.authorize.common.utils.DateUtil;
 import com.avst.authorize.common.utils.RResult;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.service.AuthorizeService;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ public class AuthorizeAction {
      * @param param
      * @return
      */
+    @RequiresAuthentication
     @PostMapping(value = "/addAuthorize")
     public RResult addAuthorize(@RequestBody @Validated(Create.class) GetAuthorizeParam param) {
         RResult result = new RResult();
@@ -41,10 +44,25 @@ public class AuthorizeAction {
      * @param param
      * @return
      */
+    @RequiresAuthentication
     @RequestMapping(value = "/delAuthorize")
     public RResult delAuthorize(@RequestBody @Validated(Delete.class) GetAuthorizeParam param) {
         RResult result = new RResult();
         authorizeService.delAuthorize(result, param);
+        result.setEndtime(DateUtil.getDateAndMinute());
+        return result;
+    }
+
+    /**
+     * 获取指定ssid的授权信息
+     * @param param
+     * @return
+     */
+    @RequiresAuthentication
+    @RequestMapping(value = "/getFindByssid")
+    public RResult getFindByssid(@RequestBody @Validated(Delete.class) GetAuthorizeParam param) {
+        RResult result = new RResult();
+        authorizeService.getFindByssid(result, param);
         result.setEndtime(DateUtil.getDateAndMinute());
         return result;
     }
@@ -57,7 +75,7 @@ public class AuthorizeAction {
     @RequestMapping(value = "/getPrivilege")
     public RResult getPrivilege() {
         RResult result = new RResult();
-        authorizeService.getPrivilege(result);
+        authorizeService.getBaseType(result);
         result.setEndtime(DateUtil.getDateAndMinute());
         return result;
     }
@@ -67,6 +85,7 @@ public class AuthorizeAction {
      * 授权文件上传接口
      * @return
      */
+    @RequiresAuthentication
     @PostMapping(value = "/uploadBytxt")
     public RResult uploadBytxt(@RequestParam("file") MultipartFile file) {
         RResult result = new RResult();
@@ -80,6 +99,7 @@ public class AuthorizeAction {
      * @param fileName
      * @return
      */
+    @RequiresAuthentication
     @RequestMapping("/downloadSQFile/{fileName:.*}")
     public ResponseEntity<Resource> downloadSQFile(@PathVariable("fileName") String fileName) {
         return authorizeService.downloadSQFile(fileName);

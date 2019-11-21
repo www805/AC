@@ -2,9 +2,12 @@ package com.avst.authorize.common.entity;
 
 import com.avst.authorize.common.utils.sq.SQEntity;
 import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.util.List;
 
 @TableName("ac_sqentityplus")
 public class SQEntityPlus extends SQEntity implements Serializable {
@@ -12,6 +15,8 @@ public class SQEntityPlus extends SQEntity implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 3465873159777481144L;
 
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     private String username; //申请人名称
     private Integer sqsize; //授权台数
     private String companyname; //公司名称
@@ -20,6 +25,9 @@ public class SQEntityPlus extends SQEntity implements Serializable {
 
     private Integer state = 1; //状态
 
+    @TableField(exist = false)
+    private List<SQCode> sqCodeList; //授权码
+
     private String string1;
     private String string2;
     private Integer integer1;
@@ -27,6 +35,22 @@ public class SQEntityPlus extends SQEntity implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public List<SQCode> getSqCodeList() {
+        return sqCodeList;
+    }
+
+    public void setSqCodeList(List<SQCode> sqCodeList) {
+        this.sqCodeList = sqCodeList;
     }
 
     public String getSsid() {

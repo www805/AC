@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-@MapperScan("com.avst.authorize.web.dao")
+@MapperScan("com.avst.authorize.web.mapper")
 public class AuthorizeApplication {
 
     public static void main(String[] args) {

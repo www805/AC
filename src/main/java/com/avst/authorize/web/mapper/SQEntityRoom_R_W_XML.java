@@ -1,4 +1,4 @@
-package com.avst.authorize.web.dao;
+package com.avst.authorize.web.mapper;
 
 import java.io.*;
 import java.util.ArrayList;

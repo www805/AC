@@ -8,7 +8,9 @@ import javax.validation.constraints.NotEmpty;
 
 public class GetAuthorizeParam {
 
-    @NotBlank(message = "公司名称不能为空", groups = Create.class)
+    @NotBlank(message = "申请人名称不能为空", groups = Create.class)
+    private String username;
+//    @NotBlank(message = "公司名称不能为空", groups = Create.class)
     private String companyname;
     @NotEmpty(message = "单位名称不能为空", groups = Create.class)
     private String clientName;
@@ -16,8 +18,9 @@ public class GetAuthorizeParam {
     private String unitCode;
     private Integer sqDay;
     private Integer sortNum;
+    private Integer sqsize;
     private Boolean foreverBool;
-    @NotEmpty(message = "授权服务类型不能为空", groups = Create.class)
+//    @NotEmpty(message = "授权服务类型不能为空", groups = Create.class)
     private String serverType;
     @NotEmpty(message = "授权码不能为空", groups = Create.class)
     private String cpuCode;
@@ -25,11 +28,19 @@ public class GetAuthorizeParam {
     private String gnlist;
     @NotBlank(message = "ssid不能为空", groups = Delete.class)
     private String ssid;
-    @NotBlank(message = "公司简介不能为空", groups = Create.class)
+//    @NotBlank(message = "公司简介不能为空", groups = Create.class)
     private String companymsg;
 
     public String getCompanyname() {
         return companyname;
+    }
+
+    public Integer getSqsize() {
+        return sqsize;
+    }
+
+    public void setSqsize(Integer sqsize) {
+        this.sqsize = sqsize;
     }
 
     public void setCompanyname(String companyname) {
@@ -38,6 +49,14 @@ public class GetAuthorizeParam {
 
     public String getCompanymsg() {
         return companymsg;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setCompanymsg(String companymsg) {
