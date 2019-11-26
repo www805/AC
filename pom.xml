@@ -80,6 +80,21 @@
         </dependency>
         <!-- shiro end -->
 
+        <!--缓存start-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!--缓存end-->
+
+        <!-- 解压rar -->
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+
         <!-- dom4j xml读写-->
         <dependency>
             <groupId>dom4j</groupId>

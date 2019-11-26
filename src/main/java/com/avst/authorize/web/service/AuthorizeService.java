@@ -1,5 +1,6 @@
 package com.avst.authorize.web.service;
 
+import com.avst.authorize.common.cache.BaseGnInfoCache;
 import com.avst.authorize.common.cache.SqCache;
 import com.avst.authorize.common.entity.BaseGninfo;
 import com.avst.authorize.common.entity.BaseType;
@@ -12,10 +13,16 @@ import com.avst.authorize.web.mapper.BaseGnInfoMapper;
 import com.avst.authorize.web.mapper.BaseTypeMapper;
 import com.avst.authorize.web.mapper.SQCodeMapper;
 import com.avst.authorize.web.mapper.SQEntityMapper;
+import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
+import com.avst.authorize.web.vo.GetAuthorizeListVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -26,16 +33,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URLConnection;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class AuthorizeService {
-
-    @Autowired
-    private MainService mainService;
 
     @Autowired
     private BaseTypeMapper baseTypeMapper;
@@ -58,26 +61,40 @@ public class AuthorizeService {
 
         InputStream inputStream = null;
         String cpuCode = "";
-        try {
-            inputStream = file.getInputStream();
 
-            byte[] buf = new byte[1024];
-            int length = 0;
-            while((length = inputStream.read(buf)) != -1){
-                cpuCode += new String(buf, 0, length);
-                System.out.print(cpuCode);
-            }
+        String contentType = file.getContentType();
+        if("text/plain".equals(contentType)){
+            try {
+                inputStream = file.getInputStream();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(null != inputStream){
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                byte[] buf = new byte[1024];
+                int length = 0;
+                while((length = inputStream.read(buf)) != -1){
+                    cpuCode += new String(buf, 0, length);
+                    System.out.print(cpuCode);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(null != inputStream){
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+        }else if("application/zip".equals(contentType)){
+            //先批量解压
+            String tempdonwloadName= PropertiesListenerConfig.getProperty("sq.tempshouquan");
+            String tempPath = OpenUtil.getXMSoursePath() + tempdonwloadName;
+            FileUtil.delAllFile(tempPath);
+            ZipUtil.decompression(null, tempPath, file);
+            //解析txt文件里的授权码
+            cpuCode = traverseFolder(tempPath);
+        }else if("application/octet-stream".equals(contentType)){
+
         }
 
         if (StringUtils.isNotEmpty(cpuCode)) {
@@ -86,6 +103,44 @@ public class AuthorizeService {
 
     }
 
+    @Cacheable(cacheNames = "emp", key = "#param.clientName+'-'+#param.username+'-'+#param.currPage+'-'+#param.pageSize")
+    public RResult getAuthorizeList(RResult result, GetAuthorizeListParam param) {
+
+        GetAuthorizeListVO authorizeListVO = new GetAuthorizeListVO();
+
+        EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
+        if(StringUtils.isNotEmpty(param.getUsername())){
+            ew.like("username", param.getUsername());
+        }
+        if(StringUtils.isNotEmpty(param.getClientName())){
+            ew.like("clientname", param.getClientName());
+        }
+
+        ew.eq("state", 1);//1是正常状态0是已删除的
+
+        ew.orderBy("startTime", false);
+
+        Integer count = sqEntityMapper.selectCount(ew);
+        param.setRecordCount(count);
+
+        com.baomidou.mybatisplus.plugins.Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageSize());
+        List<SQEntityPlus> sqCacheList = sqEntityMapper.selectPage(page, ew);
+
+        for (SQEntityPlus sqEntity : sqCacheList) {
+            String gn = sqEntity.getGnlist();
+            //判断是哪个就替换成中文
+            gn = getZW(gn);
+            sqEntity.setGnlist(gn);
+        }
+
+        authorizeListVO.setPagelist(sqCacheList);
+        authorizeListVO.setPageparam(param);
+
+        result.changeToTrue(authorizeListVO);
+        return result;
+    }
+
+    @CacheEvict(cacheNames = "emp", allEntries = true)
     public void addAuthorize(RResult result, GetAuthorizeParam param) {
 
         String cpuCode = param.getCpuCode();
@@ -155,12 +210,14 @@ public class AuthorizeService {
                 System.out.println(path);
                 boolean b = CreateSQ.deSQ(sqEntity, path);
 
+                String javatrm = PropertiesListenerConfig.getProperty("sq.javatrm");
+
                 //新增授权码表
                 if (b) {
                     SQCode sqCode = new SQCode();
                     sqCode.setName(codelist[0]);
                     sqCode.setSqcode(sqEntity.getCpuCode());
-                    sqCode.setRealpath(path + "\\javatrm.ini");
+                    sqCode.setRealpath(path + "\\" + javatrm);
                     sqCode.setSqentityssid(sqEntity.getSsid());
                     sqCode.setSsid(OpenUtil.getUUID_32());
                     Integer insert = sqCodeMapper.insert(sqCode);
@@ -196,38 +253,12 @@ public class AuthorizeService {
          * @return
          */
 
-        List<BaseGninfo> baseGninfos = baseGnInfoMapper.selectList(null);
-
-
-//        String filename= PropertiesListenerConfig.getProperty("file.ini.name");
-//
-//        String path = OpenUtil.getXMSoursePath() + "\\" + filename;
-//
-//        LinkedHashMap<String, LinkedHashMap<String, String>> map = null;
-//        HashMap hashMap = new HashMap();
-//        try {
-//            hashMap = PrivilegeCache.getPrivilegeList();
-//
-//            if (null == hashMap || hashMap.size() == 0) {
-//                INI4j ini4j = new INI4j(new File(path));
-//                map = ini4j.get();
-//
-//                hashMap.put("serverType", map.get("serverType"));
-//                map.remove("serverType");
-//                hashMap.put("shouquan", map);
-//
-//                PrivilegeCache.setPrivilegeCacheList(hashMap);
-//            }
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
+        List<BaseGninfo> baseGninfos = BaseGnInfoCache.getBaseGninfoListCache();
 
         result.changeToTrue(baseGninfos);
     }
 
+    @CacheEvict(cacheNames = "emp", allEntries = true)
     public void delAuthorize(RResult result, GetAuthorizeParam param) {
 
         String ssid = param.getSsid();
@@ -246,31 +277,6 @@ public class AuthorizeService {
         sqEntityPlus.setState(0);
 
         Integer update = sqEntityMapper.update(sqEntityPlus, ew);
-        
-
-//        //获取xml保存路径
-//        String filename= PropertiesListenerConfig.getProperty("file.data.url");
-//
-//        //xml保存的固定地址
-//        String page = OpenUtil.getXMSoursePath() + filename;
-//
-//        //把json转换成集合
-//        List<String> gnList = SqCache.getSqGnList();
-//        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
-//        if (null != gnList && gnList.size() > 0 && null != sqCacheList && sqCacheList.size() > 0) {
-//
-//            for (int i = 0; i < sqCacheList.size(); i++) {
-//                SQEntity entity = sqCacheList.get(i);
-//                entity.setGnlist(gnList.get(i));
-//            }
-//            SqCache.setSqCacheList(sqCacheList);
-//            SqCache.setSqGnList(null);
-//        }
-//
-//        SqCache.removeSqCacheBySsid(ssid);
-//        SQEntityRoom_R_W_XML.writeXml_courtRoomList(page, sqCacheList);
-//
-//        SqCache.delSqCacheList();//清空缓存
 
         result.changeToTrue(update);
     }
@@ -281,7 +287,7 @@ public class AuthorizeService {
             //获取系统上一级目录
 //            String savePath = OpenUtil.getXMSoursePath();
             //授权文件名称
-            String trmFileName = "javatrm.ini";
+            String trmFileName = PropertiesListenerConfig.getProperty("sq.javatrm");;
 
 //            String savePath = "/home/download/";
             // 获取文件名称，中文可能被URL编码
@@ -342,7 +348,7 @@ public class AuthorizeService {
 
         String gn = sqEntityPlus.getGnlist();
         //判断是哪个就替换成中文
-        gn = mainService.getZW(gn);
+        gn = getZW(gn);
         gn = gn.replace("|", "，");
         int indexOf = gn.lastIndexOf("，");
         gn = gn.substring(0, indexOf);
@@ -350,5 +356,160 @@ public class AuthorizeService {
         sqEntityPlus.setGnlist(gn);
 
         result.changeToTrue(sqEntityPlus);
+    }
+
+    public synchronized ResponseEntity<Resource> downloadAllSQFile(String ssid) {
+
+        try {
+            //获取系统上一级目录
+            String tempdonwloadName= PropertiesListenerConfig.getProperty("sq.tempshouquan");
+            String donwloadName= PropertiesListenerConfig.getProperty("sq.shouquan");
+            String tempPath = OpenUtil.getXMSoursePath() + tempdonwloadName;
+            String sqFilePath = OpenUtil.getXMSoursePath() + donwloadName;
+
+            File file = new File(tempPath);
+            if(!file.exists()){
+                file.mkdirs();
+            }
+
+            FileUtil.delAllFile(tempPath);//删除文件夹里所有内容
+            FileUtil.delAllFile(sqFilePath);//删除文件夹里所有内容
+
+            String sqFileName = PropertiesListenerConfig.getProperty("sq.javatrm");
+
+            SQCode sqCode = new SQCode();
+//            sqCode.setSsid(ssid);
+//            sqCode = sqCodeMapper.selectOne(sqCode);
+
+            SQEntityPlus entityPlus = sqEntityMapper.getFindByssid(ssid);
+
+            String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + ".zip";
+
+            if (null != entityPlus) {
+                List<SQCode> sqCodeList = entityPlus.getSqCodeList();
+                if (sqCodeList.size() > 0) {
+                    sqCode = sqCodeList.get(0);
+                }
+
+                for (SQCode code : sqCodeList) {
+                    String path = sqFilePath + code.getSqcode() + "_" + sqFileName;
+                    File tagerFile = new File(path);
+                    File yuanFile = new File(code.getRealpath());
+
+                    FileUtils.copyFile(yuanFile, tagerFile);
+                }
+
+                ZipUtil.packageZipFolder(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");
+
+                FileSystemResource resource = new FileSystemResource(tagerZip);
+
+                // 解析文件的 mime 类型
+                String mediaTypeStr = URLConnection.getFileNameMap().getContentTypeFor(ssid);
+                // 无法判断MIME类型时，作为流类型
+                mediaTypeStr = (mediaTypeStr == null) ? MediaType.APPLICATION_OCTET_STREAM_VALUE : mediaTypeStr;
+                // 实例化MIME
+                MediaType mediaType = MediaType.parseMediaType(mediaTypeStr);
+
+                sqFileName = sqCode.getName() + "_" + sqCode.getSqcode() + "_" + entityPlus.getCompanyname() + ".zip";
+
+                /*
+                 * 构造响应的头
+                 */
+                HttpHeaders headers = new HttpHeaders();
+                // 下载之后需要在请求头中放置文件名，该文件名按照ISO_8859_1编码。
+                String filenames = new String(sqFileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
+                headers.setContentDispositionFormData("attachment", filenames);
+                headers.setContentType(mediaType);
+
+                /*
+                 * 返还资源
+                 */
+                return ResponseEntity.ok()
+                        .headers(headers)
+                        .contentLength(resource.getInputStream().available())
+                        .body(resource);
+            }
+
+            LogUtil.intoLog(4, this.getClass(), "读取授权码错误！请检查ssid是否存在");
+        } catch (IOException e) {
+//            e.printStackTrace();
+            LogUtil.intoLog(4, e.getClass(), "文件不存在或文件读写错误");
+        }
+        return null;
+
+    }
+
+
+    //转换成中文
+    public String getZW(String str){
+        RResult result = new RResult();
+        getPrivilege(result);
+
+        List<BaseGninfo> shouquan = (List<BaseGninfo>) result.getData();
+
+        for (BaseGninfo gninfo : shouquan) {
+            if (str.indexOf(gninfo.getName()) != -1) {
+                str = str.replace(gninfo.getName(), gninfo.getTitle());
+            }
+        }
+        return str;
+    }
+
+    public String traverseFolder(String path) {
+
+        String sqlistStr = "";
+        File file = new File(path);
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            if (null == files || files.length == 0) {
+                LogUtil.intoLog(4, this.getClass(), "文件夹是空的!");
+                return sqlistStr;
+            } else {
+                for (File file2 : files) {
+                    if (file2.isDirectory()) {
+//                        System.out.println("文件夹:" + file2.getAbsolutePath());
+                        traverseFolder(file2.getAbsolutePath());
+                    } else {
+//                        System.out.println("文件:" + file2.getAbsolutePath());
+                        if (file2.getAbsolutePath().indexOf(".txt") != -1) {
+//                            System.out.println("解析txt文件");
+
+                            BufferedReader buffReader = null;
+                            String cpuCode = "";
+
+                            try {
+                                buffReader = new BufferedReader(new InputStreamReader(new FileInputStream(file2.getAbsolutePath())));
+                                String strTmp = "";
+                                while((strTmp = buffReader.readLine())!=null){
+                                    cpuCode += strTmp;
+                                }
+
+                                String filenameFilter = file2.getName().replace(".txt", "");
+
+                                sqlistStr += filenameFilter + "|" + cpuCode + "\n";
+
+//                                System.out.println(sqlistStr);
+                                LogUtil.intoLog(1, this.getClass(), sqlistStr);
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if(null != buffReader){
+                                    try {
+                                        buffReader.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            LogUtil.intoLog(4, this.getClass(), "文件不存在!");
+        }
+
+        return sqlistStr;
     }
 }

@@ -2,20 +2,12 @@
 <html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
 <head>
     <meta charset="UTF-8">
-    <title>笔录授权系统</title>
+    <title th:text="${getAdmin.title}">笔录授权系统</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <style type="text/css">
         .center{
             margin: 60px auto;
             text-align: center;
-        }
-        .bottom_mian{
-            text-align:center;
-            background-color: #eee;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            padding: 5px 0;
         }
         .top_button {
             margin-top: 50px;
@@ -94,16 +86,10 @@
 <div class="layui-row">
     <div class="layui-col-xs12 layui-col-md12">
 
-
-
-
-
-
         <div class="layui-main">
             <div class="center">
-                <h1 style="font-weight: bold;">欢迎来到后台授权系统</h1>
+                <h1 style="font-weight: bold;"  th:text="'欢迎来到'+${getAdmin.title}">欢迎来到后台授权系统</h1>
                 <input type="button" class="layui-btn layui-btn-normal top_button" onclick="opneModal_1();" value="添加授权">
-                <!--<input type="button" class="layui-btn layui-btn-normal top_button" onclick="opneModal_2();" value="授权详情">-->
             </div>
 
             <form class="layui-form" >
@@ -131,14 +117,13 @@
         </div>
 
         <!--<a href="/logout">退出</a>-->
-        <button class="layui-btn layui-btn-normal" style="position: absolute;top:0;right: 0;" onclick="login_logout();">退出</button>
+        <div th:replace="top_button :: top_button">...</div>
+
+        <!--<button class="layui-btn layui-btn-normal" style="position: absolute;top:0;right: 0;" onclick="login_logout();">退出</button>-->
 
     </div>
 </div>
-<div class="layui-footer">
-    <!-- 底部固定区域 -->
-    <p id="bottom_mian" class="bottom_mian">授权系统</p>
-</div>
+<div th:replace="footer :: footer">...</div>
 
 <script id="pagelisttemplates" type="text/html">
 

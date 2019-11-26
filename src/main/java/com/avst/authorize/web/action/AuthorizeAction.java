@@ -4,6 +4,7 @@ import com.avst.authorize.common.config.check.Create;
 import com.avst.authorize.common.config.check.Delete;
 import com.avst.authorize.common.utils.DateUtil;
 import com.avst.authorize.common.utils.RResult;
+import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.service.AuthorizeService;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -24,6 +25,17 @@ public class AuthorizeAction {
     @Autowired
     private AuthorizeService authorizeService;
 
+    /**
+     * 获取所有授权记录
+     * @param param
+     * @return
+     */
+    @RequestMapping("/getAuthorizeList")
+    public RResult getAuthorizeList(@RequestBody GetAuthorizeListParam param){
+        RResult result = new RResult();
+        result = authorizeService.getAuthorizeList(result, param);
+        return result;
+    }
 
     /**
      * 添加授权
@@ -105,7 +117,16 @@ public class AuthorizeAction {
         return authorizeService.downloadSQFile(fileName);
     }
 
-
+    /**
+     * 批量下载授权文件
+     * @param ssid 授权信息ssid
+     * @return
+     */
+    @RequiresAuthentication
+    @RequestMapping("/downloadAllSQFile/{ssid}")
+    public ResponseEntity<Resource> downloadAllSQFile(@PathVariable("ssid") String ssid) {
+        return authorizeService.downloadAllSQFile(ssid);
+    }
 
     /**
      * 授权文件下载2

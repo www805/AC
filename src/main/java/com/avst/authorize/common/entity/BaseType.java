@@ -14,8 +14,9 @@ public class BaseType extends Model<BaseType> {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private String name;
+    private String typename;
     private String typecode;
+    private Integer ordernum;
     private String ssid;
     private String string1;
     private String string2;
@@ -37,6 +38,14 @@ public class BaseType extends Model<BaseType> {
         return typecode;
     }
 
+    public Integer getOrdernum() {
+        return ordernum;
+    }
+
+    public void setOrdernum(Integer ordernum) {
+        this.ordernum = ordernum;
+    }
+
     public void setTypecode(String typecode) {
         this.typecode = typecode;
     }
@@ -49,12 +58,12 @@ public class BaseType extends Model<BaseType> {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTypename() {
+        return typename;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTypename(String typename) {
+        this.typename = typename;
     }
 
     public String getSsid() {

@@ -64,7 +64,7 @@ public class ShiroConfig {
      * @return
      */
     @Bean(value = "ehCacheManager")
-    public EhCacheManager ehCacheManager(@Qualifier("cacheManager") CacheManager cacheManager) {
+    public EhCacheManager ehCacheManager(@Qualifier("cacheManager2") CacheManager cacheManager) {
         EhCacheManager ehCacheManager = new EhCacheManager();
 //        ehCacheManager.setCacheManagerConfigFile("classpath:config/ehcache-shiro.xml");
         ehCacheManager.setCacheManager(cacheManager);
@@ -75,7 +75,7 @@ public class ShiroConfig {
      * 判断以前的缓存是否存在
      * @return
      */
-    @Bean(name = "cacheManager")
+    @Bean(name = "cacheManager2")
     public CacheManager ehCacheManagerFactoryBean() {
         CacheManager cacheManager = CacheManager.getCacheManager("users");
         if(cacheManager == null){
@@ -144,6 +144,8 @@ public class ShiroConfig {
         //设置必须要登录才可以访问的页面
 //        filterMap.put("/**", "authc");
         filterMap.put("/admin", "authc");
+        filterMap.put("/base/tobasegninfo", "authc");
+        filterMap.put("/base/tobasetype", "authc");
 //        filterMap.put("/ac/**", "authc");
 
         //授权过滤器

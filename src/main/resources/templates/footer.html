@@ -6,12 +6,29 @@
 </head>
 <body>
 <div  data-th-fragment="footer">
-    <!--<script src="/layui/layui.js"></script>-->
-    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-    <!--[if lt IE 9]>
-    <script src="/layui/in8andie9/html5.min.js"></script>
-    <script src="/layui/in8andie9/respond.min.js"></script>
-    <![endif]-->
+    <style type="text/css">
+        .bottom_mian{
+            text-align:center;
+            background-color: #eee;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 5px 0;
+        }
+    </style>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        <p id="bottom_mian" class="bottom_mian">授权系统</p>
+    </div>
 </div>
+<script>
+
+
+
+    $(function () {
+
+    });
+
+</script>
 </body>
 </html>

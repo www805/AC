@@ -49,7 +49,7 @@ public class LoginAction {
         try {
             subject.login(token);
         } catch (UnknownAccountException e) {
-            result.setMessage("用户名不存在");
+            result.setMessage("用户名或密码错误");
             return result;
         } catch (IncorrectCredentialsException e) {
             result.setMessage("用户名或密码错误");

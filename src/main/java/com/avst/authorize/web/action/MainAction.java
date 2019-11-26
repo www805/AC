@@ -13,32 +13,19 @@ import org.springframework.web.servlet.ModelAndView;
 @RestController
 public class MainAction {
 
-    @Autowired
-    private MainService mainService;
-
     @RequestMapping({"/", "main", "index"})
     public ModelAndView Home(Model model){
-        model.addAttribute("title", "首页系统");
+        model.addAttribute("title", "授权系统");
         return new ModelAndView("main", "getMain", model);
     }
 
     @RequestMapping("/admin")
     public ModelAndView admin(Model model){
-        model.addAttribute("title", "后台管理");
+        model.addAttribute("title", "后台授权管理系统");
         return new ModelAndView("admin", "getAdmin", model);
     }
 
-    /**
-     * 获取所有授权记录
-     * @param param
-     * @return
-     */
-    @RequestMapping("/getAuthorizeList")
-    public RResult getAuthorizeList(@RequestBody GetAuthorizeListParam param){
-        RResult result = new RResult();
-        result = mainService.getAuthorizeList(result, param);
-        return result;
-    }
+
 
 
 }

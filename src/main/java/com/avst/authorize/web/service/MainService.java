@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -23,101 +24,11 @@ import java.util.*;
 @Service
 public class MainService {
 
-    @Autowired
-    private AuthorizeService authorizeService;
+    /*以下方法可全部删除*/
 
-    @Autowired
-    private SQEntityMapper sqEntityDao;
-
-    public RResult getAuthorizeList(RResult result, GetAuthorizeListParam param) {
-
-        GetAuthorizeListVO authorizeListVO = new GetAuthorizeListVO();
-
-//        //读取所有xml数据，分页
-//        List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
-//
-//        //时间排序
-//        ListSort(sqCacheList);
-//
-//        if (null == sqCacheList || sqCacheList.size() == 0) {
-//            //读取xml文件
-//            getSqXmltoCache();
-//            sqCacheList = SqCache.getSqCacheList();
-//        }
-//
-//        //如果没有就把gn集合放进缓存里
-//        List<String> gnList = SqCache.getSqGnList();
-//        if (null == gnList || gnList.size() == 0) {
-//            ArrayList<String> gns = new ArrayList<>();
-//            for (SQEntityPlus entity : sqCacheList) {
-//                gns.add(entity.getGnlist());
-//            }
-//            SqCache.setSqGnList(gns);
-//        }
-//
-//        for (SQEntityPlus sqEntity : sqCacheList) {
-//            String gn = sqEntity.getGnlist();
-//            //判断是哪个就替换成中文
-//            gn = getZW(gn);
-//            sqEntity.setGnlist(gn);
-//        }
-//
-//
-//        //做好分页
-//        Integer unum = FuzzyQueryUtils.fuzzyQueryCount(param.getClientName(), sqCacheList);
-//        param.setRecordCount(unum);
-//
-//        if (null == unum || unum < 1) {
-//            param.setPageCount(0);
-//        } else {
-//            if (unum % param.getPageSize() == 0) {
-//                param.setPageCount(unum / param.getPageSize());
-//            } else {
-//                param.setPageCount(unum / param.getPageSize() + 1);
-//            }
-//        }
-//
-//        List<SQEntityPlus> list = null;
-//
-//        //判断是否有条件
-//        if (StringUtils.isNotEmpty(param.getClientName())) {
-//            list = FuzzyQueryUtils.fuzzyQueryPage(param, sqCacheList);
-//        } else {
-//            list = FuzzyQueryUtils.getPage(param, sqCacheList);
-//        }
-
-        EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
-        if(StringUtils.isNotEmpty(param.getUsername())){
-            ew.like("username", param.getUsername());
-        }
-        if(StringUtils.isNotEmpty(param.getClientName())){
-            ew.like("clientname", param.getClientName());
-        }
-
-        ew.orderBy("startTime", false);
-
-        Integer count = sqEntityDao.selectCount(ew);
-        param.setRecordCount(count);
-
-        Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageSize());
-        List<SQEntityPlus> sqCacheList = sqEntityDao.selectPage(page, ew);
-
-        for (SQEntityPlus sqEntity : sqCacheList) {
-            String gn = sqEntity.getGnlist();
-            //判断是哪个就替换成中文
-            gn = getZW(gn);
-            sqEntity.setGnlist(gn);
-        }
-
-        authorizeListVO.setPagelist(sqCacheList);
-        authorizeListVO.setPageparam(param);
-
-        result.changeToTrue(authorizeListVO);
-        return result;
-    }
 
     //新增xml
-    public void setSqInfo(SQEntityPlus sqEntity){
+    public void setSqInfo(SQEntityPlus sqEntity) {
 
         //先获取缓存里是否为空，如果为空，从xml读取数据
         List<SQEntityPlus> sqCacheList = SqCache.getSqCacheList();
@@ -127,7 +38,7 @@ public class MainService {
         }
 
         //获取xml保存路径
-        String filename= PropertiesListenerConfig.getProperty("file.data.url");
+        String filename = PropertiesListenerConfig.getProperty("file.data.url");
 
         //xml保存的固定地址
         String page = OpenUtil.getXMSoursePath() + filename;
@@ -168,10 +79,10 @@ public class MainService {
     }
 
     //读取xml到缓存
-    public void getSqXmltoCache(){
+    public void getSqXmltoCache() {
 
         //获取xml保存路径
-        String filename= PropertiesListenerConfig.getProperty("file.data.url");
+        String filename = PropertiesListenerConfig.getProperty("file.data.url");
 
         //xml保存的固定地址
         String page = OpenUtil.getXMSoursePath() + filename;
@@ -179,55 +90,6 @@ public class MainService {
         List<SQEntityPlus> sqEntitieList = SQEntityRoom_R_W_XML.readXml(page);
         SqCache.setSqCacheList(sqEntitieList);
     }
-
-    //转换成中文
-    public String getZW(String str){
-//        HashMap<String, LinkedHashMap<String, LinkedHashMap<String, String>>> map = PrivilegeCache.getPrivilegeList();
-//
-//        if (null == map || map.size() == 0) {
-//            RResult result = new RResult();
-//            authorizeService.getPrivilege(result);
-//            map = (HashMap<String, LinkedHashMap<String, LinkedHashMap<String, String>>>) result.getData();
-//        }
-
-//        System.out.println(map);
-
-
-//        LinkedHashMap<String, LinkedHashMap<String, String>> shouquan = map.get("shouquan");
-
-//        System.out.println(shouquan);
-
-        RResult result = new RResult();
-        authorizeService.getPrivilege(result);
-
-
-        List<BaseGninfo> shouquan = (List<BaseGninfo>) result.getData();
-
-        for (BaseGninfo gninfo : shouquan) {
-            if (str.indexOf(gninfo.getName()) != -1) {
-                str = str.replace(gninfo.getName(), gninfo.getTitle());
-            }
-        }
-
-//        Set<String> keys = shouquan.keySet();
-//        Iterator<String> iterator = keys.iterator();
-//        while (iterator.hasNext()) {
-//
-//            String key = iterator.next();
-//            LinkedHashMap<String, String> hashMap = shouquan.get(key);
-//
-//            Set<String> keySet = hashMap.keySet();
-//            Iterator<String> stringIterator = keySet.iterator();
-//            while (stringIterator.hasNext()) {
-//                String next = stringIterator.next();
-//                String value = hashMap.get(next);
-//                str = str.replace(next, value);
-//            }
-//        }
-
-        return str;
-    }
-
 
 
     //按时间排序

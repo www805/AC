@@ -1,8 +1,10 @@
 package com.avst.authorize.common.utils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +80,7 @@ public class FileUtil {
 
 //删除指定文件夹下的所有文件
 	public static boolean delAllFile(String path) {
+		System.gc();    //回收资源
 		boolean flag = false;
 		File file = new File(path);
 		if (!file.exists()) {
@@ -231,9 +234,25 @@ public class FileUtil {
 	}
 
 
+
 	public static void main(String[] args) {
 
-		System.out.println(getsavepath("f:\\32\\43\\57\\fr.ds"));
+//		System.out.println(getsavepath("f:\\32\\43\\57\\fr.ds"));
+
+//		String savePath = OpenUtil.getXMSoursePath();
+//
+//		System.out.println(savePath);
+
+//		File file = new File("e://zipFile.zip");
+//		File file2 = new File("e://xiao//zipFile.zip");
+//
+//		try {
+//			FileUtils.copyFile(file,file2);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+
+//		traverseFolder("D:\\java\\AC\\sq\\tempdonwload");
 	}
 
 }
