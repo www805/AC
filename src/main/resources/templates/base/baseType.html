@@ -78,7 +78,7 @@
             <form class="layui-form" >
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label" style="padding: 0;width: auto;"><a href="javascript:;" onclick="javascript:history.go(-1);" class="layui-btn layui-btn-normal" style="padding-left: 10px;"><i class="layui-icon">&#xe603;</i>返回</a></label>
+                    <!--<label class="layui-form-label" style="padding: 0;width: auto;"><a href="javascript:;" onclick="javascript:history.go(-1);" class="layui-btn layui-btn-normal" style="padding-left: 10px;"><i class="layui-icon">&#xe603;</i>返回</a></label>-->
                     <label class="layui-form-label" style="padding-left: 0;">授权类型名称：</label>
                     <div class="layui-input-inline">
                         <input type="text" name="sq_typename" id="sq_typename" lay-verify="required" placeholder="请输入授权类型名称" autocomplete="off" class="layui-input">
@@ -110,12 +110,14 @@
             <col width="170">
             <col width="60">
             <col width="60">
+            <col width="60">
         </colgroup>
         <thead>
         <tr>
             <th>序号</th>
             <th>授权类型名称</th>
             <th>类型代码</th>
+            <th>是否为单选框</th>
             <th>排序</th>
             <th>操作</th>
         </tr>
@@ -126,6 +128,7 @@
             <td>{{index+1}}</td>
             <td>{{value.typename==null?"":value.typename}}</td>
             <td>{{value.typecode==null?"":value.typecode}}</td>
+            <td>{{value.type==null?"":value.type==1?"单选框":"复选框"}}</td>
             <td>{{value.ordernum==null?"":value.ordernum}}</td>
             <td>
                 <input type="button" onclick="opneModal_1('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="修改"/>
@@ -146,15 +149,15 @@
 <script th:src="@{/js/base/basetype.js}"type="text/javascript"></script>
 <script th:inline="javascript">
     $(function(){
-        // document.onkeydown = function (event) {
-        //     var e = event || window.event;
-        //     if (e && e.keyCode == 13) { //回车键的键值为13
-        //         event.preventDefault();
-        //         getBaseTypeList_init(1,10);
-        //     }
-        // };
+        document.onkeydown = function (event) {
+            var e = event || window.event;
+            if (e && e.keyCode == 13) { //回车键的键值为13
+                event.preventDefault();
+                getBaseTypeList_init(1,10);
+            }
+        };
 
-        $('#typename').on('input propertychange', function() {
+        $('#sq_typename').on('input propertychange', function() {
             getBaseTypeList_init(1,10);
         });
 

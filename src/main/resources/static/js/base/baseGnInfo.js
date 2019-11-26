@@ -66,13 +66,11 @@ function updateBaseGnInfo(ssid) {
     var url = getactionid_manage().updateBaseGnInfo;
     var title=$("input[name='title']").val();
     var name=$("input[name='name']").val();
-    var type=$("input[name='type']").prop("checked")==true?1:0;
     var btypessid = $("#sqtypename").val();
 
     var data={
         title: title,
         name: name,
-        type: parseInt(type),
         btypessid: btypessid,
         ssid: ssid
     };
@@ -169,13 +167,8 @@ function callGetBaseGnInfoByssid(data){
             var basetype = data.data;
             $("input[name='title']").val(basetype.title);
             $("input[name='name']").val(basetype.name);
-            $("#sqtype").prop("checked", basetype.type == 1);
             $("#sqtypename").find("option[value='" + basetype.btypessid + "']").attr("selected", true);
 
-            layui.use('form', function () {
-                var form = layui.form;
-                form.render();
-            });
         }
     }else{
         layer.msg(data.message,{icon: 5});
@@ -250,12 +243,6 @@ function opneModal_1(ssid) {
         '                    </select>\n' +
         '                </div>\n' +
         '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>是否为单选框</label>\n' +
-        '                <div class="layui-input-block">\n' +
-        '                    <input type="checkbox" name="type" id="sqtype" lay-skin="switch" lay-text="单选框|复选框">\n' +
-        '                </div>\n' +
-        '            </div>\n' +
         '        </form>';
 
 
@@ -272,7 +259,7 @@ function opneModal_1(ssid) {
             type: 1,
             title: modelName + '授权类型',
             content: html,
-            area: ['630px', '380px'],
+            area: ['630px', '350px'],
             btn: [modelName, '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识

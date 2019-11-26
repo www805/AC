@@ -48,11 +48,13 @@ function addBaseType() {
     var url = getactionid_manage().addBaseType;
     var typename=$("input[name='typename']").val();
     var typecode=$("input[name='typecode']").val();
+    var type=$("input[name='type']").prop("checked")==true?1:0;
     var ordernum=$("input[name='ordernum']").val();
 
     var data={
         typename: typename,
         typecode: typecode,
+        type: parseInt(type),
         ordernum: ordernum
     };
 
@@ -64,11 +66,13 @@ function updateBaseType(ssid) {
     var url = getactionid_manage().updateBaseType;
     var typename=$("input[name='typename']").val();
     var typecode=$("input[name='typecode']").val();
+    var type=$("#sqtype").val();
     var ordernum=$("input[name='ordernum']").val();
 
     var data={
         typename: typename,
         typecode: typecode,
+        type: parseInt(type),
         ordernum: ordernum,
         ssid: ssid
     };
@@ -132,7 +136,13 @@ function callGetBaseTypeByssid(data){
             var basetype = data.data;
             $("input[name='typename']").val(basetype.typename);
             $("input[name='typecode']").val(basetype.typecode);
+            $("#sqtype").find("option[value='" + basetype.type + "']").attr("selected", true);
             $("input[name='ordernum']").val(basetype.ordernum);
+
+            layui.use('form', function () {
+                var form = layui.form;
+                form.render();
+            });
         }
     }else{
         layer.msg(data.message,{icon: 5});
@@ -186,6 +196,9 @@ function showpagetohtml(){
 function opneModal_1(ssid) {
 
 
+    var modelName = "添加";
+
+
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
         '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>类型名称</label>\n' +
@@ -200,15 +213,21 @@ function opneModal_1(ssid) {
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>是否为单选框</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <select name="sqtype" id="sqtype" lay-verify="required">\n' +
+        '                       <option value="0">复选框</option>\n' +
+        '                       <option value="1">单选框</option>\n' +
+        '                    </select>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label">排序</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="number" name="ordernum" lay-verify="" required  autocomplete="off" placeholder="请输入排序" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
+        '                    <input type="number" name="ordernum" lay-verify="" required  autocomplete="off" placeholder="请输入排序" class="layui-input" value="0" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
         '                </div>\n' +
         '            </div>\n' +
         '        </form>';
-
-
-    var modelName = "添加";
     if (isNotEmpty(ssid)) {
         modelName = "修改";
     }
@@ -221,7 +240,7 @@ function opneModal_1(ssid) {
             type: 1,
             title: modelName + '授权类型',
             content: html,
-            area: ['630px', '280px'],
+            area: ['630px', '380px'],
             btn: [modelName, '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
@@ -230,6 +249,8 @@ function opneModal_1(ssid) {
                 if(isNotEmpty(ssid)){
                     getBaseTypeByssid(ssid);
                 }
+
+                form.render();
             },
             yes: function (index, layero) {
                 //自定义验证规则

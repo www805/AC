@@ -170,7 +170,11 @@ public class AuthorizeService {
         sqEntity.setUnitCode(param.getUnitCode());
         sqEntity.setSqDay(param.getSqDay());
         sqEntity.setSortNum(sortNum);//排序
-        sqEntity.setServerType(param.getServerType());
+        if(StringUtils.isNotEmpty(param.getServerType())){
+            sqEntity.setServerType(param.getServerType());
+        }else{
+            sqEntity.setServerType("police");
+        }
         sqEntity.setForeverBool(param.getForeverBool());//是否永久授权
         sqEntity.setClientName(param.getClientName());
         sqEntity.setSqsize(param.getSqsize());

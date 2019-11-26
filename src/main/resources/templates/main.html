@@ -227,27 +227,27 @@
 
         form.on('submit(formDemo)', function (data) {
             //功能列表选中
-            $("#sqgns input[type='checkbox']:checked").each(function(index, element){
-
-                if(isNotEmpty(sqgnlist)){
-                    if (sqgnlist.indexOf(this.title) == -1) {
-                        sqgnlist += "，" + this.title;
-                    }
-                }else{
-                    sqgnlist += this.title;
-                }
-            });
-
-            $("#sqgns input[type='radio']:checked").each(function(index, element){
-
-                if(isNotEmpty(sqgnlist)){
-                    if (sqgnlist.indexOf(this.title) == -1) {
-                        sqgnlist += "，" + this.title;
-                    }
-                }else{
-                    sqgnlist += this.title;
-                }
-            });
+            // $("#sqgns input[type='checkbox']:checked").each(function(index, element){
+            //
+            //     if(isNotEmpty(sqgnlist)){
+            //         if (sqgnlist.indexOf(this.title) == -1) {
+            //             sqgnlist += "，" + this.title;
+            //         }
+            //     }else{
+            //         sqgnlist += this.title;
+            //     }
+            // });
+            //
+            // $("#sqgns input[type='radio']:checked").each(function(index, element){
+            //
+            //     if(isNotEmpty(sqgnlist)){
+            //         if (sqgnlist.indexOf(this.title) == -1) {
+            //             sqgnlist += "，" + this.title;
+            //         }
+            //     }else{
+            //         sqgnlist += this.title;
+            //     }
+            // });
 
             //授权码
             $("#jiaru input[type='text']").each(function (index,element) {
@@ -257,8 +257,11 @@
                     sqinfo['name'] = this.value;
                 }else{
                     sqinfo['value'] = this.value;
-                    sqinfolist.push(sqinfo);
-                    sqinfo = {name:"",value: ""};
+
+                    if(isNotEmpty(sqinfo.name) && isNotEmpty(sqinfo.value)){
+                        sqinfolist.push(sqinfo);
+                        sqinfo = {name:"",value: ""};
+                    }
                 }
 
             });

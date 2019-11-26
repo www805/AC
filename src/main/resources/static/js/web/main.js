@@ -72,6 +72,21 @@ function addAuthorize() {
         return false;
     }
 
+
+
+    var ng_list_str = "";
+
+    $('#quanxian .layui-form-checked').each(function(){//获取所有功能列表的值
+        var ng_str = $(this).html()
+        var ng_title = ng_str.substring(ng_str.indexOf("<span>") + 6, ng_str.indexOf("</span>"));
+        ng_list_str += ng_title + ",";
+    });
+
+    if(!isNotEmpty(ng_list_str)){
+        layer.msg("请至少选择一个客户端的功能",{icon: 5});
+        return;
+    }
+
     var companyname = $("input[name='companyname']").val();
     var companymsg = $("textarea[name='companymsg']").val();
     if(isNotEmpty(companyname) && isNotEmpty(companymsg)){
@@ -242,6 +257,28 @@ function formSubmit() {
     }
     //textarea转换换行符
     companymsg = companymsg.replace(/\n/g,"<br/>");
+
+    var ng_list_str = "";
+    var qt_list_str = "";
+
+    $('#sqgns .layui-form-checked').each(function(){//获取所有功能列表的值
+        var ng_str = $(this).html()
+        var ng_title = ng_str.substring(ng_str.indexOf("<span>") + 6, ng_str.indexOf("</span>"));
+        ng_list_str += ng_title + ",";
+    });
+
+    $('#sqgns .layui-form-radioed').each(function(){//获取所有单选框的值
+        var qt_str = $(this).html()
+        var qt_title = qt_str.substring(qt_str.indexOf("<div>") + 5, qt_str.indexOf("</div>"));
+        qt_list_str += qt_title + ",";
+    });
+
+    if(!isNotEmpty(ng_list_str)){
+        layer.msg("请至少选择一个客户端的功能",{icon: 5});
+        return;
+    }
+
+    sqgnlist = ng_list_str + qt_list_str;
 
     var data={
         username: username,
@@ -428,7 +465,7 @@ function callGetPrivilege(data){
                 for (var num in gninfoList){
                     var gninfo = gninfoList[num];
 
-                    if(gninfo.type == 1){
+                    if(item.type == 1){
                         if (indexKey == 0) {
                             inpitHTML += '       <input type="radio" name="' + item.typecode + '" value="' + gninfo.name + '" title="' + gninfo.title + '" checked>';
                         } else {
@@ -436,7 +473,7 @@ function callGetPrivilege(data){
                         }
                     }else{
                         if (indexKey == 0) {
-                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + gninfo.name + '" title="' + gninfo.title + '" checked>';
+                            inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + gninfo.name + '" title="' + gninfo.title + '" >';
                         }else{
                             inpitHTML += '       <input type="checkbox" lay-filter="checkbox" name="' + gninfo.name + '" title="' + gninfo.title + '">';
                         }

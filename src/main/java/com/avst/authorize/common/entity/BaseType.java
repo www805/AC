@@ -16,6 +16,7 @@ public class BaseType extends Model<BaseType> {
     private Integer id;
     private String typename;
     private String typecode;
+    private Integer type;
     private Integer ordernum;
     private String ssid;
     private String string1;
@@ -36,6 +37,14 @@ public class BaseType extends Model<BaseType> {
 
     public String getTypecode() {
         return typecode;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getOrdernum() {

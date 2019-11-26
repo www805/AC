@@ -35,7 +35,7 @@ public class BaseGnInfoService {
             ew.like("title", param.getTitle());
         }
 
-//        ew.orderBy("ordernum", false);
+        ew.orderBy("id", false);
 
         Integer count = baseGnInfoMapper.selectCount(ew);
         param.setRecordCount(count);
@@ -76,10 +76,19 @@ public class BaseGnInfoService {
 
     public RResult addBaseGnInfo(RResult result, GetBaseGnInfoListParam param) {
 
+        EntityWrapper<BaseGninfo> ew = new EntityWrapper<>();
+        ew.eq("title", param.getTitle());
+        ew.or("name", param.getName());
+
+        List<BaseGninfo> baseGninfos = baseGnInfoMapper.selectList(ew);
+        if (baseGninfos.size() > 0) {
+            result.setMessage("该功能标题或授权代号已经存在");
+            return result;
+        }
+
         BaseGninfo baseGninfo = new BaseGninfo();
-        baseGninfo.setName(param.getName());
-        baseGninfo.setTitle(param.getTitle());
-        baseGninfo.setType(param.getType());
+        baseGninfo.setName(param.getName().trim());
+        baseGninfo.setTitle(param.getTitle().trim());
         baseGninfo.setBtypessid(param.getBtypessid());
         baseGninfo.setSsid(OpenUtil.getUUID_32());
 
@@ -98,9 +107,8 @@ public class BaseGnInfoService {
         ew.eq("ssid", param.getSsid());
 
         BaseGninfo baseGninfo = new BaseGninfo();
-        baseGninfo.setName(param.getName());
-        baseGninfo.setTitle(param.getTitle());
-        baseGninfo.setType(param.getType());
+        baseGninfo.setName(param.getName().trim());
+        baseGninfo.setTitle(param.getTitle().trim());
         baseGninfo.setBtypessid(param.getBtypessid());
         baseGninfo.setSsid(param.getSsid());
 

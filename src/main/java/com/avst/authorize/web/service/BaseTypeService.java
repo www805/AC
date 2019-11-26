@@ -83,9 +83,20 @@ public class BaseTypeService {
 
     public RResult addBaseType(RResult result, GetBaseTypeListParam param) {
 
+        EntityWrapper<BaseType> ew = new EntityWrapper<>();
+        ew.eq("typename", param.getTypename());
+        ew.or("typecode", param.getTypecode());
+
+        List<BaseType> baseTypes = baseTypeMapper.selectList(ew);
+        if (baseTypes.size() > 0) {
+            result.setMessage("该类型名称或类型代码已经存在");
+            return result;
+        }
+
         BaseType baseType = new BaseType();
-        baseType.setTypename(param.getTypename());
-        baseType.setTypecode(param.getTypecode());
+        baseType.setTypename(param.getTypename().trim());
+        baseType.setTypecode(param.getTypecode().trim());
+        baseType.setType(param.getType());
         baseType.setOrdernum(param.getOrdernum());
         baseType.setSsid(OpenUtil.getUUID_32());
 
@@ -104,8 +115,9 @@ public class BaseTypeService {
         ew.eq("ssid", param.getSsid());
 
         BaseType baseType = new BaseType();
-        baseType.setTypename(param.getTypename());
-        baseType.setTypecode(param.getTypecode());
+        baseType.setTypename(param.getTypename().trim());
+        baseType.setTypecode(param.getTypecode().trim());
+        baseType.setType(param.getType());
         baseType.setOrdernum(param.getOrdernum());
 
         boolean update = baseType.update(ew);

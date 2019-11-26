@@ -15,9 +15,6 @@ public class GetBaseGnInfoListParam extends Page {
     private String name;//授权代号
     @NotBlank(message = "功能标题不能为空", groups = {Create.class, Update.class})
     private String title;//功能标题
-    @DecimalMin(value = "0",message = "是否为单选框不能为空", groups = {Create.class, Update.class})
-    private Integer type;//是否为单选框
-
     @NotBlank(message = "关联类型ssid不能为空", groups = {Create.class, Update.class})
     private String btypessid;//关联类型ssid
 
@@ -39,14 +36,6 @@ public class GetBaseGnInfoListParam extends Page {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public String getBtypessid() {

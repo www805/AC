@@ -7,6 +7,7 @@
         <id column="id" property="id" />
         <result column="typename" property="typename" />
         <result column="typecode" property="typecode" />
+        <result column="type" property="type" />
         <result column="ordernum" property="ordernum" />
         <result column="ssid" property="ssid" />
         <result column="string1" property="string1" />
@@ -17,7 +18,6 @@
             <id column="gid" property="id" />
             <result column="gname" property="name" />
             <result column="gtitle" property="title" />
-            <result column="gtype" property="type" />
             <result column="gbtypessid" property="btypessid" />
             <result column="gssid" property="ssid" />
         </collection>
@@ -29,11 +29,11 @@
             g.id gid,
             g.NAME gname,
             g.title gtitle,
-            g.type gtype,
             g.btypessid gtypessid
         FROM
             base_type t
             LEFT JOIN base_gninfo g ON t.ssid = g.btypessid
+            ${ew.sqlSegment}
     </select>
 
 

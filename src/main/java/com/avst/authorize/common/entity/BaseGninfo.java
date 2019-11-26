@@ -15,7 +15,6 @@ public class BaseGninfo extends Model<BaseGninfo> {
     private Integer id;
     private String name;
     private String title;
-    private Integer type;
     private String btypessid;
     private String ssid;
     private String string1;
@@ -58,13 +57,6 @@ public class BaseGninfo extends Model<BaseGninfo> {
         this.title = title;
     }
 
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
 
     public String getBtypessid() {
         return btypessid;

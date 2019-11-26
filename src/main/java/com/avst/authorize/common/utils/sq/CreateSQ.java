@@ -53,9 +53,9 @@ public class CreateSQ {
         sqEntity.setServerType("police");
         sqEntity.setForeverBool(false);//是否永久授权
         sqEntity.setClientName("人民公安审讯系统");
-        sqEntity.setCpuCode("5357565357535757414141444147554542414248444148464346");
+        sqEntity.setCpuCode("535756535753575741414144414754444243454344444943");
 
-        sqEntity.setGnlist("record|asr|fd|ph"); //通过集合转成字符串，以|的方式分割
+        sqEntity.setGnlist("record_f|asr_f|tts_f|fd_f|ph_f|s_v|ga_t|common_o|c_e|{companyname:22,companymsg:aaaa}"); //通过集合转成字符串，以|的方式分割
         sqEntity.setStartTime(DateUtil.getDateAndMinute());
 
         LogUtil.intoLog(CreateSQ.class,deSQ(sqEntity,"D:\\trmshouquan"));//最后生成
