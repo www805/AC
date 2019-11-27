@@ -25,17 +25,18 @@ public class CreateSQ {
      */
     public static boolean deSQ(SQEntityPlus sqEntity, String basepath){
 
+        String sqcode=sqEntity.toString();
         try {
-            String sqcode=sqEntity.toString();
-            LogUtil.intoLog(CreateSQ.class,"授权创建前 sqcode:"+sqcode);
+            LogUtil.intoLog(1, CreateSQ.class, "授权创建前 sqcode:" + sqcode);
             String rr= EncodeUtil.encoderByDES(sqcode);
-            LogUtil.intoLog(CreateSQ.class,"授权创建后 rr:"+rr);
+            LogUtil.intoLog(1, CreateSQ.class, "授权创建后 rr:" + rr);
 
             String path=basepath+"\\"+ javakeyname;
             ReadWriteFile.writeTxtFile(rr,path);
 
             return true;
         }catch (Exception e){
+            LogUtil.intoLog(4, CreateSQ.class, sqcode + " 授权失败。。。");
             e.printStackTrace();
         }
         return false;

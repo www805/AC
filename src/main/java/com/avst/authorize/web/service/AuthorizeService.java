@@ -267,8 +267,6 @@ public class AuthorizeService {
 
         String ssid = param.getSsid();
 
-        System.out.println(ssid);
-
         EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
         ew.eq("ssid", ssid);
 
@@ -281,6 +279,8 @@ public class AuthorizeService {
         sqEntityPlus.setState(0);
 
         Integer update = sqEntityMapper.update(sqEntityPlus, ew);
+
+        LogUtil.intoLog(1, this.getClass(), " 删除一条授权：" + ssid);
 
         result.changeToTrue(update);
     }
@@ -371,39 +371,47 @@ public class AuthorizeService {
             String tempPath = OpenUtil.getXMSoursePath() + tempdonwloadName;
             String sqFilePath = OpenUtil.getXMSoursePath() + donwloadName;
 
-            File file = new File(tempPath);
-            if(!file.exists()){
-                file.mkdirs();
-            }
-
-            FileUtil.delAllFile(tempPath);//删除文件夹里所有内容
+//            FileUtil.delAllFile(tempPath);//删除文件夹里所有内容
             FileUtil.delAllFile(sqFilePath);//删除文件夹里所有内容
+
+//            FileUtils.forceDelete(tempFile);
+//            FileUtils.forceDelete(sqfile);
+
+            File tempFile = new File(tempPath);
+//            File sqfile = new File(sqFilePath);
+            if(!tempFile.exists()){
+                tempFile.mkdirs();
+            }
 
             String sqFileName = PropertiesListenerConfig.getProperty("sq.javatrm");
 
             SQCode sqCode = new SQCode();
-//            sqCode.setSsid(ssid);
-//            sqCode = sqCodeMapper.selectOne(sqCode);
-
             SQEntityPlus entityPlus = sqEntityMapper.getFindByssid(ssid);
 
-            String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + ".zip";
+//            String uuid_32 = OpenUtil.getUUID_32();
+            String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getSsid() + ".zip";
+
 
             if (null != entityPlus) {
+
                 List<SQCode> sqCodeList = entityPlus.getSqCodeList();
                 if (sqCodeList.size() > 0) {
                     sqCode = sqCodeList.get(0);
                 }
+                //判断压缩包是否已经存在，如果存在就直接使用，不存在就进行压缩
+                File fileZIP = new File(tagerZip);
+                if(!fileZIP.exists()){
 
-                for (SQCode code : sqCodeList) {
-                    String path = sqFilePath + code.getSqcode() + "_" + sqFileName;
-                    File tagerFile = new File(path);
-                    File yuanFile = new File(code.getRealpath());
+                    for (SQCode code : sqCodeList) {
+                        String path = sqFilePath + code.getSqcode() + "_" + sqFileName;
+                        File tagerFile = new File(path);
+                        File yuanFile = new File(code.getRealpath());
 
-                    FileUtils.copyFile(yuanFile, tagerFile);
+                        FileUtils.copyFile(yuanFile, tagerFile);
+                    }
+
+                    ZipUtil.packageZipFolder(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");
                 }
-
-                ZipUtil.packageZipFolder(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");
 
                 FileSystemResource resource = new FileSystemResource(tagerZip);
 
@@ -436,8 +444,8 @@ public class AuthorizeService {
 
             LogUtil.intoLog(4, this.getClass(), "读取授权码错误！请检查ssid是否存在");
         } catch (IOException e) {
-//            e.printStackTrace();
             LogUtil.intoLog(4, e.getClass(), "文件不存在或文件读写错误");
+            e.printStackTrace();
         }
         return null;
 

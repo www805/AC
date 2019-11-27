@@ -33,7 +33,6 @@
         FROM
             base_type t
             LEFT JOIN base_gninfo g ON t.ssid = g.btypessid
-            ${ew.sqlSegment}
     </select>
 
 

@@ -88,7 +88,7 @@ public class BaseTypeAction {
     @RequestMapping("/tobasetype")
     public ModelAndView admin(Model model){
         model.addAttribute("title", "授权类型管理");
-        return new ModelAndView("base/basetype", "getBasetype", model);
+        return new ModelAndView("base/baseType", "getBasetype", model);
     }
 
 

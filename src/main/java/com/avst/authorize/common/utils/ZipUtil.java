@@ -51,6 +51,7 @@ public class ZipUtil {
             LogUtil.intoLog(4, ZipUtil.class, "压缩文件夹不存在。。。。。。");
             return;
         }
+
         InputStream input = null;
         ZipOutputStream zipOut = null;
         try {
@@ -77,6 +78,13 @@ public class ZipUtil {
             if (null != zipOut) {
                 try {
                     zipOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != input){
+                try {
+                    input.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

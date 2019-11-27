@@ -111,6 +111,7 @@ public class FileUtil {
 
 	//删除文件夹
 	public static void delFolder(String folderPath) {
+		System.gc();    //回收资源
 		try {
 			delAllFile(folderPath); //删除完里面所有内容
 			String filePath = folderPath;

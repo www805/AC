@@ -119,4 +119,21 @@ public class BaseType extends Model<BaseType> {
     protected Serializable pkVal() {
         return this.ssid;
     }
+
+    @Override
+    public String toString() {
+        return "BaseType{" +
+                "id=" + id +
+                ", typename='" + typename + '\'' +
+                ", typecode='" + typecode + '\'' +
+                ", type=" + type +
+                ", ordernum=" + ordernum +
+                ", ssid='" + ssid + '\'' +
+                ", string1='" + string1 + '\'' +
+                ", string2='" + string2 + '\'' +
+                ", integer1=" + integer1 +
+                ", integer2=" + integer2 +
+                ", baseGninfo=" + baseGninfo +
+                '}';
+    }
 }

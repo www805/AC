@@ -26,7 +26,7 @@ public class LoginAction {
     @RequestMapping("/login")
     public ModelAndView gotoLongin(Model model) {
         model.addAttribute("title", "用户登录");
-        return new ModelAndView("/login", "loginModel", model);
+        return new ModelAndView("login", "loginModel", model);
     }
  
  

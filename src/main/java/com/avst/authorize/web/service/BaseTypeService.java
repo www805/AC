@@ -4,6 +4,7 @@ package com.avst.authorize.web.service;
 import com.avst.authorize.common.cache.BaseGnInfoCache;
 import com.avst.authorize.common.entity.BaseGninfo;
 import com.avst.authorize.common.entity.BaseType;
+import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.RResult;
 import com.avst.authorize.web.mapper.BaseGnInfoMapper;
@@ -77,6 +78,8 @@ public class BaseTypeService {
         Integer gnUpdate = baseGnInfoMapper.delete(ew2);
         Integer delete = baseTypeMapper.delete(ew);
 
+        LogUtil.intoLog(1, this.getClass(), "删除一条授权功能：bool=" + delete + "  ssid=" + param.getSsid());
+
         result.changeToTrue(delete);
         return result;
     }
@@ -84,12 +87,13 @@ public class BaseTypeService {
     public RResult addBaseType(RResult result, GetBaseTypeListParam param) {
 
         EntityWrapper<BaseType> ew = new EntityWrapper<>();
-        ew.eq("typename", param.getTypename());
-        ew.or("typecode", param.getTypecode());
+        ew.eq("typename", param.getTypename().trim())
+                .or()
+                .eq("typecode", param.getTypecode().trim());
 
         List<BaseType> baseTypes = baseTypeMapper.selectList(ew);
         if (baseTypes.size() > 0) {
-            result.setMessage("该类型名称或类型代码已经存在");
+            result.setMessage("该类型名称或类型代码已经存在！");
             return result;
         }
 
@@ -102,6 +106,7 @@ public class BaseTypeService {
 
         boolean insert = baseType.insert();
         if (insert) {
+            LogUtil.intoLog(1, this.getClass(), "成功添加一条授权类型：" + baseType.toString());
             BaseGnInfoCache.delBaseGninfoListCache();
         }
         result.changeToTrue(insert);
@@ -110,6 +115,21 @@ public class BaseTypeService {
     }
 
     public RResult updateBaseType(RResult result, GetBaseTypeListParam param) {
+
+        EntityWrapper<BaseType> eww = new EntityWrapper<>();
+        eww.eq("typename", param.getTypename().trim())
+                .and()
+                .ne("ssid",param.getSsid())
+                .or()
+                .eq("typecode",param.getTypecode().trim())
+                .and()
+                .ne("ssid",param.getSsid());
+
+        List<BaseType> typeList = baseTypeMapper.selectList(eww);
+        if (typeList.size() > 0) {
+            result.setMessage("该类型名称或类型代码已经存在！");
+            return result;
+        }
 
         EntityWrapper<BaseType> ew = new EntityWrapper<>();
         ew.eq("ssid", param.getSsid());
@@ -122,6 +142,7 @@ public class BaseTypeService {
 
         boolean update = baseType.update(ew);
         if (update) {
+            LogUtil.intoLog(1, this.getClass(), "成功修改一条授权类型：" + baseType.toString());
             BaseGnInfoCache.delBaseGninfoListCache();
         }
         result.changeToTrue(update);

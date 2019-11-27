@@ -1,7 +1,14 @@
+var loadIndex;
 
 function login_login(){
 
     var url = getactionid_manage().loginCaChe;
+
+    loadIndex = layer.msg("加载中，请稍后...", {
+        icon: 16,
+        time:10000,
+        shade: [0.1,"#fff"]
+    });
 
     var loginaccount =$('input[name="loginaccount"]').val();
     var password =$('input[name="password"]').val();
@@ -14,13 +21,13 @@ function login_login(){
 }
 
 function callLogin_login(data){
-
+    layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         var url = getactionid_manage().admin_index;
         window.location.href = url;
     }else{
-        // layer.msg(data.message, {icon: 2});
-        alert(data.message);
+        layer.msg(data.message, {icon: 5});
+        // alert(data.message);
     }
     // layui.use('form', function(){
     //     var form = layui.form;
@@ -36,7 +43,7 @@ function login_logout(){
 }
 
 function callLogout(data){
-
+    layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         //alert(data.message);
         // var url=getActionURL(getactionid_manage().login_main);

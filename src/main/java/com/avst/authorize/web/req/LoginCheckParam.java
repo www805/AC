@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 public class LoginCheckParam {
  
     @NotBlank(message = "用户名不能为空")
-    @Size(min = 5, max = 12, message = "用户名长度必须是5-12位之间")
+//    @Size(min = 5, max = 12, message = "用户名长度必须是5-12位之间")
     private String loginaccount;
  
     @NotBlank(message = "密码不能为空")

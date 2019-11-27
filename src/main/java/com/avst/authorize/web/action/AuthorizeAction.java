@@ -2,11 +2,15 @@ package com.avst.authorize.web.action;
 
 import com.avst.authorize.common.config.check.Create;
 import com.avst.authorize.common.config.check.Delete;
-import com.avst.authorize.common.utils.DateUtil;
-import com.avst.authorize.common.utils.RResult;
+import com.avst.authorize.common.entity.SQCode;
+import com.avst.authorize.common.entity.SQEntityPlus;
+import com.avst.authorize.common.utils.*;
+import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
+import com.avst.authorize.web.mapper.SQEntityMapper;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.service.AuthorizeService;
+import org.apache.commons.io.FileUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ac")
@@ -24,6 +30,9 @@ public class AuthorizeAction {
 
     @Autowired
     private AuthorizeService authorizeService;
+
+    @Autowired
+    private SQEntityMapper sqEntityMapper;
 
     /**
      * 获取所有授权记录
@@ -134,12 +143,60 @@ public class AuthorizeAction {
      * @return
      * @throws UnsupportedEncodingException
      */
-//    @RequestMapping("/download")
-//    public String downLoad(HttpServletResponse response) throws UnsupportedEncodingException {
-//        String filename="2.xlsx";
-//        String filePath = "D:/download" ;
-//        File file = new File(filePath + "/" + filename);
-//        if(file.exists()){ //判断文件父目录是否存在
+//    @RequestMapping("/download/{ssid}")
+//    public String downLoad(HttpServletResponse response,@PathVariable("ssid") String ssid) throws UnsupportedEncodingException {
+//
+//
+//        //获取系统上一级目录
+//        String tempdonwloadName= PropertiesListenerConfig.getProperty("sq.tempshouquan");
+//        String donwloadName= PropertiesListenerConfig.getProperty("sq.shouquan");
+//        String tempPath = OpenUtil.getXMSoursePath() + tempdonwloadName;
+//        String sqFilePath = OpenUtil.getXMSoursePath() + donwloadName;
+//
+//        File file = new File(tempPath);
+//        if(!file.exists()){
+//            file.mkdirs();
+//        }
+//
+//        FileUtil.delAllFile(tempPath);//删除文件夹里所有内容
+//        FileUtil.delAllFile(sqFilePath);//删除文件夹里所有内容
+//
+//        String sqFileName = PropertiesListenerConfig.getProperty("sq.javatrm");
+//
+//        SQCode sqCode = new SQCode();
+////            sqCode.setSsid(ssid);
+////            sqCode = sqCodeMapper.selectOne(sqCode);
+//
+//        SQEntityPlus entityPlus = sqEntityMapper.getFindByssid(ssid);
+//
+//        String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + ".zip";
+//
+//        if (null != entityPlus) {
+//            List<SQCode> sqCodeList = entityPlus.getSqCodeList();
+//            if (sqCodeList.size() > 0) {
+//                sqCode = sqCodeList.get(0);
+//            }
+//
+//            for (SQCode code : sqCodeList) {
+//                String path = sqFilePath + code.getSqcode() + "_" + sqFileName;
+//                File tagerFile = new File(path);
+//                File yuanFile = new File(code.getRealpath());
+//
+//                try {
+//                    FileUtils.copyFile(yuanFile, tagerFile);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            ZipUtil.packageZipFolder(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");
+//
+//
+//        String filename = entityPlus.getUsername() + "_" + entityPlus.getCompanyname();
+////        String filename="2.xlsx";
+////        String filePath = "D:/download" ;
+//        File file2 = new File(tagerZip);
+//        if(file2.exists()){ //判断文件父目录是否存在
 //            response.setContentType("application/vnd.ms-excel;charset=UTF-8");
 //            response.setCharacterEncoding("UTF-8");
 //            // response.setContentType("application/force-download");
@@ -171,7 +228,7 @@ public class AuthorizeAction {
 //                // TODO Auto-generated catch block
 //                e.printStackTrace();
 //            }
-//        }
+//        }}
 //        return null;
 //    }
 }
