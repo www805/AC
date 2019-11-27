@@ -422,7 +422,7 @@ public class AuthorizeService {
                 // 实例化MIME
                 MediaType mediaType = MediaType.parseMediaType(mediaTypeStr);
 
-                sqFileName = sqCode.getName() + "_" + sqCode.getSqcode() + "_" + entityPlus.getCompanyname() + ".zip";
+                sqFileName = entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getStartTime() + ".zip";
 
                 /*
                  * 构造响应的头

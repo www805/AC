@@ -369,6 +369,7 @@ function addsqinfo() {
 }
 
 function callGetFindByssid(data){
+    layer.close(loadIndex);
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)){
             sqEntityInfo = data.data;
@@ -786,6 +787,11 @@ function opneModal_2(ssid) {
             area: ['630px', '650px'],
             btn: ['返回'],
             success: function (layero, index) {
+                loadIndex = layer.msg("加载中，请稍后...", {
+                    icon: 16,
+                    time:30000,
+                    shade: [0.1,"#fff"]
+                });
                 getFindByssid(ssid);
             },
             yes: function (index, layero) {
