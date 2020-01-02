@@ -13,8 +13,8 @@
 <div class="login">
     <h1>笔录授权系统</h1>
     <form class="layui-form" action="">
-        <input type="text" name="loginaccount" placeholder="用户名" lay-verify="required" required="required" class="layui-input" value=""/>
-        <input type="password" name="password" placeholder="密码" lay-verify="required" required="required" class="layui-input" autocomplete="off" value=""/>
+        <input type="text" name="loginaccount" placeholder="用户名" lay-verify="loginaccount" required="required" class="layui-input" value=""/>
+        <input type="password" name="password" placeholder="密码" lay-verify="password" required="required" class="layui-input" autocomplete="off" value=""/>
         <button type="button" id="denglu" class="btn btn-primary btn-block btn-large" lay-submit lay-filter="formLogin" >登录</button>
     </form>
 </div>
@@ -43,6 +43,22 @@
         var layer = layui.layer; //获得layer模块
         var element = layui.element;
         var form = layui.form;
+
+        form.verify({
+            loginaccount:function (value) {
+                if (!(/\S/).test(value)) {
+                    return "请输入登录账号";
+                }
+                if (!(/^(?!.*\s).{5,12}$/.test(value))) {
+                    return "请输入5-12个字符不含空格的登录账号";
+                }
+            },
+            password:function (value) {
+                if (!(/\S/).test(value)) {
+                    return "请输入密码";
+                }
+            }
+        });
 
         form.on('submit(formLogin)', function (data) {
 

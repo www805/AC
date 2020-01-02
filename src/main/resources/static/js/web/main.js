@@ -108,8 +108,8 @@ function addAuthorize() {
         sqDay = "0";
     }
 
-    if (isNotEmpty(clientName) && clientName.length > 9) {
-        layer.msg("单位名称长度不能超过9个字符", {icon: 5});
+    if (isNotEmpty(clientName) && clientName.length > 20) {
+        layer.msg("单位名称长度不能超过20个字符", {icon: 5});
         return false;
     }
 
