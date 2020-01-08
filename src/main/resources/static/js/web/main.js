@@ -395,7 +395,7 @@ function callGetFindByssid(data){
                     //输出授权码
                     sqCodeListHTML += '<tr>\n' +
                         '        <td>' + sqCode.name + '</td>\n' +
-                        '        <td>' + sqCode.sqcode + '</td>\n' +
+                        '        <td title="' + sqCode.sqcode + '">' + sqCode.sqcode.substring(0, 53) + '</td>\n' +
                         '        <td><a href="' + url + '/' + sqCode.ssid + '">下载授权文件</a></td>\n' +
                         '</tr>';
                 }

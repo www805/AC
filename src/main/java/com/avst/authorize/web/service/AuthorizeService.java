@@ -205,11 +205,16 @@ public class AuthorizeService {
                     return;
                 }
 
-                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
-                String startTime = df.format(new Date());
+//                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
+//                String startTime = df.format(new Date());
+
+                Calendar now = Calendar.getInstance();
+                String year = now.get(Calendar.YEAR) + "";
+                String month = ((now.get(Calendar.MONTH) + 1) + "").length() == 1 ? "0" + (now.get(Calendar.MONTH) + 1) : (now.get(Calendar.MONTH) + 1) + "";
+                String day = (now.get(Calendar.DAY_OF_MONTH) + "").length() == 1 ? "0" + now.get(Calendar.DAY_OF_MONTH) : now.get(Calendar.DAY_OF_MONTH) + "";
 
                 String sqFileName= PropertiesListenerConfig.getProperty("sq.fileName");
-                String path = OpenUtil.getXMSoursePath() + sqFileName + startTime + "\\" + param.getUnitCode();
+                String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode();
 
                 System.out.println(path);
                 boolean b = CreateSQ.deSQ(sqEntity, path);

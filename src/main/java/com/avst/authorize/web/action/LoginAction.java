@@ -1,5 +1,6 @@
 package com.avst.authorize.web.action;
 
+import com.avst.authorize.common.config.check.UserCheckSequence;
 import com.avst.authorize.common.entity.User;
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.RResult;
@@ -36,7 +37,7 @@ public class LoginAction {
      * @return
      */
     @PostMapping("/loginCaChe")
-    public RResult loginCaChe(@RequestBody @Validated LoginCheckParam param) {
+    public RResult loginCaChe(@RequestBody @Validated({UserCheckSequence.class}) LoginCheckParam param) {
  
         RResult<User> result = new RResult();
  
