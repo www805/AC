@@ -1,13 +1,12 @@
 package com.avst.authorize.web.service;
 
-
 import com.avst.authorize.common.cache.BaseGnInfoCache;
+import com.avst.authorize.common.entity.BaseGnType;
 import com.avst.authorize.common.entity.BaseGninfo;
 import com.avst.authorize.common.entity.BaseType;
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.RResult;
-import com.avst.authorize.web.mapper.BaseGnInfoMapper;
 import com.avst.authorize.web.mapper.BaseTypeMapper;
 import com.avst.authorize.web.req.GetBaseTypeListParam;
 import com.avst.authorize.web.vo.GetBaseTypeListVO;
@@ -16,22 +15,26 @@ import com.baomidou.mybatisplus.plugins.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.ws.soap.Addressing;
 import java.util.List;
 
+/**
+ * @Auther: zhuang
+ * @Date: 2020/1/11 14:58
+ * @Description:
+ */
 @Service
 public class BaseTypeService {
 
     @Autowired
     private BaseTypeMapper baseTypeMapper;
 
-    @Autowired
-    private BaseGnInfoMapper baseGnInfoMapper;
 
     public RResult getBaseTypeList(RResult result, GetBaseTypeListParam param) {
 
-        GetBaseTypeListVO baseTypeListVO = new GetBaseTypeListVO();
+        GetBaseTypeListVO vo = new GetBaseTypeListVO();
+
 
         EntityWrapper<BaseType> ew = new EntityWrapper<>();
         if(StringUtils.isNotEmpty(param.getTypename())){
@@ -43,66 +46,44 @@ public class BaseTypeService {
         Integer count = baseTypeMapper.selectCount(ew);
         param.setRecordCount(count);
 
-        com.baomidou.mybatisplus.plugins.Page<BaseType> page = new Page<>(param.getCurrPage(), param.getPageSize());
+        Page<BaseType> page = new Page<>(param.getCurrPage(), param.getPageSize());
         List<BaseType> sqCacheList = baseTypeMapper.selectPage(page, ew);
 
 
-        baseTypeListVO.setPagelist(sqCacheList);
-        baseTypeListVO.setPageparam(param);
+        vo.setPagelist(sqCacheList);
+        vo.setPageparam(param);
 
-        result.changeToTrue(baseTypeListVO);
+        result.changeToTrue(vo);
+
         return result;
     }
-
 
     public RResult getBaseTypeByssid(RResult result, GetBaseTypeListParam param) {
 
         BaseType baseType = new BaseType();
-        baseType.setSsid( param.getSsid());
+        baseType.setSsid(param.getSsid());
+        BaseType selectOne = baseTypeMapper.selectOne(baseType);
+        result.changeToTrue(selectOne);
 
-        baseType = baseTypeMapper.selectOne(baseType);
-
-        result.changeToTrue(baseType);
-        return result;
-    }
-
-    @Transactional
-    public RResult deleteBaseTypeByssid(RResult result, GetBaseTypeListParam param) {
-
-        EntityWrapper<BaseType> ew = new EntityWrapper<>();
-        ew.eq("ssid", param.getSsid());
-
-        EntityWrapper<BaseGninfo> ew2 = new EntityWrapper<>();
-        ew2.eq("btypessid", param.getSsid());
-
-        Integer gnUpdate = baseGnInfoMapper.delete(ew2);
-        Integer delete = baseTypeMapper.delete(ew);
-
-        LogUtil.intoLog(1, this.getClass(), "删除一条授权功能：bool=" + delete + "  ssid=" + param.getSsid());
-
-        result.changeToTrue(delete);
         return result;
     }
 
     public RResult addBaseType(RResult result, GetBaseTypeListParam param) {
 
         EntityWrapper<BaseType> ew = new EntityWrapper<>();
-        ew.eq("typename", param.getTypename().trim())
-                .or()
-                .eq("typecode", param.getTypecode().trim());
+        ew.eq("typename", param.getTypename().trim());
 
         List<BaseType> baseTypes = baseTypeMapper.selectList(ew);
         if (baseTypes.size() > 0) {
-            result.setMessage("该类型名称或类型代码已经存在！");
+            LogUtil.intoLog(1, this.getClass(), "该类型名称已经存在！");
+            result.setMessage("该类型名称已经存在！");
             return result;
         }
 
         BaseType baseType = new BaseType();
-        baseType.setTypename(param.getTypename().trim());
-        baseType.setTypecode(param.getTypecode().trim());
-        baseType.setType(param.getType());
-        baseType.setOrdernum(param.getOrdernum());
+        baseType.setTypename(param.getTypename());
         baseType.setSsid(OpenUtil.getUUID_32());
+
 
         boolean insert = baseType.insert();
         if (insert) {
@@ -119,15 +100,12 @@ public class BaseTypeService {
         EntityWrapper<BaseType> eww = new EntityWrapper<>();
         eww.eq("typename", param.getTypename().trim())
                 .and()
-                .ne("ssid",param.getSsid())
-                .or()
-                .eq("typecode",param.getTypecode().trim())
-                .and()
-                .ne("ssid",param.getSsid());
+                .ne("ssid", param.getSsid());
 
         List<BaseType> typeList = baseTypeMapper.selectList(eww);
         if (typeList.size() > 0) {
-            result.setMessage("该类型名称或类型代码已经存在！");
+            LogUtil.intoLog(1, this.getClass(), "该类型名称已经存在！");
+            result.setMessage("该类型名称已经存在！");
             return result;
         }
 
@@ -136,8 +114,6 @@ public class BaseTypeService {
 
         BaseType baseType = new BaseType();
         baseType.setTypename(param.getTypename().trim());
-        baseType.setTypecode(param.getTypecode().trim());
-        baseType.setType(param.getType());
         baseType.setOrdernum(param.getOrdernum());
 
         boolean update = baseType.update(ew);
@@ -147,6 +123,19 @@ public class BaseTypeService {
         }
         result.changeToTrue(update);
 
+        return result;
+    }
+
+    public RResult deleteBaseTypeByssid(RResult result, GetBaseTypeListParam param) {
+
+        EntityWrapper<BaseType> ew = new EntityWrapper<>();
+        ew.eq("ssid", param.getSsid());
+
+        Integer delete = baseTypeMapper.delete(ew);
+
+        LogUtil.intoLog(1, this.getClass(), "删除一条授权功能类型：bool=" + delete + "  ssid=" + param.getSsid());
+
+        result.changeToTrue(delete);
         return result;
     }
 }

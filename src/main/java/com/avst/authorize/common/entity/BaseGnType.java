@@ -7,15 +7,17 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.util.List;
 
-@TableName("base_gninfo")
-public class BaseGninfo extends Model<BaseGninfo> {
+@TableName("base_gntype")
+public class BaseGnType extends Model<BaseGnType> {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private String name;
-    private String title;
-    private String bgntypessid;
+    private String typename;
+    private String typecode;
+    private Integer type;
+    private Integer ordernum;
     private String ssid;
     private String string1;
     private String string2;
@@ -23,14 +25,38 @@ public class BaseGninfo extends Model<BaseGninfo> {
     private Integer integer2;
 
     @TableField(exist = false)
-    private BaseGnType baseGnType;
+    private List<BaseGninfo> baseGninfo;
 
-    public BaseGnType getBaseGnType() {
-        return baseGnType;
+    public List<BaseGninfo> getBaseGninfo() {
+        return baseGninfo;
     }
 
-    public void setBaseGnType(BaseGnType baseGnType) {
-        this.baseGnType = baseGnType;
+    public void setBaseGninfo(List<BaseGninfo> baseGninfo) {
+        this.baseGninfo = baseGninfo;
+    }
+
+    public String getTypecode() {
+        return typecode;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getOrdernum() {
+        return ordernum;
+    }
+
+    public void setOrdernum(Integer ordernum) {
+        this.ordernum = ordernum;
+    }
+
+    public void setTypecode(String typecode) {
+        this.typecode = typecode;
     }
 
     public Integer getId() {
@@ -41,30 +67,13 @@ public class BaseGninfo extends Model<BaseGninfo> {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTypename() {
+        return typename;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTypename(String typename) {
+        this.typename = typename;
     }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getBgntypessid() {
-        return bgntypessid;
-    }
-
-    public void setBgntypessid(String bgntypessid) {
-        this.bgntypessid = bgntypessid;
-    }
-
 
     public String getSsid() {
         return ssid;
@@ -113,17 +122,18 @@ public class BaseGninfo extends Model<BaseGninfo> {
 
     @Override
     public String toString() {
-        return "BaseGninfo{" +
+        return "BaseType{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                ", title='" + title + '\'' +
-                ", bgntypessid='" + bgntypessid + '\'' +
+                ", typename='" + typename + '\'' +
+                ", typecode='" + typecode + '\'' +
+                ", type=" + type +
+                ", ordernum=" + ordernum +
                 ", ssid='" + ssid + '\'' +
                 ", string1='" + string1 + '\'' +
                 ", string2='" + string2 + '\'' +
                 ", integer1=" + integer1 +
                 ", integer2=" + integer2 +
-                ", baseGnType=" + baseGnType +
+                ", baseGninfo=" + baseGninfo +
                 '}';
     }
 }

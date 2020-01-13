@@ -3,6 +3,7 @@ package com.avst.authorize;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.Page;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -23,6 +24,9 @@ public class AuthorizeApplicationTests {
 
     @Test
     public void contextLoads() {
+
+        String uuid_32 = OpenUtil.getUUID_32();
+        System.out.println(uuid_32);
 
 //        Calendar now = Calendar.getInstance();
 //        System.out.println("年: " + now.get(Calendar.YEAR));

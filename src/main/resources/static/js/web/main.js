@@ -10,9 +10,11 @@ function getAuthorizeList_init(currPage,pageSize) {
     var url = getactionid_manage().getAuthorizeList;
     var sq_username=$("input[name='sq_username']").val();
     var keyword=$("input[name='keyword']").val();
+    var sqtypessid=$("#sqtypessid").val();
     var data={
         username: sq_username,
         clientName: keyword,
+        batypessid: sqtypessid,
         currPage:currPage,
         pageSize:pageSize
     };
@@ -25,19 +27,30 @@ function getAuthorizeList_init(currPage,pageSize) {
     ajaxSubmitByJson(url,data,callGetAuthorizeList);
 }
 
-function getProblemTypeList(keyword, currPage, pageSize) {
+function getProblemTypeList(sq_username, keyword, sqtypessid, currPage, pageSize) {
     var url = getactionid_manage().getAuthorizeList;
-    var data={
+    var data = {
+        username: sq_username,
         clientName: keyword,
-        currPage:currPage,
-        pageSize:pageSize
+        batypessid: sqtypessid,
+        currPage: currPage,
+        pageSize: pageSize
     };
     loadIndex = layer.msg("加载中，请稍后...", {
         icon: 16,
-        time:30000,
-        shade: [0.1,"#fff"]
+        time: 30000,
+        shade: [0.1, "#fff"]
     });
     ajaxSubmitByJson(url, data, callGetAuthorizeList);
+}
+
+//获取全部授权类型
+function getBaseType() {
+    var url = getactionid_manage().getBaseTypeList;
+    var data={
+
+    };
+    ajaxSubmitByJson(url, data, callGetBaseType);
 }
 
 //获取授权信息
@@ -55,6 +68,7 @@ function addAuthorize() {
     var unitCode = $("input[name='unitCode']").val();
     var sqDay = $("input[name='sqDay']").val();
     var sqsize = $("input[name='sqsize']").val();
+    var batypessid = $("#batypessid").val();
 
     var cpuCode = $("#cpuCode2").val();
     var updateCpuCode = $("#updateCpuCode").val();
@@ -122,6 +136,7 @@ function addAuthorize() {
         sqDay: parseInt(sqDay),
         foreverBool: foreverBool,
         serverType: serverType,
+        batypessid: batypessid,
         gnlist: gnlist,
         cpuCode: cpuCode,
         companymsg: companymsg
@@ -429,6 +444,7 @@ function callGetAuthorizeList(data){
     layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
+            $("#resultSize").html(data.data.pageparam.recordCount);
             pageshow(data);
             var listcountsize = data.data.pagelist;
             if (listcountsize == null || listcountsize.length == 0) {
@@ -501,11 +517,33 @@ function callGetPrivilege(data){
     }
 }
 
+function callGetBaseType(data){
+    if(null!=data&&data.actioncode=='SUCCESS'){
+        if (isNotEmpty(data.data)){
+            var sqtypes = data.data.pagelist;
+            var sqtypeHtml = "<option value='0'>全部类型</option>";
+            var typeHtml = "";
+
+            for (var i = 0; i < sqtypes.length; i++) {
+                var sqtype = sqtypes[i];
+                typeHtml += '<option value="'+sqtype.ssid+'">'+sqtype.typename+'</option>';
+            }
+            $("#sqtypessid").html(sqtypeHtml + typeHtml);
+            $("#batypessid").html(typeHtml);
+            layui.use('form', function () {
+                var form = layui.form;
+                form.render();
+            })
+        }
+    }else{
+        layer.msg(data.message,{icon: 5});
+    }
+}
 
 /**
  * 局部刷新
  */
-function getProblemTypeListParam() {
+function getAuthorizeListParam() {
 
     var len = arguments.length;
 
@@ -516,7 +554,7 @@ function getProblemTypeListParam() {
     }  else if (len == 2) {
         getProblemTypeList('', arguments[0], arguments[1]);
     } else if (len > 2) {
-        getProblemTypeList(arguments[0], arguments[1], arguments[2]);
+        getProblemTypeList(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
     }
 }
 
@@ -527,10 +565,15 @@ function showpagetohtml(){
         var pageCount=pageparam.pageCount;
         var currPage=pageparam.currPage;
 
+        var sq_username=$("input[name='sq_username']").val();
         var keyword=$("input[name='keyword']").val();
+        var sqtypessid=$("#sqtypessid").val();
+
         var arrparam=new Array();
-        arrparam[0]=keyword;
-        showpage("paging",arrparam,'getProblemTypeListParam',currPage,pageCount,pageSize);
+        arrparam[0]=sq_username;
+        arrparam[1]=keyword;
+        arrparam[2]=sqtypessid;
+        showpage("paging",arrparam,'getAuthorizeListParam',currPage,pageCount,pageSize);
     }
 }
 
@@ -556,7 +599,6 @@ function copysqinfo() {
  * 自用弹框
  */
 function opneModal_1() {
-
 
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
         '            <div class="layui-form-item">\n' +
@@ -600,6 +642,13 @@ function opneModal_1() {
         '                    <div class="layui-input-block">\n' +
         '                        <input type="checkbox" name="foreverBool" id="foreverBool" lay-filter="foreverBool" lay-skin="switch">\n' +
         '                    </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>授权类型</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <select name="batypessid" id="batypessid" lay-verify="required">\n' +
+        '                    </select>\n' +
+        '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>\n' +
@@ -677,6 +726,7 @@ function opneModal_1() {
                     }
                 });
                 getPrivilege();//获取功能权限信息
+                getBaseType();//获取授权类型
                 form.render();
             },
             yes: function (index, layero) {

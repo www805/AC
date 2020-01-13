@@ -31,7 +31,7 @@ public class BaseTypeAction {
      * @return
      */
     @RequestMapping("/getBaseTypeList")
-    public RResult getBaseTypeList(@RequestBody GetBaseTypeListParam param){
+    public RResult getBaseGnTypeList(@RequestBody GetBaseTypeListParam param){
         RResult result = new RResult();
         result = baseTypeService.getBaseTypeList(result, param);
         return result;
@@ -86,7 +86,7 @@ public class BaseTypeAction {
     }
 
     @RequestMapping("/tobasetype")
-    public ModelAndView admin(Model model){
+    public ModelAndView tobasetype(Model model){
         model.addAttribute("title", "授权类型管理");
         return new ModelAndView("base/baseType", "getBasetype", model);
     }

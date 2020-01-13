@@ -1,9 +1,7 @@
 package com.avst.authorize.web.vo;
 
 import com.avst.authorize.common.entity.BaseGninfo;
-import com.avst.authorize.common.entity.BaseType;
 import com.avst.authorize.web.req.GetBaseGnInfoListParam;
-import com.avst.authorize.web.req.GetBaseTypeListParam;
 
 import java.util.List;
 

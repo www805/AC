@@ -83,7 +83,7 @@
                     <div class="layui-input-inline">
                         <input type="text" name="sq_typename" id="sq_typename" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
                     </div>
-                    <input type="button" id="chaxun" class="layui-btn layui-btn-normal" value="查询" onclick="getBaseTypeList_init(1,10);" >
+                    <input type="button" id="chaxun" class="layui-btn layui-btn-normal" value="查询" onclick="getBaseGnTypeList_init(1,10);" >
                     <input type="button" class="layui-btn layui-btn-normal" value="添加类型" onclick="opneModal_1();" >
 
                 </div>
@@ -128,7 +128,7 @@
             <td>{{value.ordernum==null?"":value.ordernum}}</td>
             <td>
                 <input type="button" onclick="opneModal_1('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="修改"/>
-                <input type="button" onclick="deleteBaseTypeByssid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="删除"/>
+                <input type="button" onclick="deleteBaseGnTypeByssid('{{value.ssid}}');" class="layui-btn layui-btn-sm layui-btn-normal" value="删除"/>
             </td>
         </tr>
         {{#  }); }}
@@ -154,7 +154,7 @@
         // };
 
         $('#typename').on('input propertychange', function() {
-            getBaseTypeList_init(1,10);
+            getBaseGnTypeList_init(1,10);
         });
 
         setTimeout("$(\"#chaxun\").click();",300);

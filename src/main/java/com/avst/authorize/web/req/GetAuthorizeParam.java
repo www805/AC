@@ -16,6 +16,8 @@ public class GetAuthorizeParam {
     private String clientName;
     @NotEmpty(message = "单位简称不能为空", groups = Create.class)
     private String unitCode;
+    @NotEmpty(message = "授权类型不能为空", groups = Create.class)
+    private String batypessid;
     private Integer sqDay;
     private Integer sortNum;
     private Integer sqsize;
@@ -129,6 +131,14 @@ public class GetAuthorizeParam {
 
     public String getSsid() {
         return ssid;
+    }
+
+    public String getBatypessid() {
+        return batypessid;
+    }
+
+    public void setBatypessid(String batypessid) {
+        this.batypessid = batypessid;
     }
 
     public void setSsid(String ssid) {

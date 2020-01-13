@@ -1,22 +1,23 @@
 package com.avst.authorize.common.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
-import java.util.List;
 
+/**
+ * @Auther: zhuang
+ * @Date: 2020/1/11 15:02
+ * @Description:
+ */
 @TableName("base_type")
 public class BaseType extends Model<BaseType> {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     private String typename;
-    private String typecode;
-    private Integer type;
     private Integer ordernum;
     private String ssid;
     private String string1;
@@ -24,40 +25,6 @@ public class BaseType extends Model<BaseType> {
     private Integer integer1;
     private Integer integer2;
 
-    @TableField(exist = false)
-    private List<BaseGninfo> baseGninfo;
-
-    public List<BaseGninfo> getBaseGninfo() {
-        return baseGninfo;
-    }
-
-    public void setBaseGninfo(List<BaseGninfo> baseGninfo) {
-        this.baseGninfo = baseGninfo;
-    }
-
-    public String getTypecode() {
-        return typecode;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getOrdernum() {
-        return ordernum;
-    }
-
-    public void setOrdernum(Integer ordernum) {
-        this.ordernum = ordernum;
-    }
-
-    public void setTypecode(String typecode) {
-        this.typecode = typecode;
-    }
 
     public Integer getId() {
         return id;
@@ -69,6 +36,14 @@ public class BaseType extends Model<BaseType> {
 
     public String getTypename() {
         return typename;
+    }
+
+    public Integer getOrdernum() {
+        return ordernum;
+    }
+
+    public void setOrdernum(Integer ordernum) {
+        this.ordernum = ordernum;
     }
 
     public void setTypename(String typename) {
@@ -120,20 +95,5 @@ public class BaseType extends Model<BaseType> {
         return this.ssid;
     }
 
-    @Override
-    public String toString() {
-        return "BaseType{" +
-                "id=" + id +
-                ", typename='" + typename + '\'' +
-                ", typecode='" + typecode + '\'' +
-                ", type=" + type +
-                ", ordernum=" + ordernum +
-                ", ssid='" + ssid + '\'' +
-                ", string1='" + string1 + '\'' +
-                ", string2='" + string2 + '\'' +
-                ", integer1=" + integer1 +
-                ", integer2=" + integer2 +
-                ", baseGninfo=" + baseGninfo +
-                '}';
-    }
+
 }

@@ -3,16 +3,12 @@ package com.avst.authorize.web.service;
 
 import com.avst.authorize.common.cache.BaseGnInfoCache;
 import com.avst.authorize.common.entity.BaseGninfo;
-import com.avst.authorize.common.entity.BaseType;
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.OpenUtil;
 import com.avst.authorize.common.utils.RResult;
 import com.avst.authorize.web.mapper.BaseGnInfoMapper;
-import com.avst.authorize.web.mapper.BaseTypeMapper;
 import com.avst.authorize.web.req.GetBaseGnInfoListParam;
-import com.avst.authorize.web.req.GetBaseTypeListParam;
 import com.avst.authorize.web.vo.GetBaseGnInfoListVO;
-import com.avst.authorize.web.vo.GetBaseTypeListVO;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +87,7 @@ public class BaseGnInfoService {
         BaseGninfo baseGninfo = new BaseGninfo();
         baseGninfo.setName(param.getName().trim());
         baseGninfo.setTitle(param.getTitle().trim());
-        baseGninfo.setBtypessid(param.getBtypessid());
+        baseGninfo.setBgntypessid(param.getBtypessid()) ;
         baseGninfo.setSsid(OpenUtil.getUUID_32());
 
         boolean insert = baseGninfo.insert();
@@ -127,7 +123,7 @@ public class BaseGnInfoService {
         BaseGninfo baseGninfo = new BaseGninfo();
         baseGninfo.setName(param.getName().trim());
         baseGninfo.setTitle(param.getTitle().trim());
-        baseGninfo.setBtypessid(param.getBtypessid());
+        baseGninfo.setBgntypessid(param.getBtypessid());
         baseGninfo.setSsid(param.getSsid());
 
         boolean update = baseGninfo.update(ew);

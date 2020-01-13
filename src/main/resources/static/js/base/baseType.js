@@ -1,6 +1,6 @@
 var loadIndex;
 
-function getBaseTypeList_init(currPage,pageSize) {
+function getBaseTypeList_init(currPage, pageSize) {
     var url = getactionid_manage().getBaseTypeList;
     var sq_typename=$("input[name='sq_typename']").val();
     var data={
@@ -32,7 +32,7 @@ function getBaseTypeList(typename, currPage, pageSize) {
     ajaxSubmitByJson(url, data, callGetBaseTypeList);
 }
 
-//通过ssid获取授权类型
+//通过ssid获取授权功能类型
 function getBaseTypeByssid(ssid) {
     var url = getactionid_manage().getBaseTypeByssid;
 
@@ -43,7 +43,7 @@ function getBaseTypeByssid(ssid) {
     ajaxSubmitByJson(url,data,callGetBaseTypeByssid);
 }
 
-//新增授权类型
+//新增授权功能类型
 function addBaseType() {
     var url = getactionid_manage().addBaseType;
     var typename=$("input[name='typename']").val();
@@ -61,18 +61,14 @@ function addBaseType() {
     ajaxSubmitByJson(url,data,callGetBaseType);
 }
 
-//修改授权类型
+//修改授权功能类型
 function updateBaseType(ssid) {
     var url = getactionid_manage().updateBaseType;
     var typename=$("input[name='typename']").val();
-    var typecode=$("input[name='typecode']").val();
-    var type=$("#sqtype").val();
     var ordernum=$("input[name='ordernum']").val();
 
     var data={
         typename: typename,
-        typecode: typecode,
-        type: parseInt(type),
         ordernum: ordernum,
         ssid: ssid
     };
@@ -80,14 +76,14 @@ function updateBaseType(ssid) {
     ajaxSubmitByJson(url,data,callGetBaseType);
 }
 
-//删除一条授权类型
+//删除一条授权功能类型
 function deleteBaseTypeByssid(ssid) {
     if (!isNotEmpty(ssid)){
         layer.msg("ssid不为空，系统异常",{icon: 5});
         return;
     }
 
-    layer.confirm('确定要删除这个授权类型吗', {
+    layer.confirm('确定要删除这个授权功能类型吗', {
         btn: ['确认','取消'], //按钮
         shade: [0.1,'#fff'], //不显示遮罩
     }, function(index){
@@ -135,8 +131,6 @@ function callGetBaseTypeByssid(data){
         if (isNotEmpty(data)){
             var basetype = data.data;
             $("input[name='typename']").val(basetype.typename);
-            $("input[name='typecode']").val(basetype.typecode);
-            $("#sqtype").find("option[value='" + basetype.type + "']").attr("selected", true);
             $("input[name='ordernum']").val(basetype.ordernum);
 
             layui.use('form', function () {
@@ -201,24 +195,9 @@ function opneModal_1(ssid) {
 
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>类型名称</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>功能类型名称</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="typename" required  lay-verify="required" autocomplete="off" placeholder="请输入类型名称" class="layui-input" >\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>类型代码</label>\n' +
-        '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="typecode" required  lay-verify="required" autocomplete="off" placeholder="请输入类型代码" class="layui-input" >\n' +
-        '                </div>\n' +
-        '            </div>\n' +
-        '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>是否为单选框</label>\n' +
-        '                <div class="layui-input-block">\n' +
-        '                    <select name="sqtype" id="sqtype" lay-verify="required">\n' +
-        '                       <option value="0">复选框</option>\n' +
-        '                       <option value="1">单选框</option>\n' +
-        '                    </select>\n' +
+        '                    <input type="text" name="typename" required  lay-verify="required" autocomplete="off" placeholder="请输入功能类型名称" class="layui-input" >\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
@@ -238,9 +217,9 @@ function opneModal_1(ssid) {
 
         var index = layer.open({
             type: 1,
-            title: modelName + '授权类型',
+            title: modelName + '授权功能类型',
             content: html,
-            area: ['630px', '380px'],
+            area: ['630px', '250px'],
             btn: [modelName, '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
@@ -255,7 +234,7 @@ function opneModal_1(ssid) {
             yes: function (index, layero) {
                 //自定义验证规则
                 form.verify({
-                    typename: [/\S/, '请输入授权类型名称'], typecode: [/\S/, '请输入类型代码']
+                    typename: [/\S/, '请输入授权功能类型名称'], typecode: [/\S/, '请输入功能类型代码']
                 });
                 //监听提交
                 form.on('submit(fromContent)', function (data) {

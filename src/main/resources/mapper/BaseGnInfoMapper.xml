@@ -7,13 +7,13 @@
         <id column="id" property="id" />
         <result column="name" property="name" />
         <result column="title" property="title" />
-        <result column="btypessid" property="btypessid" />
+        <result column="bgntypessid" property="bgntypessid" />
         <result column="ssid" property="ssid" />
         <result column="string1" property="string1" />
         <result column="string2" property="string2" />
         <result column="integer1" property="integer1" />
         <result column="integer2" property="integer2" />
-        <association property="baseType" javaType="com.avst.authorize.common.entity.BaseType">
+        <association property="baseGnType" javaType="com.avst.authorize.common.entity.BaseGnType">
             <id column="bid" property="id" />
             <result column="typename" property="typename" />
             <result column="typecode" property="typecode" />
@@ -26,15 +26,16 @@
     <select id="getBaseGnInfoList" resultMap="BaseResultMap">
         SELECT
             g.*,
-            t.typename,
-            t.typecode,
-            t.type btype,
-            t.ordernum,
-            t.ssid bssid
+            nt.typename,
+            nt.typecode,
+            nt.type btype,
+            nt.ordernum,
+            nt.ssid bssid
         FROM
             base_gninfo g
-            LEFT JOIN base_type t ON g.btypessid = t.ssid
-        ${ew.sqlSegment}
+            LEFT JOIN base_gntype nt ON g.bgntypessid = nt.ssid
+        where 1=1
+            ${ew.sqlSegment}
     </select>
 
 

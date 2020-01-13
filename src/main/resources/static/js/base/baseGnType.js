@@ -1,10 +1,10 @@
 var loadIndex;
 
-function getBaseGnInfoList_init(currPage,pageSize) {
-    var url = getactionid_manage().getBaseGnInfoList;
-    var keyword=$("input[name='keyword']").val();
+function getBaseGnTypeList_init(currPage, pageSize) {
+    var url = getactionid_manage().getBaseGnTypeList;
+    var sq_typename=$("input[name='sq_typename']").val();
     var data={
-        title: keyword,
+        typename: sq_typename,
         currPage:currPage,
         pageSize:pageSize
     };
@@ -14,13 +14,13 @@ function getBaseGnInfoList_init(currPage,pageSize) {
         time:30000,
         shade: [0.1,"#fff"]
     });
-    ajaxSubmitByJson(url,data,callGetBaseGnInfoList);
+    ajaxSubmitByJson(url,data,callGetBaseGnTypeList);
 }
 
-function getBaseGnInfoList(keyword, currPage, pageSize) {
-    var url = getactionid_manage().getBaseGnInfoList;
+function getBaseGnTypeList(typename, currPage, pageSize) {
+    var url = getactionid_manage().getBaseGnTypeList;
     var data={
-        title: keyword,
+        typename: typename,
         currPage:currPage,
         pageSize:pageSize
     };
@@ -29,67 +29,69 @@ function getBaseGnInfoList(keyword, currPage, pageSize) {
         time:30000,
         shade: [0.1,"#fff"]
     });
-    ajaxSubmitByJson(url, data, callGetBaseGnInfoList);
+    ajaxSubmitByJson(url, data, callGetBaseGnTypeList);
 }
 
-//通过ssid获取授权类型
-function getBaseGnInfoByssid(ssid) {
-    var url = getactionid_manage().getBaseGnInfoByssid;
+//通过ssid获取授权功能类型
+function getBaseGnTypeByssid(ssid) {
+    var url = getactionid_manage().getBaseTypeGnByssid;
 
     var data={
         ssid: ssid
     };
 
-    ajaxSubmitByJson(url,data,callGetBaseGnInfoByssid);
+    ajaxSubmitByJson(url,data,callGetBaseGnTypeByssid);
 }
 
-//新增授权类型
-function addBaseGnInfo() {
-    var url = getactionid_manage().addBaseGnInfo;
-    var title=$("input[name='title']").val();
-    var name=$("input[name='name']").val();
+//新增授权功能类型
+function addBaseGnType() {
+    var url = getactionid_manage().addBaseGnType;
+    var typename=$("input[name='typename']").val();
+    var typecode=$("input[name='typecode']").val();
     var type=$("input[name='type']").prop("checked")==true?1:0;
-    var btypessid = $("#sqtypename").val();
+    var ordernum=$("input[name='ordernum']").val();
 
     var data={
-        title: title,
-        name: name,
+        typename: typename,
+        typecode: typecode,
         type: parseInt(type),
-        btypessid: btypessid
+        ordernum: ordernum
     };
 
-    ajaxSubmitByJson(url,data,callGetBaseGnInfo);
+    ajaxSubmitByJson(url,data,callGetBaseGnType);
 }
 
-//修改授权类型
-function updateBaseGnInfo(ssid) {
-    var url = getactionid_manage().updateBaseGnInfo;
-    var title=$("input[name='title']").val();
-    var name=$("input[name='name']").val();
-    var btypessid = $("#sqtypename").val();
+//修改授权功能类型
+function updateBaseGnType(ssid) {
+    var url = getactionid_manage().updateBaseGnType;
+    var typename=$("input[name='typename']").val();
+    var typecode=$("input[name='typecode']").val();
+    var type=$("#sqtype").val();
+    var ordernum=$("input[name='ordernum']").val();
 
     var data={
-        title: title,
-        name: name,
-        btypessid: btypessid,
+        typename: typename,
+        typecode: typecode,
+        type: parseInt(type),
+        ordernum: ordernum,
         ssid: ssid
     };
 
-    ajaxSubmitByJson(url,data,callGetBaseGnInfo);
+    ajaxSubmitByJson(url,data,callGetBaseGnType);
 }
 
-//删除一条授权类型
-function deleteBaseGnInfoByssid(ssid) {
+//删除一条授权功能类型
+function deleteBaseGnTypeByssid(ssid) {
     if (!isNotEmpty(ssid)){
         layer.msg("ssid不为空，系统异常",{icon: 5});
         return;
     }
 
-    layer.confirm('确定要删除这个授权类型吗', {
+    layer.confirm('确定要删除这个授权功能类型吗', {
         btn: ['确认','取消'], //按钮
         shade: [0.1,'#fff'], //不显示遮罩
     }, function(index){
-        var url = getactionid_manage().deleteBaseGnInfoByssid;
+        var url = getactionid_manage().deleteBaseGnTypeByssid;
         var data={
             ssid:ssid
         };
@@ -100,7 +102,7 @@ function deleteBaseGnInfoByssid(ssid) {
             shade: [0.1,"#fff"]
         });
 
-        ajaxSubmitByJson(url,data,callGetBaseGnInfo);
+        ajaxSubmitByJson(url,data,callGetBaseGnType);
 
         layer.close(index);
     }, function(index){
@@ -108,41 +110,8 @@ function deleteBaseGnInfoByssid(ssid) {
     });
 }
 
-//获取授权类型
-function getBaseType() {
-    var url = getactionid_manage().getBaseGnTypeList;
-    var data={};
-    ajaxSubmitByJson(url,data,callGetBaseType);
-}
 
-function callGetBaseType(data){
-    if(null!=data&&data.actioncode=='SUCCESS'){
-        if (isNotEmpty(data.data)){
-
-            var list = data.data.pagelist;
-            if (isNotEmpty(list)) {
-
-                var typeHTML = "";
-
-                for (var i = 0; i < list.length; i++) {
-                    var sqtype = list[i];
-                    typeHTML += '<option value="' + sqtype.ssid + '">' + sqtype.typename + '</option>';
-                }
-
-                $("#sqtypename").html(typeHTML);
-
-                layui.use('form', function () {
-                    var form = layui.form;
-                    form.render();
-                });
-            }
-        }
-    }else{
-        layer.msg(data.message,{icon: 5});
-    }
-}
-
-function callGetBaseGnInfoList(data){
+function callGetBaseGnTypeList(data){
     layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
@@ -161,21 +130,26 @@ function callGetBaseGnInfoList(data){
     }
 }
 
-function callGetBaseGnInfoByssid(data){
+function callGetBaseGnTypeByssid(data){
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
             var basetype = data.data;
-            $("input[name='title']").val(basetype.title);
-            $("input[name='name']").val(basetype.name);
-            $("#sqtypename").find("option[value='" + basetype.btypessid + "']").attr("selected", true);
+            $("input[name='typename']").val(basetype.typename);
+            $("input[name='typecode']").val(basetype.typecode);
+            $("#sqtype").find("option[value='" + basetype.type + "']").attr("selected", true);
+            $("input[name='ordernum']").val(basetype.ordernum);
 
+            layui.use('form', function () {
+                var form = layui.form;
+                form.render();
+            });
         }
     }else{
         layer.msg(data.message,{icon: 5});
     }
 }
 
-function callGetBaseGnInfo(data){
+function callGetBaseGnType(data){
     if(null!=data&&data.actioncode=='SUCCESS'){
         layer.msg(data.message,{icon: 6});
         setTimeout("window.location.reload()",1500);
@@ -187,18 +161,18 @@ function callGetBaseGnInfo(data){
 /**
  * 局部刷新
  */
-function getBaseGnInfoListParam() {
+function getBaseGnTypeListParam() {
 
     var len = arguments.length;
 
     if (len == 0) {
         var currPage = 1;
         var pageSize = 10;//测试
-        getBaseGnInfoList_init(currPage, pageSize);
+        getBaseGnTypeList_init(currPage, pageSize);
     }  else if (len == 2) {
-        getBaseGnInfoList('', arguments[0], arguments[1]);
+        getBaseGnTypeList('', arguments[0], arguments[1]);
     } else if (len > 2) {
-        getBaseGnInfoList(arguments[0], arguments[1], arguments[2]);
+        getBaseGnTypeList(arguments[0], arguments[1], arguments[2]);
     }
 }
 
@@ -212,7 +186,7 @@ function showpagetohtml(){
         var typename=$("input[name='sq_typename']").val();
         var arrparam=new Array();
         arrparam[0]=typename;
-        showpage("paging",arrparam,'getBaseGnInfoListParam',currPage,pageCount,pageSize);
+        showpage("paging",arrparam,'getBaseTypeListParam',currPage,pageCount,pageSize);
     }
 }
 
@@ -222,31 +196,38 @@ function showpagetohtml(){
 function opneModal_1(ssid) {
 
 
+    var modelName = "添加";
+
+
     var html = '<form class="layui-form site-inline" style="margin-top: 20px;padding-right: 35px;">\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>功能标题</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>功能类型名称</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="title" required  lay-verify="required" autocomplete="off" placeholder="请输入功能标题" class="layui-input" >\n' +
+        '                    <input type="text" name="typename" required  lay-verify="required" autocomplete="off" placeholder="请输入功能类型名称" class="layui-input" >\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>授权代号</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>功能类型代码</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <input type="text" name="name" required  lay-verify="required" autocomplete="off" placeholder="请输入授权代号" class="layui-input" >\n' +
+        '                    <input type="text" name="typecode" required  lay-verify="required" autocomplete="off" placeholder="请输入功能类型代码" class="layui-input" >\n' +
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
-        '                <label class="layui-form-label"><span style="color: red;">*</span>授权类型</label>\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>是否为单选框</label>\n' +
         '                <div class="layui-input-block">\n' +
-        '                    <select name="typename" id="sqtypename" lay-verify="required">\n' +
-        '                       <option value="0">选择类型</option>\n' +
+        '                    <select name="sqtype" id="sqtype" lay-verify="required">\n' +
+        '                       <option value="0">复选框</option>\n' +
+        '                       <option value="1">单选框</option>\n' +
         '                    </select>\n' +
         '                </div>\n' +
         '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label">排序</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="number" name="ordernum" lay-verify="" required  autocomplete="off" placeholder="请输入排序" class="layui-input" value="0" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
+        '                </div>\n' +
+        '            </div>\n' +
         '        </form>';
-
-
-    var modelName = "添加";
     if (isNotEmpty(ssid)) {
         modelName = "修改";
     }
@@ -257,19 +238,16 @@ function opneModal_1(ssid) {
 
         var index = layer.open({
             type: 1,
-            title: modelName + '授权类型',
+            title: modelName + '授权功能类型',
             content: html,
-            area: ['630px', '350px'],
+            area: ['630px', '380px'],
             btn: [modelName, '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
                 layero.find('.layui-layer-btn0').attr('lay-filter', 'fromContent').attr('lay-submit', '').css("border-color","#4A77D4").css("background-color","#4A77D4");//将按钮弄成能提交的
 
-                getBaseType();
                 if(isNotEmpty(ssid)){
-                    setTimeout(function () {
-                        getBaseGnInfoByssid(ssid);
-                    },300);
+                    getBaseGnTypeByssid(ssid);
                 }
 
                 form.render();
@@ -277,16 +255,16 @@ function opneModal_1(ssid) {
             yes: function (index, layero) {
                 //自定义验证规则
                 form.verify({
-                    typename: [/\S/, '请输入授权功能名称'], typecode: [/\S/, '请输入功能代码']
+                    typename: [/\S/, '请输入授权功能类型名称'], typecode: [/\S/, '请输入功能类型代码']
                 });
                 //监听提交
                 form.on('submit(fromContent)', function (data) {
 
                     //提交
                     if(isNotEmpty(ssid)){
-                        updateBaseGnInfo(ssid);
+                        updateBaseGnType(ssid);
                     }else{
-                        addBaseGnInfo();
+                        addBaseGnType();
                     }
                 });
 

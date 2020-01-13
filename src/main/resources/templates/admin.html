@@ -79,6 +79,10 @@
         #sqinifo_tableId tr td a{
             color: red;
         }
+        .msg{
+            float: left;
+            padding-right: 30px;
+        }
     </style>
 </head>
 <body style="background: url('/img/body.png');">
@@ -94,7 +98,7 @@
 
             <form class="layui-form" >
 
-                <div class="layui-form-item">
+                <div class="layui-form-item" style="margin-bottom: 10px;">
                     <label class="layui-form-label" style="padding-left: 0;">申请人名称：</label>
                     <div class="layui-input-inline">
                         <input type="text" name="sq_username" id="sq_username" lay-verify="required" placeholder="请输入申请人名称" autocomplete="off" class="layui-input">
@@ -104,12 +108,33 @@
                     <div class="layui-input-inline">
                         <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
                     </div>
+
+                    <label class="layui-form-label" style="padding-left: 0;">授权类型：</label>
+                    <div class="layui-input-inline">
+                        <select id="sqtypessid" name="sqtypessid" lay-filter="sqtypessid" lay-verify="">
+                            <option value="">全部类型</option>
+                            <option value="010">北京</option>
+                            <option value="021">上海</option>
+                            <option value="0571">杭州</option>
+                        </select>
+                    </div>
+
                     <input type="button" id="chaxun" class="layui-btn layui-btn-normal" value="查询" onclick="getAuthorizeList_init(1,10);" >
 
                 </div>
 
 
             </form>
+
+            <div style="margin-bottom: 10px;overflow:hidden;">
+                <p class="msg">
+                    当前返回的结果：<span style="color: red;font-weight: bold;" id="resultSize">0</span> 条
+                </p>
+<!--                <p class="msg">-->
+<!--                    当前有：<span style="color: red;font-weight: bold;" id="dqsqSize">0</span> 个授权即将到期-->
+<!--                </p>-->
+            </div>
+
 
             <div id="wushuju" style="display: none;font-size: 24px;color: #90a2bc;text-align: center;margin-top: 30px;">暂无授权记录...</div>
             <div th:replace="page :: page">...</div>
@@ -137,6 +162,7 @@
             <col width="300">
             <col width="100">
             <col width="90">
+            <col width="90">
             <col width="170">
             <col width="100">
             <col width="150"><!---->
@@ -151,6 +177,7 @@
             <th>申请权限功能</th>
             <th>申请台数</th>
             <th>授权总天数</th>
+            <th>授权类型</th>
             <th>授权时间</th>
             <th>状态</th>
             <th>操作</th>
@@ -173,6 +200,7 @@
             </td>
             <td>{{value.sqsize==null?"":value.sqsize}}</td>
             <td>{{value.foreverBool==null?"":value.foreverBool==true?'<span class="layui-badge layui-bg-cyan">永久</span>':'<span class="layui-badge ">'+value.sqDay==null?"":value.sqDay+'</span>'}}</td>
+            <td>{{value.sqtypename==null?"":'<span class="layui-badge layui-bg-blue">'+value.sqtypename+'</span>'}}</td>
             <td>{{value.startTime==null?"":value.startTime}}</td>
             <td>{{value.state == 1?"正常":""}}</td>
             <td>
@@ -208,6 +236,7 @@
             getAuthorizeList_init(1,10);
         });
 
+        getBaseType();
         setTimeout("$(\"#chaxun\").click();",300);
 
     });
@@ -223,6 +252,9 @@
             }else{
                 $("input[name='sqDay']").removeAttr("disabled").css("background", "").attr("lay-verify", "required|number");
             }
+        });
+        form.on('select(sqtypessid)', function(data){
+            $("#chaxun").click();
         });
 
         form.render();

@@ -2,17 +2,11 @@ package com.avst.authorize.web.service;
 
 import com.avst.authorize.common.cache.BaseGnInfoCache;
 import com.avst.authorize.common.cache.SqCache;
-import com.avst.authorize.common.entity.BaseGninfo;
-import com.avst.authorize.common.entity.BaseType;
-import com.avst.authorize.common.entity.SQCode;
-import com.avst.authorize.common.entity.SQEntityPlus;
+import com.avst.authorize.common.entity.*;
 import com.avst.authorize.common.utils.*;
 import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.common.utils.sq.CreateSQ;
-import com.avst.authorize.web.mapper.BaseGnInfoMapper;
-import com.avst.authorize.web.mapper.BaseTypeMapper;
-import com.avst.authorize.web.mapper.SQCodeMapper;
-import com.avst.authorize.web.mapper.SQEntityMapper;
+import com.avst.authorize.web.mapper.*;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.vo.GetAuthorizeListVO;
@@ -29,19 +23,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 public class AuthorizeService {
 
     @Autowired
-    private BaseTypeMapper baseTypeMapper;
+    private BaseGnTypeMapper baseGnTypeMapper;
 
     @Autowired
     private BaseGnInfoMapper baseGnInfoMapper;
@@ -51,6 +45,9 @@ public class AuthorizeService {
 
     @Autowired
     private SQEntityMapper sqEntityMapper;
+
+    @Autowired
+    private BaseTypeMapper baseTypeMapper;
 
     public void uploadBytxt(RResult result, MultipartFile file) {
 
@@ -103,28 +100,31 @@ public class AuthorizeService {
 
     }
 
-    @Cacheable(cacheNames = "emp", key = "#param.clientName+'-'+#param.username+'-'+#param.currPage+'-'+#param.pageSize")
+    @Cacheable(cacheNames = "emp", key = "#param.clientName+'-'+#param.username+'-'+#param.batypessid+'-'+#param.currPage+'-'+#param.pageSize")
     public RResult getAuthorizeList(RResult result, GetAuthorizeListParam param) {
 
         GetAuthorizeListVO authorizeListVO = new GetAuthorizeListVO();
 
         EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
         if(StringUtils.isNotEmpty(param.getUsername())){
-            ew.like("username", param.getUsername());
+            ew.like("s.username", param.getUsername());
         }
         if(StringUtils.isNotEmpty(param.getClientName())){
-            ew.like("clientname", param.getClientName());
+            ew.like("s.clientname", param.getClientName());
+        }
+        if (StringUtils.isNotEmpty(param.getBatypessid()) && !"0".equals(param.getBatypessid())) {
+            ew.eq("s.batypessid", param.getBatypessid());
         }
 
-        ew.eq("state", 1);//1是正常状态0是已删除的
+        ew.eq("s.state", 1);//1是正常状态0是已删除的
 
-        ew.orderBy("startTime", false);
+        ew.orderBy("s.startTime", false);
 
-        Integer count = sqEntityMapper.selectCount(ew);
+        Integer count = sqEntityMapper.getSQCount(ew);
         param.setRecordCount(count);
 
         com.baomidou.mybatisplus.plugins.Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageSize());
-        List<SQEntityPlus> sqCacheList = sqEntityMapper.selectPage(page, ew);
+        List<SQEntityPlus> sqCacheList = sqEntityMapper.getSQList(page, ew);
 
         for (SQEntityPlus sqEntity : sqCacheList) {
             String gn = sqEntity.getGnlist();
@@ -140,6 +140,7 @@ public class AuthorizeService {
         return result;
     }
 
+    @Transactional
     @CacheEvict(cacheNames = "emp", allEntries = true)
     public void addAuthorize(RResult result, GetAuthorizeParam param) {
 
@@ -180,6 +181,7 @@ public class AuthorizeService {
         sqEntity.setSqsize(param.getSqsize());
         sqEntity.setCompanyname(param.getCompanyname());
         sqEntity.setCompanymsg(param.getCompanymsg());
+        sqEntity.setBatypessid(param.getBatypessid());
 
         sqEntity.setGnlist(param.getGnlist()); //通过集合转成字符串，以|的方式分割
         sqEntity.setStartTime(DateUtil.getDateAndMinute());
@@ -245,7 +247,7 @@ public class AuthorizeService {
     }
 
     public void getBaseType(RResult result) {
-        List<BaseType> list = baseTypeMapper.getBaseType();
+        List<BaseGnType> list = baseGnTypeMapper.getBaseNgType();
         result.changeToTrue(list);
     }
 

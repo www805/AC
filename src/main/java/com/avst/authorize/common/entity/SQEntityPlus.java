@@ -22,6 +22,9 @@ public class SQEntityPlus extends SQEntity implements Serializable {
     private String companyname; //公司名称
     private String companymsg; //公司简介
     private String ssid; //唯一ID
+    private String batypessid; //授权码ssid
+    @TableField(exist = false)
+    private String sqtypename; //授权类型
 
     private Integer state = 1; //状态
 
@@ -35,6 +38,14 @@ public class SQEntityPlus extends SQEntity implements Serializable {
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
+    }
+
+    public String getBatypessid() {
+        return batypessid;
+    }
+
+    public void setBatypessid(String batypessid) {
+        this.batypessid = batypessid;
     }
 
     public Integer getId() {
@@ -61,6 +72,13 @@ public class SQEntityPlus extends SQEntity implements Serializable {
         this.ssid = ssid;
     }
 
+    public String getSqtypename() {
+        return sqtypename;
+    }
+
+    public void setSqtypename(String sqtypename) {
+        this.sqtypename = sqtypename;
+    }
 
     public String getUsername() {
         return username;
