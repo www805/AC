@@ -251,6 +251,7 @@ function formSubmit() {
     var username=$("input[name='username']").val();
     var companyname=$("input[name='companyname']").val();
     var clientName=$("input[name='clientName']").val();
+    var batypessid=$("#batypessid").find("option:selected").text();
     var unitCode=$("input[name='unitCode']").val();
     var sqNum=$("input[name='sqNum']").val();
     var sqDay=$("input[name='sqDay']").val();
@@ -300,6 +301,7 @@ function formSubmit() {
         companyname:companyname,
         clientName:clientName,
         unitCode:unitCode,
+        batypessid:batypessid,
         sqNum:sqNum,
         sqDay:sqDay,
         sqgnlist:sqgnlist,
@@ -312,6 +314,7 @@ function formSubmit() {
         companyname:"授权公司名称：",
         clientName:"单位名称：",
         unitCode:"单位代码：",
+        batypessid:"授权类型：",
         sqNum:"授权台数：",
         sqDay:"授权总天数：",
         sqgnlist:"客户端的功能列表：",
@@ -326,7 +329,7 @@ function formSubmit() {
         formHTML += '<tr>\n' +
             '        <td class="td_right">' + dataName[key] + '</td>\n' +
             '        <td>' + data[key] + '</td>\n' +
-            '    </tr>';
+            '    </tr>';    
 
         sqinfodata += dataName[key] + data[key] + "\n";
     }
