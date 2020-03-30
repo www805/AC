@@ -756,8 +756,12 @@ function opneModal_1() {
                         }
                     });
 
-                    //提交
-                    addAuthorize();
+                    if((gnlist.split('im')).length-1 > 1){
+                        layer.msg("即时通讯功能只能选择一个",{icon: 5})
+                    }else{
+                        //提交
+                        addAuthorize();
+                    }
                 });
 
             },

@@ -298,7 +298,7 @@ public class AuthorizeService {
             //获取系统上一级目录
 //            String savePath = OpenUtil.getXMSoursePath();
             //授权文件名称
-            String trmFileName = PropertiesListenerConfig.getProperty("sq.javatrm");;
+            String trmFileName = PropertiesListenerConfig.getProperty("sq.javatrm");
 
 //            String savePath = "/home/download/";
             // 获取文件名称，中文可能被URL编码

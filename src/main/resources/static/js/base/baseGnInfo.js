@@ -167,8 +167,12 @@ function callGetBaseGnInfoByssid(data){
             var basetype = data.data;
             $("input[name='title']").val(basetype.title);
             $("input[name='name']").val(basetype.name);
-            $("#sqtypename").find("option[value='" + basetype.btypessid + "']").attr("selected", true);
+            $("#sqtypename").find("option[value='" + basetype.bgntypessid + "']").attr("selected", true);
 
+            layui.use('form', function () {
+                var form = layui.form;
+                form.render();
+            });
         }
     }else{
         layer.msg(data.message,{icon: 5});

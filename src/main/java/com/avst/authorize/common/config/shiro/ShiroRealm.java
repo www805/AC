@@ -71,6 +71,8 @@ public class ShiroRealm extends AuthorizingRealm {
 //            }
 //        }
 
+
+
         //添加资源的授权字符串
         simpleAuthorizationInfo.addStringPermission("user:getUser");
 
