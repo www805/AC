@@ -296,6 +296,12 @@ function formSubmit() {
 
     sqgnlist = ng_list_str + qt_list_str;
 
+
+    if((sqgnlist.split('即时')).length-1 > 1){
+        layer.msg("即时通讯功能只能选择一个",{icon: 5})
+        return;
+    }
+
     var data={
         username: username,
         companyname:companyname,
