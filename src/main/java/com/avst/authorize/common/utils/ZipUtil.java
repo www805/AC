@@ -4,6 +4,7 @@ import com.github.junrar.Archive;
 import com.github.junrar.rarfile.FileHeader;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import sun.nio.cs.ext.GBK;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -27,13 +28,112 @@ public class ZipUtil {
 //        File file = new File("D:\\java\\AC\\sq\\tempdonwload\\sq1.rar");
 
 
-
         try {
-            unrar("D:\\java\\AC\\sq\\tempdonwload\\donwload.rar", "D:\\java\\AC\\sq\\tempdonwload\\");
+//            unrar("D:\\java\\AC\\sq\\tempdonwload\\donwload.rar", "D:\\java\\AC\\sq\\tempdonwload\\");
+
+
+            String entry = "D:\\java\\AC\\sq\\shouquan\\";//需要压缩的文件目录
+//            File file = new File(entry);
+//
+//            ZipOutputStream zipOutput = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath() + ".zip")));
+//
+//            String base = file.getName();
+//
+//            compressZip(zipOutput, file, base);
+//            zipOutput.closeEntry();
+//            zipOutput.close();
+
+            compressAllFileZip(entry,"D:\\java\\AC\\sq\\tempshouquan\\123","可以吗？？？骚灵情歌");
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+
+    /**
+     * 包括
+     * @param basePath 需要压缩的文件目录
+     * @param zipName 压缩后存放的路径
+     * @param comment 压缩注释
+     */
+    public static void compressAllFileZip(String basePath, String zipName, String comment){
+
+        File file = new File(basePath);//需要压缩的文件目录
+        File zipFile = new File(zipName);//"e:" + File.separator + "zipFile.zip"
+        if (!file.exists()){
+            LogUtil.intoLog(4, ZipUtil.class, "压缩文件夹不存在。。。。。。");
+            return;
+        }
+        if (!zipFile.exists()){ //如果不存在就创建文件夹，结束后删除该文件
+            zipFile.mkdir();
+        }
+
+        ZipOutputStream zipOutput = null;
+        try {
+            zipOutput = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile.getAbsolutePath() + ".zip")));
+            zipOutput.setComment(comment);
+
+            String base = file.getName();
+
+            compressZip(zipOutput, file, base);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != zipOutput) {
+                try {
+                    zipOutput.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            zipFile.delete();
+        }
+
+    }
+
+
+    /**
+     * 因为子文件夹中可能还有文件夹，所以进行递归
+     *
+     */
+    private static void compressZip(ZipOutputStream zipOutput, File file, String base) throws IOException {
+
+        if(file.isDirectory()){
+            File[] listFiles = file.listFiles();// 列出所有的文件
+
+            for(File fi : listFiles){
+                if(fi.isDirectory()){
+                    compressZip(zipOutput, fi, base + "/" + fi.getName());
+                }else{
+                    zzip(zipOutput, fi, base);
+                }
+            }
+        }else{
+            zzip(zipOutput, file, base);
+        }
+    }
+
+
+    /**
+     * 压缩的具体操作
+     *
+     */
+    private static void zzip(ZipOutputStream zipOutput, File file, String base) throws IOException, FileNotFoundException {
+        ZipEntry zEntry = new ZipEntry(base + File.separator + file.getName());
+        zipOutput.putNextEntry(zEntry);
+
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+
+        byte[] buffer = new byte[1024];
+        int read = 0;
+        while((read =bis.read(buffer)) != -1){
+            zipOutput.write(buffer, 0, read);
+        }
+        bis.close();
     }
 
     /**
@@ -47,7 +147,7 @@ public class ZipUtil {
 
         File file = new File(folder);//"e:" + File.separator + "xiao"
         File zipFile = new File(zipName);//"e:" + File.separator + "zipFile.zip"
-        if (!file.exists()){
+            if (!file.exists()){
             LogUtil.intoLog(4, ZipUtil.class, "压缩文件夹不存在。。。。。。");
             return;
         }

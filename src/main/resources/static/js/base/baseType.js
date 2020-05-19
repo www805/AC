@@ -111,6 +111,7 @@ function callGetBaseTypeList(data){
     layer.close(loadIndex);//关闭load特效
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
+            $("#resultSize").html(data.data.pageparam.recordCount);
             pageshow(data);
             var listcountsize = data.data.pagelist;
             if (listcountsize == null || listcountsize.length == 0) {

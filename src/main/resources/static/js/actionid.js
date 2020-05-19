@@ -38,6 +38,7 @@ function getactionid_manage() {
         getPrivilege:"/ac/getPrivilege",
         downloadSQFile:"/ac/downloadSQFile",
         downloadAllSQFile:"/ac/downloadAllSQFile",
+        updateAuthorizeTime:"/ac/updateAuthorizeTime",
 
         getAuthorizeList:"/ac/getAuthorizeList",
 

@@ -17,6 +17,8 @@ public class SQCode extends Model<SQCode>{
     private String sqcode;//授权码
     private String realpath;//真实文件存放地址
     private String sqentityssid;//关联授权信息ssid
+    private String startTime;//授权开始时间
+    private Integer sqDay;
     private String ssid;
     private String string1;
     private String string2;
@@ -29,6 +31,14 @@ public class SQCode extends Model<SQCode>{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSqcode() {
@@ -47,20 +57,28 @@ public class SQCode extends Model<SQCode>{
         this.realpath = realpath;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getSqentityssid() {
         return sqentityssid;
     }
 
     public void setSqentityssid(String sqentityssid) {
         this.sqentityssid = sqentityssid;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public Integer getSqDay() {
+        return sqDay;
+    }
+
+    public void setSqDay(Integer sqDay) {
+        this.sqDay = sqDay;
     }
 
     public String getSsid() {

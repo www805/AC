@@ -104,6 +104,11 @@
                         <input type="text" name="sq_username" id="sq_username" lay-verify="required" placeholder="请输入申请人名称" autocomplete="off" class="layui-input">
                     </div>
 
+                    <label class="layui-form-label" style="padding-left: 0;">授权申请码：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="sqcode" id="sqcode" lay-verify="required" placeholder="请输入授权申请码" autocomplete="off" class="layui-input">
+                    </div>
+
                     <label class="layui-form-label" style="padding-left: 0;">单位名称：</label>
                     <div class="layui-input-inline">
                         <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
@@ -232,7 +237,7 @@
         //     }
         // };
 
-        $('#keyword,#sq_username').on('input propertychange', function() {
+        $('#keyword,#sq_username,#sqcode').on('input propertychange', function() {
             getAuthorizeList_init(1,10);
         });
 

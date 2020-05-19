@@ -7,6 +7,7 @@ import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.wb.deencode.DeCodeUtil;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 /**
  * 客户端服务器有的类
@@ -335,8 +336,14 @@ public class AnalysisSQ {
 
     public static void main(String[] args) {
 
-        SQEntity sqEntity=AnalysisSQ.getSQEntity("4e90a81a033898689a09e644ee48dbe75f542f3feae58b591e86245c06319a1b1ca4a33c3e2614760bafb96952505a501baaaff482216ec6a88310ff9dca990eac7dc6c5c29900af670e756b2b1c9bc1d608c9aafe330d83207a512c0069527a5749311f593f3f6faa2e38e53255b0059cf94b2e725e2c4de07c086a551967088afe11efca2305d422759eddc9f8fec2");
-        LogUtil.intoLog(AnalysisSQ.class,sqEntity.getStartTime());
+//        SQEntity sqEntity=AnalysisSQ.getSQEntity("4e90a81a033898689a09e644ee48dbe75f542f3feae58b591e86245c06319a1b1ca4a33c3e2614760bafb96952505a501baaaff482216ec6a88310ff9dca990eac7dc6c5c29900af670e756b2b1c9bc1d608c9aafe330d83207a512c0069527a5749311f593f3f6faa2e38e53255b0059cf94b2e725e2c4de07c086a551967088afe11efca2305d422759eddc9f8fec2");
+//        LogUtil.intoLog(AnalysisSQ.class,sqEntity.getStartTime());
+
+        String trmjava = "4e90a81a0338986800a374f27a5cff492a68da988df1602121b7f82722f205d4041894a69f987bd2b8be0c84004e185fbcf82dd3236f857ec5791ff4ad0a2e6b2fa8bc375012e1debee9deb2f9ef78b1893c38d7e9615e28e79530e7d7a8c665b7f0eafb29ba5ab3a8ef97f77cabb07ee8e59b662a76b45b56d47678570af1917379a877be4576f888cac854464c3f8a";
+
+        String[] sqcodearr= DeCodeUtil.decoderByDES(trmjava).split(";");
+
+        System.out.println(Arrays.toString(sqcodearr));
 
     }
 

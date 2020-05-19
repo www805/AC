@@ -31,6 +31,8 @@
             <result column="csqcode" property="sqcode"/>
             <result column="crealpath" property="realpath"/>
             <result column="csqentityssid" property="sqentityssid"/>
+            <result column="cstartTime" property="startTime"/>
+            <result column="csqDay" property="sqDay"/>
             <result column="cssid" property="ssid"/>
             <result column="cstring1" property="string1"/>
             <result column="cstring2" property="string2"/>
@@ -48,6 +50,8 @@
             c.sqcode csqcode,
             c.realpath crealpath,
             c.sqentityssid csqentityssid,
+            c.startTime cstartTime,
+            c.sqDay csqDay,
             c.ssid cssid,
             c.string1 cstring1,
             c.string2 cstring2,
@@ -68,10 +72,11 @@
 
     <select id="getSQCount" resultType="integer">
         SELECT
-            count(s.id)
+            count(distinct s.id)
         FROM
             ac_sqentityplus s
         LEFT JOIN base_type t ON t.ssid = s.batypessid
+        LEFT JOIN ac_sqcode a ON a.sqentityssid = s.ssid
         where 1=1
             ${ew.sqlSegment}
     </select>
@@ -84,6 +89,7 @@
         FROM
             ac_sqentityplus s
         LEFT JOIN base_type t ON t.ssid = s.batypessid
+        LEFT JOIN ac_sqcode a ON a.sqentityssid = s.ssid
         where 1=1
             ${ew.sqlSegment}
     </select>

@@ -9,11 +9,13 @@ var sqEntityInfo = "";
 function getAuthorizeList_init(currPage,pageSize) {
     var url = getactionid_manage().getAuthorizeList;
     var sq_username=$("input[name='sq_username']").val();
+    var sqcode=$("input[name='sqcode']").val();
     var keyword=$("input[name='keyword']").val();
     var sqtypessid=$("#sqtypessid").val();
     var data={
         username: sq_username,
         clientName: keyword,
+        sqcode: sqcode,
         batypessid: sqtypessid,
         currPage:currPage,
         pageSize:pageSize
@@ -171,6 +173,26 @@ function addAuthorize() {
     // ajaxSubmitByJson(url, data, callAddOrDelete());
 }
 
+//续期授权
+function updateAuthorizeTime() {
+
+    var url = getactionid_manage().updateAuthorizeTime;
+    var xqCpuCode = $("#xq_cpuCode").val().trim();
+    var xqSqDay = $("#xq_sqDay").val().trim();
+
+    loadIndex = layer.msg("续期中，请稍后...", {
+        icon: 16,
+        time: 30000,
+        shade: [0.1, "#fff"]
+    });
+
+    var data={
+        xqCpuCode: xqCpuCode,
+        xqSqDay: xqSqDay
+    };
+    ajaxSubmitByJson(url, data, callUpdateAuthorizeTime);
+}
+
 //删除一条授权记录
 function deleteAuthorizeBySsid(ssid) {
     if (!isNotEmpty(ssid)){
@@ -209,7 +231,7 @@ function downloadFileByPath(clientName, startTime) {
     var url = getactionid_manage().downloadSQFile;
     var path = clientName + startTime;
 
-    loadIndex = layer.msg("加载中，请稍后...", {
+    loadIndex = layer.msg("下载中，请稍后...", {
         icon: 16,
         time: 30000,
         shade: [0.1, "#fff"]
@@ -217,7 +239,8 @@ function downloadFileByPath(clientName, startTime) {
 
     window.location.href = url + "/" + path;
 
-    layer.close(loadIndex);
+    setTimeout("layer.close(loadIndex);",4000);
+
 }
 
 //批量打包下载授权文件
@@ -419,13 +442,14 @@ function callGetFindByssid(data){
                     //输出授权码
                     sqCodeListHTML += '<tr>\n' +
                         '        <td>' + sqCode.name + '</td>\n' +
-                        '        <td title="' + sqCode.sqcode + '">' + sqCode.sqcode.substring(0, 53) + '</td>\n' +
+                        '        <td width="420" title="' + sqCode.sqcode + '">' + sqCode.sqcode.substring(0, 53) + '</td>\n' +
+                        '        <td width="30">' + (sqCode.sqDay==null?'':sqCode.sqDay) + '</td>\n' +
                         '        <td><a href="' + url + '/' + sqCode.ssid + '">下载授权文件</a></td>\n' +
                         '</tr>';
                 }
 
                 sqCodeListHTML += '<tr>\n' +
-                    '                    <td colspan="3"><button class="layui-btn layui-btn-normal" onclick="downloadAllSQFile(\'' + sqEntityInfo.ssid + '\');" style="float: right;margin-top: 5px;">打包下载</button></td>\n' +
+                    '                    <td colspan="4"><button class="layui-btn layui-btn-normal" onclick="downloadAllSQFile(\'' + sqEntityInfo.ssid + '\');" style="float: right;margin-top: 5px;">批量打包下载</button></td>\n' +
                     '                </tr>\n';
 
             }
@@ -437,11 +461,36 @@ function callGetFindByssid(data){
     }
 }
 
+function callUpdateAuthorizeTime(data){
+    layer.close(loadIndex);
+    if(null!=data&&data.actioncode=='SUCCESS'){
+        if (isNotEmpty(data)){
+            // layer.msg(data.message,{icon: 6});
+            // setTimeout("window.location.reload()",1500);
+
+            layer.confirm('续期成功！是否立即下载该授权文件？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+
+                downloadFileByPath(data.data, "");
+
+                setTimeout("window.location.reload();",6000);
+            }, function(){
+                layer.closeAll();
+                window.location.reload();
+            });
+
+        }
+    }else{
+        layer.msg(data.message,{icon: 5});
+    }
+}
+
 function callAddOrDelete(data){
     layer.close(loadIndex);
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data)){
-            layer.msg("操作成功",{icon: 6});
+            layer.msg(data.message,{icon: 6});
             setTimeout("window.location.reload()",1500);
         }
     }else{
@@ -525,6 +574,7 @@ function callGetPrivilege(data){
         layer.msg(data.message,{icon: 5});
     }
 }
+
 
 function callGetBaseType(data){
     if(null!=data&&data.actioncode=='SUCCESS'){
@@ -781,6 +831,101 @@ function opneModal_1() {
 
 }
 
+function xuqiModal_1() {
+
+    var html = '<form class="layui-form site-inline" style="margin-top: 0px;padding-right: 35px;">\n' +
+        '            <div id="guanli" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="margin-left: 20px;margin-bottom:5px;">\n' +
+        '                <ul class="layui-tab-title">\n' +
+        '                    <li class="layui-this"><span style="color: red;">*</span>授权码授权</li>\n' +
+        '                    <li>上传授权文件</li>\n' +
+        '                </ul>\n' +
+        '                <div class="layui-tab-content" style="padding-top: 15px;">\n' +
+        '                    <div class="layui-tab-item layui-show" >\n' +
+        '                        <div class="layui-form-item" id="sqcodelists" style="margin: 23px 0px;">\n' +
+        '                            <label class="layui-form-label"><span style="color: red;">*</span>授权号码</label>\n' +
+        '                            <div class="layui-input-block">\n' +
+        '                                <input type="text" name="xq_cpuCode" lay-verify="required" required id="xq_cpuCode" placeholder="请输入授权号码" class="layui-input"></input>\n' +
+        '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="layui-tab-item">\n' +
+        '                        <input type="hidden" id="updateCpuCode" name="updateCpuCode" value=""/>\n' +
+        '                        <div class="layui-upload-drag" id="test10" style="width: 510px;height: 70px;padding-top: 20px;">\n' +
+        '                            <i class="layui-icon"></i>\n' +
+        '                            <p>点击上传，或将文件拖拽到此处(可上传SQ.txt 或 trmjava.ini文件)</p>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label" style="width: 110px;"><span style="color: red;">*</span>续期天数</label>\n' +
+        '                <div class="layui-input-block" style="margin-left: 140px;margin-right: 10px;">\n' +
+        '                    <input type="number" name="xq_sqDay" id="xq_sqDay" lay-verify="required|number" required  autocomplete="off" placeholder="请输入续期天数" class="layui-input" onKeypress="return (/[\\d]/.test(String.fromCharCode(event.keyCode)))">\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '        </form>';
+
+
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form;
+        var upload = layui.upload;
+
+        var index = layer.open({
+            type: 1,
+            title: '授权续期',
+            content: html,
+            area: ['630px', '360px'],
+            btn: ['确定', '取消'],
+            success: function (layero, index) {
+                layero.addClass('layui-form');//添加form标识
+                layero.find('.layui-layer-btn0').attr('lay-filter', 'fromUpdateSQTime').attr('lay-submit', '').css("border-color","#4A77D4").css("background-color","#4A77D4");//将按钮弄成能提交的
+                //拖拽上传
+                var url = getactionid_manage().uploadBytxt;
+                upload.render({
+                    elem: '#test10'
+                    ,url: url
+                    ,acceptMime: '.txt,.ini' //只允许上传txt文件
+                    ,exts: 'txt|ini' //只允许上传压缩文件
+                    , before: function (obj) {
+                        $("#updateCpuCode").val("");
+                    }
+                    ,done: function(res){
+                        //上传成功，把授权码放到指定的name里面
+
+                        if (res.actioncode == "SUCCESS") {
+                            $("#xq_cpuCode").val(res.data);//#updateCpuCode
+                            layer.msg("授权文件上传成功，请填写续期时间点击确定",{icon: 6});
+                        }else{
+                            layer.msg(res.message,{icon: 5})
+                        }
+                    }
+                });
+                // getPrivilege();//获取功能权限信息
+                // getBaseType();//获取授权类型
+
+                form.render();
+            },
+            yes: function (index, layero) {
+                //自定义验证规则
+                form.verify({
+                    typename: [/\S/, '请输入问题类型名称'], ordernum: [/\S/, '请输入问题排序号']
+                });
+                //监听提交
+                form.on('submit(fromUpdateSQTime)', function (data) {
+                    updateAuthorizeTime();
+                });
+
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            }
+        });
+
+    });
+
+
+}
+
 /**
  * 授权详情弹框
  */
@@ -831,7 +976,7 @@ function opneModal_2(ssid) {
         '    <li class="layui-this">授权文件列表</li>\n' +
         '  </ul>\n' +
         '  <div class="layui-tab-content">' +
-            '        <div style="margin-left: 30px;overflow: hidden;">\n' +
+            '        <div style="margin-left: 20px;overflow: hidden;">\n' +
         '            <table border="0" width="100%" id="sqinifo_tableId">\n' +
 
         '            </table>\n' +

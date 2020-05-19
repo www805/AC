@@ -9,6 +9,7 @@ import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.web.mapper.SQEntityMapper;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
+import com.avst.authorize.web.req.UpdateAuthorizeTimeParam;
 import com.avst.authorize.web.service.AuthorizeService;
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -47,15 +48,15 @@ public class AuthorizeAction {
     }
 
     /**
-     * 添加授权
+     * 授权续期
      * @param param
      * @return
      */
     @RequiresAuthentication
-    @PostMapping(value = "/addAuthorize")
-    public RResult addAuthorize(@RequestBody @Validated(Create.class) GetAuthorizeParam param) {
+    @PostMapping(value = "/updateAuthorizeTime")
+    public RResult updateAuthorizeTime(@RequestBody UpdateAuthorizeTimeParam param) {
         RResult result = new RResult();
-        authorizeService.addAuthorize(result, param);
+        authorizeService.updateAuthorizeTime(result, param);
         result.setEndtime(DateUtil.getDateAndMinute());
         return result;
     }
@@ -70,6 +71,20 @@ public class AuthorizeAction {
     public RResult delAuthorize(@RequestBody @Validated(Delete.class) GetAuthorizeParam param) {
         RResult result = new RResult();
         authorizeService.delAuthorize(result, param);
+        result.setEndtime(DateUtil.getDateAndMinute());
+        return result;
+    }
+
+    /**
+     * 添加授权
+     * @param param
+     * @return
+     */
+    @RequiresAuthentication
+    @PostMapping(value = "/addAuthorize")
+    public RResult addAuthorize(@RequestBody @Validated(Create.class) GetAuthorizeParam param) {
+        RResult result = new RResult();
+        authorizeService.addAuthorize(result, param);
         result.setEndtime(DateUtil.getDateAndMinute());
         return result;
     }

@@ -6,6 +6,7 @@ public class GetAuthorizeListParam extends Page{
 
     private String clientName;
     private String username;
+    private String sqcode;
     private String batypessid;
 
 
@@ -23,6 +24,14 @@ public class GetAuthorizeListParam extends Page{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getSqcode() {
+        return sqcode;
+    }
+
+    public void setSqcode(String sqcode) {
+        this.sqcode = sqcode;
     }
 
     public String getBatypessid() {
