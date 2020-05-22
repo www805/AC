@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.avst.authorize.web.mapper.SQCodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.avst.authorize.common.entity.YearEntity">
+        <result column="year" property="year" />
+        <result column="sqcount" property="sqcount" />
+    </resultMap>
+
+    <select id="getYearStatistics" resultMap="BaseResultMap">
+        SELECT
+            DATE_FORMAT( a.startTime, '%Y-%m' ) AS `YEAR`,
+            count( a.id ) AS sqcount
+        FROM
+            ac_sqcode a
+        WHERE
+            DATE_FORMAT( a.startTime, '%Y-%m' ) > DATE_FORMAT( date_sub( curdate( ), INTERVAL 12 MONTH ), '%Y-%m' )
+            ${ew.sqlSegment}
+        GROUP BY
+            DATE_FORMAT( a.startTime, '%Y-%m' )
+
+    </select>
+
+</mapper>

@@ -168,7 +168,7 @@ public class AuthorizeService {
         param.setRecordCount(count);
 
         com.baomidou.mybatisplus.plugins.Page<SQEntityPlus> page = new Page<>(param.getCurrPage(), param.getPageSize());
-        List<SQEntityPlus> sqCacheList = sqEntityMapper.getSQList(page, ew);
+        List<SQEntityPlus> sqCacheList = sqEntityMapper.getSQListPage(page, ew);
 
         for (SQEntityPlus sqEntity : sqCacheList) {
             String gn = sqEntity.getGnlist();
@@ -185,12 +185,12 @@ public class AuthorizeService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "emp", allEntries = true)
+    @CacheEvict(cacheNames = {"emp", "empeles","empserverbase","emppaihb","empyear"}, allEntries = true)
     public void addAuthorize(RResult result, GetAuthorizeParam param) {
 
         String cpuCode = param.getCpuCode();
 
-        SQEntityPlus sqEntity= new SQEntityPlus();
+        SQEntityPlus sqEntity = new SQEntityPlus();
 
         Integer sortNum = 0;
 
@@ -215,9 +215,9 @@ public class AuthorizeService {
         sqEntity.setUnitCode(param.getUnitCode());
         sqEntity.setSqDay(param.getSqDay());
         sqEntity.setSortNum(sortNum);//排序
-        if(StringUtils.isNotEmpty(param.getServerType())){
+        if (StringUtils.isNotEmpty(param.getServerType())) {
             sqEntity.setServerType(param.getServerType());
-        }else{
+        } else {
             sqEntity.setServerType("police");
         }
         sqEntity.setForeverBool(param.getForeverBool());//是否永久授权
@@ -237,7 +237,7 @@ public class AuthorizeService {
             //不等于空，就进入
             String cpucode = cpuCodelist[i];
 
-            if(StringUtils.isNotEmpty(cpucode)){
+            if (StringUtils.isNotEmpty(cpucode)) {
                 if (cpucode.indexOf("|") == -1) {//如果没有就在前面加一个名称编号
                     cpucode = (i + 1) + "|" + cpucode;
                 }
@@ -246,7 +246,7 @@ public class AuthorizeService {
 
                 sqEntity.setCpuCode(codelist[1]);
                 //如果授权码为空，就不授权了
-                if(StringUtils.isEmpty(sqEntity.getCpuCode())){
+                if (StringUtils.isEmpty(sqEntity.getCpuCode())) {
                     result.setMessage("授权码有误，请检查再提交");
                     return;
                 }
@@ -259,7 +259,7 @@ public class AuthorizeService {
                 String month = ((now.get(Calendar.MONTH) + 1) + "").length() == 1 ? "0" + (now.get(Calendar.MONTH) + 1) : (now.get(Calendar.MONTH) + 1) + "";
                 String day = (now.get(Calendar.DAY_OF_MONTH) + "").length() == 1 ? "0" + now.get(Calendar.DAY_OF_MONTH) : now.get(Calendar.DAY_OF_MONTH) + "";
 
-                String sqFileName= PropertiesListenerConfig.getProperty("sq.fileName");
+                String sqFileName = PropertiesListenerConfig.getProperty("sq.fileName");
                 String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode();
 
                 System.out.println(path);
@@ -316,7 +316,7 @@ public class AuthorizeService {
         result.changeToTrue(baseGninfos);
     }
 
-    @CacheEvict(cacheNames = "emp", allEntries = true)
+    @CacheEvict(cacheNames = {"emp", "empeles","empserverbase","emppaihb","empyear"}, allEntries = true)
     public void delAuthorize(RResult result, GetAuthorizeParam param) {
 
         String ssid = param.getSsid();

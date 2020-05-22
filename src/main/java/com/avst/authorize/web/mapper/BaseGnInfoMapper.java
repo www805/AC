@@ -13,4 +13,11 @@ public interface BaseGnInfoMapper extends BaseMapper<BaseGninfo> {
 
     public List<BaseGninfo> getBaseGnInfoList(Page page, @Param("ew") EntityWrapper ew);
 
+    //返回授权功能数量
+    public Integer getServerBaseStatistics(@Param("ew") EntityWrapper ew);
+
+
+
+    //功能
+    public List<BaseGninfo> getBaseGnInfos(@Param("ew") EntityWrapper ew);
 }

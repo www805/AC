@@ -144,8 +144,10 @@ public class ShiroConfig {
         //设置必须要登录才可以访问的页面
 //        filterMap.put("/**", "authc");
         filterMap.put("/admin", "authc");
-        filterMap.put("/base/tobasegninfo", "authc");
-        filterMap.put("/base/tobasetype", "authc");
+//        filterMap.put("/base/tobasegninfo", "authc");
+//        filterMap.put("/base/tobasetype", "authc");
+        filterMap.put("/base/**", "authc");
+        filterMap.put("/statistics/**", "authc");
 //        filterMap.put("/ac/**", "authc");
 
         //授权过滤器

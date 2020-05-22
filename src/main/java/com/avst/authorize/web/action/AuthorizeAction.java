@@ -32,8 +32,6 @@ public class AuthorizeAction {
     @Autowired
     private AuthorizeService authorizeService;
 
-    @Autowired
-    private SQEntityMapper sqEntityMapper;
 
     /**
      * 获取所有授权记录
