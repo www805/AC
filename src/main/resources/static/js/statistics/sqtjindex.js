@@ -30,7 +30,7 @@ var userSQCodeCount = [
 ];
 var yearList = ['2020-1','2020-2','2020-3','2020-4','2020-5','2020-6','2020-7','2020-8','2020-9','2020-10','2020-11','2020-12'];
 var sqcountList = [23, 42, 18, 45, 48, 49,100,55,66,77,22,88];
-var loadIndex = null;
+
 
 //获取笔录系统基本信息统计
 function getServerBaseStatistics() {
@@ -42,19 +42,6 @@ function getServerBaseStatistics() {
 //获取申请人排行榜
 function getUsernamePaihb() {
     var url = getactionid_manage().getUsernamePaihb;
-
-
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
-        //使用模块
-        loadIndex = layer.msg("加载中，请稍后...", {
-            icon: 16,
-            time:10000,
-            shade: [0.1,"#fff"]
-        });
-    });
-
-
     var data={};
     ajaxSubmitByJson(url, data, callGetUsernamePaihb);
 }
@@ -69,15 +56,17 @@ function getYearStatistics() {
 //其他的授权统计
 function getElesStatistics() {
     var url = getactionid_manage().getElesStatistics;
+    loadIndex = layer.msg("加载中，请稍后...", {
+        icon: 16,
+        time:10000,
+        shade: [0.1,"#fff"]
+    });
     var data={};
     ajaxSubmitByJson(url, data, callGetElesStatistics);
 }
 
 function callGetServerBaseStatistics(data){
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
-        layer.closeAll();
-    });
+    layer.closeAll();
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)){
             var biluInfo = data.data;
