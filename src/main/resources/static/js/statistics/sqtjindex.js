@@ -30,7 +30,7 @@ var userSQCodeCount = [
 ];
 var yearList = ['2020-1','2020-2','2020-3','2020-4','2020-5','2020-6','2020-7','2020-8','2020-9','2020-10','2020-11','2020-12'];
 var sqcountList = [23, 42, 18, 45, 48, 49,100,55,66,77,22,88];
-
+var thisisboot;
 
 //获取笔录系统基本信息统计
 function getServerBaseStatistics() {
@@ -40,8 +40,16 @@ function getServerBaseStatistics() {
 }
 
 //获取申请人排行榜
-function getUsernamePaihb() {
+function getUsernamePaihb(isboot) {
     var url = getactionid_manage().getUsernamePaihb;
+    thisisboot = isboot;
+    if(isNotEmpty(isboot)){
+        loadIndex = layer.msg("加载中，请稍后...", {
+            icon: 16,
+            time:10000,
+            shade: [0.1,"#fff"]
+        });
+    }
     var data={};
     ajaxSubmitByJson(url, data, callGetUsernamePaihb);
 }
@@ -66,7 +74,6 @@ function getElesStatistics() {
 }
 
 function callGetServerBaseStatistics(data){
-    layer.closeAll();
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)){
             var biluInfo = data.data;
@@ -78,14 +85,9 @@ function callGetServerBaseStatistics(data){
     }else{
         layer.msg(data.message,{icon: 5});
     }
-
 }
 
 function callGetUsernamePaihb(data){
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
-        layer.closeAll();
-    });
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)){
             var PaihbList = data.data;
@@ -113,14 +115,13 @@ function callGetUsernamePaihb(data){
     }else{
         layer.msg(data.message,{icon: 5});
     }
-
+    if(isNotEmpty(thisisboot)){
+        layer.close(loadIndex);
+    }
+    thisisboot = null;
 }
 
 function callGetYearStatistics(data){
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
-        layer.closeAll();
-    });
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)) {
             // console.log(data.data);
@@ -191,10 +192,6 @@ function callGetYearStatistics(data){
 }
 
 function callGetElesStatistics(data){
-    layui.use(['layer'], function () {
-        var layer = layui.layer;
-        layer.closeAll();
-    });
     if(null!=data&&data.actioncode=='SUCCESS'){
         if (isNotEmpty(data.data)) {
             // console.log(data.data);
@@ -453,5 +450,6 @@ function callGetElesStatistics(data){
     }else{
         layer.msg(data.message,{icon: 5});
     }
+    layer.close(loadIndex);
 }
 

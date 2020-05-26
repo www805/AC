@@ -19,7 +19,6 @@ public class SQCode extends Model<SQCode>{
     private String sqentityssid;//关联授权信息ssid
     private String startTime;//授权开始时间
     private Integer sqDay;
-    private String gnlist;
     private String ssid;
     private String string1;
     private String string2;
@@ -120,14 +119,6 @@ public class SQCode extends Model<SQCode>{
 
     public void setInteger2(Integer integer2) {
         this.integer2 = integer2;
-    }
-
-    public String getGnlist() {
-        return gnlist;
-    }
-
-    public void setGnlist(String gnlist) {
-        this.gnlist = gnlist;
     }
 
     @Override

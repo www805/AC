@@ -7,6 +7,8 @@ import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.ReadWriteFile;
 import com.wb.deencode.EncodeUtil;
 
+import java.io.File;
+
 /**
  *  创建授权文件
  *  授权的UnitCode一定是有规则的，例如：最上面的服务器是hb,下一级hb_wh,hb_wh_hk,最下级的客户端服务器也是hb_wh_hk；
@@ -32,7 +34,19 @@ public class CreateSQ {
             LogUtil.intoLog(1, CreateSQ.class, "授权创建后 rr:" + rr);
 
             String path=basepath+"\\"+ javakeyname;
-            ReadWriteFile.writeTxtFile(rr,path);
+            for (int i = 0; i < 5; i++) { //进行5次写出，确保文件一定写到文件中
+                File file = new File(path);
+                if(!file.exists()){
+                    boolean b = ReadWriteFile.writeTxtFile(rr, path);
+                    if(!b){
+                        LogUtil.intoLog(4, CreateSQ.class, "授权文件写出失败:" + path);
+                    }else{
+                        LogUtil.intoLog(1, CreateSQ.class, "把授权写到授权文件中保存成功:" + path);
+                    }
+                }else{
+                    break;
+                }
+            }
 
             return true;
         }catch (Exception e){

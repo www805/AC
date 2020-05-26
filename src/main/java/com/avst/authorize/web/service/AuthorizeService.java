@@ -262,7 +262,7 @@ public class AuthorizeService {
                 String sqFileName = PropertiesListenerConfig.getProperty("sq.fileName");
                 String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode();
 
-                System.out.println(path);
+                LogUtil.intoLog("授权路径："+path);
                 boolean b = CreateSQ.deSQ(sqEntity, path);
 
                 String javatrm = PropertiesListenerConfig.getProperty("sq.javatrm");
@@ -390,6 +390,9 @@ public class AuthorizeService {
                 File tagerFile = new File(path);
                 File yuanFile = new File(sqCode.getRealpath());
 
+                LogUtil.intoLog(1, this.getClass(), "path路径:" + path);
+                LogUtil.intoLog(1, this.getClass(), "tagerZip路径:" + tagerZip);
+
                 FileUtils.copyFile(yuanFile, tagerFile);
                 ZipUtil.compressAllFileZip(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");
 
@@ -485,15 +488,15 @@ public class AuthorizeService {
                     sqCode = sqCodeList.get(0);
                 }
                 //判断压缩包是否已经存在，如果存在就直接使用，不存在就进行压缩
-                File fileZIP = new File(tagerZip + ".zip");
-                if(!fileZIP.exists()){
-                    for (SQCode code : sqCodeList) {
-                        String path = sqFilePath + code.getSqcode() + "\\" + sqFileName;
-                        File tagerFile = new File(path);
-                        File yuanFile = new File(code.getRealpath());
+//                File fileZIP = new File(tagerZip + ".zip");
+//                if(!fileZIP.exists()){
+//                }
+                for (SQCode code : sqCodeList) {
+                    String path = sqFilePath + code.getSqcode() + "\\" + sqFileName;
+                    File tagerFile = new File(path);
+                    File yuanFile = new File(code.getRealpath());
 
-                        FileUtils.copyFile(yuanFile, tagerFile);
-                    }
+                    FileUtils.copyFile(yuanFile, tagerFile);
                 }
 
                 ZipUtil.compressAllFileZip(sqFilePath, tagerZip, "把授权文件放到要授权的机器使用即可");

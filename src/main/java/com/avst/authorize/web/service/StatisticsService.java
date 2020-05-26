@@ -57,7 +57,8 @@ public class StatisticsService {
         Integer gnCount = baseGnInfoMapper.getServerBaseStatistics(ewgn);
         //获取全部授权数量
         EntityWrapper<SQEntityPlus> ewsqcount = new EntityWrapper<>();
-        Integer sqCount = sqEntityMapper.selectCount(ewsqcount);
+        ewsqcount.eq("state", 1);
+        Integer sqCount = sqEntityMapper.getSQCount(ewsqcount);
 
         vo.setBranchCount(branchCount);
         vo.setOemCount(oemCount);
@@ -72,7 +73,6 @@ public class StatisticsService {
     @Cacheable(cacheNames = "emppaihb", key = "1")
     public RResult getUsernamePaihb(RResult result) {
         EntityWrapper<SQEntity> ew = new EntityWrapper<>();
-        ew.orderBy("sqcount", true);
         List<SQCodeStatisticsEntity> SQCodeStatisticsEntityList = sqEntityMapper.getUserSQCodeCount(ew);
         result.changeToTrue(SQCodeStatisticsEntityList);
         return result;
@@ -83,6 +83,7 @@ public class StatisticsService {
 
         //最近一年的授权统计
         EntityWrapper<YearEntity> ew = new EntityWrapper<>();
+        ew.eq("s.state", 1);
         List<YearEntity> yearStatistics = sqCodeMapper.getYearStatistics(ew);
 
         //获取过去12个月时间
@@ -116,23 +117,21 @@ public class StatisticsService {
 
         //申请人统计
         EntityWrapper<SQEntity> ew = new EntityWrapper<>();
-        ew.orderBy("sqcount", true);
         List<SQCodeStatisticsEntity> userSQCodeCount = sqEntityMapper.getUserSQCodeCount(ew);
 
         //公司授权统计
         EntityWrapper<SQEntity> ewcom = new EntityWrapper<>();
-        ewcom.orderBy("sqcount", true);
         List<SQCodeStatisticsEntity> companySQCodeCount = sqEntityMapper.getCompanynameSQCodeCount(ewcom);
 
         //类型授权统计
         EntityWrapper<SQEntity> ewtype = new EntityWrapper<>();
-        ewtype.orderBy("sqcount", true);
         List<SQCodeStatisticsEntity> typeSQCodeCount = sqEntityMapper.getTypenameSQCodeCount(ewtype);
 
         //客户端授权统计
         List<BaseGnType> baseGnTypes = baseGnTypeMapper.getBaseNgType();
 
         EntityWrapper<SQEntityPlus> ewep = new EntityWrapper<>();
+        ewep.eq("s.state", 1);
         List<SQEntityPlus> sqEntityPlusList = sqEntityMapper.getSQList(ewep);
 
         //遍历所有分类

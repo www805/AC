@@ -29,11 +29,12 @@ function getAuthorizeList_init(currPage,pageSize) {
     ajaxSubmitByJson(url,data,callGetAuthorizeList);
 }
 
-function getProblemTypeList(sq_username, keyword, sqtypessid, currPage, pageSize) {
+function getProblemTypeList(sq_username, keyword, sqtypessid, sqcode, currPage, pageSize) {
     var url = getactionid_manage().getAuthorizeList;
     var data = {
         username: sq_username,
         clientName: keyword,
+        sqcode: sqcode,
         batypessid: sqtypessid,
         currPage: currPage,
         pageSize: pageSize
@@ -613,7 +614,7 @@ function getAuthorizeListParam() {
     }  else if (len == 2) {
         getProblemTypeList('', arguments[0], arguments[1]);
     } else if (len > 2) {
-        getProblemTypeList(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+        getProblemTypeList(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5]);
     }
 }
 
@@ -626,12 +627,14 @@ function showpagetohtml(){
 
         var sq_username=$("input[name='sq_username']").val();
         var keyword=$("input[name='keyword']").val();
+        var sqcode=$("input[name='sqcode']").val();
         var sqtypessid=$("#sqtypessid").val();
 
         var arrparam=new Array();
         arrparam[0]=sq_username;
         arrparam[1]=keyword;
         arrparam[2]=sqtypessid;
+        arrparam[3]=sqcode;
         showpage("paging",arrparam,'getAuthorizeListParam',currPage,pageCount,pageSize);
     }
 }

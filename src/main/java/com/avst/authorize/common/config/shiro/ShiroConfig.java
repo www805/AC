@@ -140,6 +140,7 @@ public class ShiroConfig {
         filterMap.put("/logout", "anon");
         filterMap.put("/ai", "anon");
         filterMap.put("/getai", "anon");
+        filterMap.put("/base/getBaseTypeList", "anon");
 
         //设置必须要登录才可以访问的页面
 //        filterMap.put("/**", "authc");

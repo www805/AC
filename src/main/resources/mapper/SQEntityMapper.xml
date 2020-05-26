@@ -129,7 +129,11 @@
         FROM
             ac_sqentityplus a
             LEFT JOIN ac_sqcode s ON s.sqentityssid = a.ssid
+        where
+            a.state = 1
+            ${ew.sqlSegment}
             GROUP BY a.username
+            ORDER BY sqcount desc ,a.startTime desc
 
     </select>
 
@@ -140,6 +144,9 @@
         FROM
             ac_sqentityplus a
             LEFT JOIN ac_sqcode s ON s.sqentityssid = a.ssid
+        where
+            a.state = 1
+            ${ew.sqlSegment}
             GROUP BY a.companyname
             ORDER BY sqcount desc
 
@@ -153,6 +160,9 @@
             ac_sqentityplus a
             LEFT JOIN ac_sqcode s ON s.sqentityssid = a.ssid
             left join base_type t on a.batypessid = t.ssid
+        where
+            a.state = 1
+            ${ew.sqlSegment}
             GROUP BY t.typename
             ORDER BY sqcount desc
 
