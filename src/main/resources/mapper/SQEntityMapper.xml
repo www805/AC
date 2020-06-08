@@ -68,8 +68,9 @@
             LEFT JOIN ac_sqcode c ON s.ssid = c.sqentityssid
             LEFT JOIN base_type t ON t.ssid = s.batypessid
         <where>
+            s.id > 0
             <if test="null != ssid">
-                s.ssid = #{ssid}
+                and s.ssid = #{ssid}
             </if>
         </where>
     </select>
@@ -105,7 +106,7 @@
             ac_sqentityplus s
         LEFT JOIN base_type t ON t.ssid = s.batypessid
         LEFT JOIN ac_sqcode a ON a.sqentityssid = s.ssid
-        where 1=1
+        where s.id > 0
             ${ew.sqlSegment}
     </select>
 
@@ -117,11 +118,11 @@
             ac_sqentityplus s
         LEFT JOIN base_type t ON t.ssid = s.batypessid
         LEFT JOIN ac_sqcode a ON a.sqentityssid = s.ssid
-        where 1=1
+        where s.id > 0
             ${ew.sqlSegment}
     </select>
 
-
+<!--zhg tyoiuwen11111111111-->
     <select id="getUserSQCodeCount" resultMap="UserSQCodeMap">
         SELECT
 	        a.username as name,
@@ -130,7 +131,7 @@
             ac_sqentityplus a
             LEFT JOIN ac_sqcode s ON s.sqentityssid = a.ssid
         where
-            a.state = 1
+            a.state = 1  and a.id > 0
             ${ew.sqlSegment}
             GROUP BY a.username
             ORDER BY sqcount desc ,a.startTime desc

@@ -260,7 +260,7 @@ public class AuthorizeService {
                 String day = (now.get(Calendar.DAY_OF_MONTH) + "").length() == 1 ? "0" + now.get(Calendar.DAY_OF_MONTH) : now.get(Calendar.DAY_OF_MONTH) + "";
 
                 String sqFileName = PropertiesListenerConfig.getProperty("sq.fileName");
-                String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode();
+                String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode() + "\\" + param.getCpuCode() + "_" + System.currentTimeMillis();
 
                 LogUtil.intoLog("授权路径："+path);
                 boolean b = CreateSQ.deSQ(sqEntity, path);
@@ -624,7 +624,13 @@ public class AuthorizeService {
         ew.eq("cpuCode", xqCpuCode);
 
         List<SQEntityPlus> sqEntityPlusList = sqEntityMapper.selectList(ew);
-        if (sqEntityPlusList.size() > 0) {
+        if(sqEntityPlusList.size() > 1){
+
+            result.setData(sqEntityPlusList);
+
+            result.setMessage("找到多個授權碼，要收取哪個？");
+            return;
+        }else if (sqEntityPlusList.size() == 1) {
 
             SQEntityPlus sqEntityPlus = sqEntityPlusList.get(0);
 
@@ -634,7 +640,8 @@ public class AuthorizeService {
             cew.eq("sqentityssid", sqEntityPlus.getSsid());
             cew.eq("sqcode", param.getXqCpuCode());
             List<SQCode> sqCodes = sqCodeMapper.selectList(cew);
-            if(sqCodes.size() > 0){
+
+            if(sqCodes.size() == 1){
                 sqCode = sqCodes.get(0);
                 FileUtil.delAllFile(sqCode.getRealpath());
             }else{

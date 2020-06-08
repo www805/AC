@@ -31,6 +31,10 @@ function getAuthorizeList_init(currPage,pageSize) {
 
 function getProblemTypeList(sq_username, keyword, sqtypessid, sqcode, currPage, pageSize) {
     var url = getactionid_manage().getAuthorizeList;
+    sq_username=$("input[name='sq_username']").val();
+    keyword=$("input[name='keyword']").val();
+    sqcode=$("input[name='sqcode']").val();
+    sqtypessid=$("#sqtypessid").val();
     var data = {
         username: sq_username,
         clientName: keyword,
@@ -443,9 +447,9 @@ function callGetFindByssid(data){
                     //输出授权码
                     sqCodeListHTML += '<tr>\n' +
                         '        <td>' + sqCode.name + '</td>\n' +
-                        '        <td width="420" title="' + sqCode.sqcode + '">' + sqCode.sqcode.substring(0, 53) + '</td>\n' +
-                        '        <td width="30">' + (sqCode.sqDay==null?'':sqCode.sqDay+"天") + '</td>\n' +
-                        '        <td><a href="' + url + '/' + sqCode.ssid + '">下载授权文件</a></td>\n' +
+                        '        <td width="410" title="' + sqCode.sqcode + '">' + sqCode.sqcode + '</td>\n' +
+                        '        <td width="40">' + (sqCode.sqDay==null?'':sqCode.sqDay+"天") + '</td>\n' +
+                        '        <td><a href="' + url + '/' + sqCode.ssid + '" onclick="loaddown();">下载授权文件</a></td>\n' +
                         '</tr>';
                 }
 
@@ -483,6 +487,8 @@ function callUpdateAuthorizeTime(data){
 
         }
     }else{
+
+
         layer.msg(data.message,{icon: 5});
     }
 }
@@ -599,6 +605,8 @@ function callGetBaseType(data){
         layer.msg(data.message,{icon: 5});
     }
 }
+
+
 
 /**
  * 局部刷新
@@ -1016,4 +1024,15 @@ function opneModal_2(ssid) {
     });
 
 
+}
+
+/**
+ * 下载弹框
+ */
+function loaddown() {
+    loadIndex = layer.msg("下载中，请稍后...", {
+        icon: 16,
+        time: 5000,
+        shade: [0.1, "#fff"]
+    });
 }
