@@ -17,6 +17,15 @@ public class UpdateAuthorizeTimeParam {
     private String xqCpuCode;
     @Min(value = 0,message = "续期时间必须大于0")
     private Integer xqSqDay;
+    private String ssid;
+
+    public String getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
+    }
 
     public String getXqCpuCode() {
         return xqCpuCode;

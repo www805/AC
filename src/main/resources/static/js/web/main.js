@@ -488,8 +488,65 @@ function callUpdateAuthorizeTime(data){
         }
     }else{
 
+        if (isNotEmpty(data.data)){
 
-        layer.msg(data.message,{icon: 5});
+            // console.log(data.data);
+
+            var sqinfodata = data.data;
+            var dataHtml = "";
+
+            for (let i = 0; i < sqinfodata.length; i++) {
+                var sqinfo = sqinfodata[i];
+                dataHtml += '    <tr>\n' +
+                    '      <td>' + (i+1) + '</td>\n' +
+                    '      <td>' + sqinfo.username + '</td>\n' +
+                    '      <td>' + sqinfo.companyname + '</td>\n' +
+                    '      <td>' + sqinfo.sqDay + '</td>\n' +
+                    '      <td>' + sqinfo.startTime + '</td>\n' +
+                    '      <td><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="sqAuthorizeTime(\''+sqinfo.cpuCode+'\',\''+sqinfo.ssid+'\');">续期</button></td>\n' +
+                    '    </tr>\n        ';
+            }
+
+            var contentHtml = '<table class="layui-table" style="margin-left: 10px;margin-right: 10px;" lay-even="" lay-skin="nob">\n' +
+                '  <colgroup>\n' +
+                '    <col width="70">\n' +
+                '    <col width="110">\n' +
+                '    <col >\n' +
+                '    <col width="90">\n' +
+                '    <col width="170">\n' +
+                '    <col width="100">\n' +
+                '  </colgroup>\n' +
+                '  <thead>\n' +
+                '    <tr>\n' +
+                '      <th>id</th>\n' +
+                '      <th>申请人</th>\n' +
+                '      <th>公司名</th>\n' +
+                '      <th>授权天数</th>\n' +
+                '      <th>授权创建时间</th>\n' +
+                '      <th>操作</th>\n' +
+                '    </tr> \n' +
+                '  </thead>\n' +
+                '  <tbody>\n' +
+                dataHtml +
+                '  </tbody>\n' +
+                '</table> ';
+
+            var index = layer.open({
+                type: 1,
+                title: '发现 ' + sqinfodata.length + ' 条同样的授权码信息，请选择要续期哪条授权？',
+                content: contentHtml,
+                area: ['680px', '300px'],
+                btn: ['返回'],
+                btn2: function (index, layero) {
+                    layer.close(index);
+                }
+            });
+
+
+
+        }else{
+            layer.msg(data.message,{icon: 5});
+        }
     }
 }
 
@@ -1036,3 +1093,23 @@ function loaddown() {
         shade: [0.1, "#fff"]
     });
 }
+
+function sqAuthorizeTime(xqCpuCode, ssid) {
+    //授权码和ssid续期
+    var url = getactionid_manage().updateAuthorizeTime;
+    var xqSqDay = $("#xq_sqDay").val().trim();
+
+    loadIndex = layer.msg("续期中，请稍后...", {
+        icon: 16,
+        time: 30000,
+        shade: [0.1, "#fff"]
+    });
+
+    var data = {
+        xqCpuCode: xqCpuCode,
+        xqSqDay: xqSqDay,
+        ssid: ssid
+    };
+    ajaxSubmitByJson(url, data, callUpdateAuthorizeTime);
+}
+

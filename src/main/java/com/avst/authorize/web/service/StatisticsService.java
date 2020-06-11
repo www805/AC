@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -126,6 +128,12 @@ public class StatisticsService {
         //类型授权统计
         EntityWrapper<SQEntity> ewtype = new EntityWrapper<>();
         List<SQCodeStatisticsEntity> typeSQCodeCount = sqEntityMapper.getTypenameSQCodeCount(ewtype);
+        Collections.sort(typeSQCodeCount, new Comparator<SQCodeStatisticsEntity>() {
+            @Override
+            public int compare(SQCodeStatisticsEntity o1, SQCodeStatisticsEntity o2) {
+                return new Double(o2.getValue()).compareTo(new Double(o1.getValue()));
+            }
+        });
 
         //客户端授权统计
         List<BaseGnType> baseGnTypes = baseGnTypeMapper.getBaseNgType();

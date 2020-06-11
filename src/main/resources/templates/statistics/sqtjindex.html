@@ -73,6 +73,9 @@
             background-color: #4A77D4;
             color: #fff;
         }
+        #chart_area .layui-card-body,#chart_area2 .layui-card-body,#chart_area3 .layui-card-body,#chart_area4 .layui-card-body,#chart_area5 .layui-card-body,#chart_area6 .layui-card-body{
+            padding: 0;
+        }
     </style>
 </head>
 <body>
@@ -91,15 +94,93 @@
                     <div id="line" style="width:822px;height:492px;"></div>
 
                 </div>
-                <div class="layui-col-xs12 layui-col-md3" >
-                    <div id="chart_area" style="height:250px;"></div>
-                    <div id="chart_area2" style="height:250px;"></div>
+                <div class="layui-col-xs12 layui-col-md3 layui-col-space10" >
+                    <div id="chart_area" style="height:250px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">申请人授权统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 180px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col >
+                                        <col width="130">
+                                    </colgroup>
+                                    <tbody id="chart_area_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chart_area2" style="height:250px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">公司授权统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 180px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col width="130">
+                                        <col>
+                                    </colgroup>
+                                    <tbody id="chart_area2_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="layui-col-xs12 layui-col-md12" style="margin-bottom: 50px;">
-                    <div id="chart_area4" class="layui-col-xs12 layui-col-md3" style="height:250px;"></div>
-                    <div id="chart_area5" class="layui-col-xs12 layui-col-md3" style="height:250px;"></div>
-                    <div id="chart_area6" class="layui-col-xs12 layui-col-md3" style="height:250px;"></div>
-                    <div id="chart_area3" class="layui-col-xs12 layui-col-md3" style="height:250px;"></div>
+                    <div id="chart_area4" class="layui-col-xs12 layui-col-md3 " style="height:250px;padding-right: 10px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">分支版本统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 120px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col width="130">
+                                        <col>
+                                    </colgroup>
+                                    <tbody id="chart_area4_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chart_area5" class="layui-col-xs12 layui-col-md3 " style="height:250px;padding-right: 10px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">OEM版本统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 120px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col width="130">
+                                        <col>
+                                    </colgroup>
+                                    <tbody id="chart_area5_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chart_area6" class="layui-col-xs12 layui-col-md3 " style="height:250px;padding-right: 10px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">客户端统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 120px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col width="130">
+                                        <col>
+                                    </colgroup>
+                                    <tbody id="chart_area6_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="chart_area3" class="layui-col-xs12 layui-col-md3 " style="height:250px;">
+                        <div class="layui-card">
+                            <div class="layui-card-header">类型授权统计</div>
+                            <div class="layui-card-body" style="overflow-y:auto;height: 120px;">
+                                <table class="layui-table" lay-even lay-skin="nob">
+                                    <colgroup>
+                                        <col width="130">
+                                        <col>
+                                    </colgroup>
+                                    <tbody id="chart_area3_tr"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

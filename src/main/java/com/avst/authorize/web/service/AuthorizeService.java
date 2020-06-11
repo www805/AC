@@ -622,15 +622,17 @@ public class AuthorizeService {
 
         EntityWrapper<SQEntityPlus> ew = new EntityWrapper<>();
         ew.eq("cpuCode", xqCpuCode);
+        if(null != param.getSsid() && StringUtils.isNotEmpty(param.getSsid().trim())){
+            ew.eq("ssid", param.getSsid().trim());
+        }
+        ew.orderBy("startTime", false);
 
         List<SQEntityPlus> sqEntityPlusList = sqEntityMapper.selectList(ew);
-        if(sqEntityPlusList.size() > 1){
-
+        if (sqEntityPlusList.size() > 1) {
             result.setData(sqEntityPlusList);
-
-            result.setMessage("找到多個授權碼，要收取哪個？");
+            result.setMessage("找到多个授权码，要授权哪个？");
             return;
-        }else if (sqEntityPlusList.size() == 1) {
+        } else if (sqEntityPlusList.size() == 1) {
 
             SQEntityPlus sqEntityPlus = sqEntityPlusList.get(0);
 
@@ -641,15 +643,15 @@ public class AuthorizeService {
             cew.eq("sqcode", param.getXqCpuCode());
             List<SQCode> sqCodes = sqCodeMapper.selectList(cew);
 
-            if(sqCodes.size() == 1){
+            if (sqCodes.size() == 1) {
                 sqCode = sqCodes.get(0);
                 FileUtil.delAllFile(sqCode.getRealpath());
-            }else{
+            } else {
                 result.setMessage("没找到该授权码，请确认授权码是否已经授权");
                 return;
             }
 
-            if(null != sqCode && StringUtils.isBlank(sqCode.getStartTime())){
+            if (null != sqCode && StringUtils.isBlank(sqCode.getStartTime())) {
                 sqCode.setStartTime(sqEntityPlus.getStartTime());
             }
             if (null != sqCode && null == sqCode.getSqDay() || null != sqCode && sqCode.getSqDay() == 0) {
@@ -669,18 +671,17 @@ public class AuthorizeService {
 
                 int endTime = calLastedTime(DateToStr2);
                 //如果小于0代表未过期
-                if(endTime > 0){
+                if (endTime > 0) {
                     //已过期
                     sqEntityPlus.setStartTime(DateUtil.getDateAndMinute());
                     sqEntityPlus.setSqDay(param.getXqSqDay());
                     sqCode.setStartTime(DateUtil.getDateAndMinute());
                     sqCode.setSqDay(param.getXqSqDay());
-                }else{
+                } else {
                     //未过期
                     sqCode.setSqDay(sqCode.getSqDay() + param.getXqSqDay());//时间续期
                     sqEntityPlus.setSqDay(sqEntityPlus.getSqDay() + param.getXqSqDay());//时间续期
                 }
-
 
 
             } catch (ParseException e) {
@@ -692,8 +693,8 @@ public class AuthorizeService {
             String month = ((now.get(Calendar.MONTH) + 1) + "").length() == 1 ? "0" + (now.get(Calendar.MONTH) + 1) : (now.get(Calendar.MONTH) + 1) + "";
             String day = (now.get(Calendar.DAY_OF_MONTH) + "").length() == 1 ? "0" + now.get(Calendar.DAY_OF_MONTH) : now.get(Calendar.DAY_OF_MONTH) + "";
 
-            String sqFileName= PropertiesListenerConfig.getProperty("sq.fileName");
-            String javatrm= PropertiesListenerConfig.getProperty("sq.javatrm");
+            String sqFileName = PropertiesListenerConfig.getProperty("sq.fileName");
+            String javatrm = PropertiesListenerConfig.getProperty("sq.javatrm");
             String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getXqCpuCode();
 
             boolean delete = FileUtil.delAllFile(path);
@@ -708,15 +709,15 @@ public class AuthorizeService {
             scew.eq("ssid", sqCode.getSsid());
             sqCode.setRealpath(path + "\\" + javatrm);
             int update = sqCodeMapper.update(sqCode, scew);
-            if(update > 0){
+            if (update > 0) {
                 result.setMessage(sqEntityPlus.getCpuCode() + "续期成功！");
-                if(null != sqCode){
+                if (null != sqCode) {
                     result.changeToTrue(sqCode.getSsid());
-                }else{
+                } else {
                     result.changeToTrue();
                 }
             }
-        }else{
+        } else {
             result.setMessage("没找到该授权码，请确认授权码是否已经授权");
         }
 

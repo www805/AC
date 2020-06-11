@@ -138,6 +138,7 @@
 
     </select>
 
+
     <select id="getCompanynameSQCodeCount" resultMap="UserSQCodeMap">
         SELECT
             a.companyname as name,
@@ -153,19 +154,19 @@
 
     </select>
 
+    <!--已优化-->
     <select id="getTypenameSQCodeCount" resultMap="UserSQCodeMap">
         SELECT
             t.typename as name,
             count(t.id)	as sqcount
         FROM
-            ac_sqentityplus a
+            base_type t
+            LEFT JOIN ac_sqentityplus a on a.batypessid = t.ssid
             LEFT JOIN ac_sqcode s ON s.sqentityssid = a.ssid
-            left join base_type t on a.batypessid = t.ssid
         where
             a.state = 1
             ${ew.sqlSegment}
             GROUP BY t.typename
-            ORDER BY sqcount desc
 
     </select>
 

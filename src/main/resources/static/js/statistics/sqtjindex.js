@@ -204,10 +204,24 @@ function callGetElesStatistics(data){
             typeSQCodeCount = tongjiAll.typeSQCodeCount;
             userSQCodeCount = tongjiAll.userSQCodeCount;
 
+            var branchSQCodeCountHTML = "";
+            var clientSQCodeCountHTML = "";
+            var companySQCodeCountHTML = "";
+            var oemSQCodeCountHTML = "";
+            var typeSQCodeCountHTML = "";
+            var userSQCodeCountHTML = "";
+
+            $("#chart_area4_tr").html(resSQHTML(branchSQCodeCount, branchSQCodeCountHTML));
+            $("#chart_area6_tr").html(resSQHTML(clientSQCodeCount, clientSQCodeCountHTML));
+            $("#chart_area2_tr").html(resSQHTML(companySQCodeCount, companySQCodeCountHTML));
+            $("#chart_area5_tr").html(resSQHTML(oemSQCodeCount, oemSQCodeCountHTML));
+            $("#chart_area3_tr").html(resSQHTML(typeSQCodeCount, typeSQCodeCountHTML));
+            $("#chart_area_tr").html(resSQHTML(userSQCodeCount, userSQCodeCountHTML));
+
             // 使用刚指定的配置项和数据显示图表。
             // 基于准备好的dom，初始化echarts实例
-            var chart_area = echarts.init(document.getElementById('chart_area'));
-            var option = {
+           // var chart_area = echarts.init(document.getElementById('chart_area'));
+            /**var option = {
                 title: {
                     x: 'left',
                     y: 'top',
@@ -244,7 +258,7 @@ function callGetElesStatistics(data){
                 ]
             };
             // 使用刚指定的配置项和数据显示图表。
-            chart_area.setOption(option);
+            //chart_area.setOption(option);
 
             var chart_area2 = echarts.init(document.getElementById('chart_area2'));
             var option2 = {
@@ -445,7 +459,7 @@ function callGetElesStatistics(data){
             };
             // 使用刚指定的配置项和数据显示图表。
             chart_area6.setOption(option6);
-
+             **/
         }
     }else{
         layer.msg(data.message,{icon: 5});
@@ -453,3 +467,16 @@ function callGetElesStatistics(data){
     layer.close(loadIndex);
 }
 
+
+function resSQHTML(arrs, SQHTML) {
+    if(arrs.length > 0){
+        for (let i = 0; i < arrs.length; i++) {
+            var usersq = arrs[i];
+            SQHTML += '<tr>\n' +
+                '                         <td>' + usersq.name + '</td>\n' +
+                '                         <td>' + usersq.value + '</td>\n' +
+                '                   </tr>\n';
+        }
+    }
+    return SQHTML;
+}
