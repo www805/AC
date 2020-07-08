@@ -8,6 +8,7 @@ import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.common.utils.sq.CreateSQ;
 import com.avst.authorize.common.utils.sq.SQEntity;
 import com.avst.authorize.web.mapper.*;
+import com.avst.authorize.web.req.CheckSQFiledonwloadParam;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.req.UpdateAuthorizeTimeParam;
@@ -186,7 +187,19 @@ public class AuthorizeService {
 
     @Transactional
     @CacheEvict(cacheNames = {"emp", "empeles","empserverbase","emppaihb","empyear"}, allEntries = true)
-    public void addAuthorize(RResult result, GetAuthorizeParam param) {
+    public synchronized void addAuthorize(RResult result, GetAuthorizeParam param) {
+
+        String gnlist = param.getGnlist();
+        //即时通讯功能只能选择一个
+        if (gnlist.split("im").length-1 > 1) {
+            result.setMessage("即时通讯功能只能选择一个");
+            return;
+        }
+        //功能中如果含有im，并且服务端为空的话就提示错误
+        if(gnlist.indexOf("im") != -1 && gnlist.indexOf("o_v") == -1){
+            result.setMessage("即时通讯功能必须为服务器版本才能设置");
+            return ;
+        }
 
         String cpuCode = param.getCpuCode();
 
@@ -278,6 +291,8 @@ public class AuthorizeService {
                     sqCode.setSqDay(sqEntity.getSqDay());
                     sqCode.setSsid(OpenUtil.getUUID_32());
                     Integer insert = sqCodeMapper.insert(sqCode);
+                }else{
+                    result.setMessage("授权失败！可能是授权文件写出不成功");
                 }
 
             }
@@ -616,7 +631,7 @@ public class AuthorizeService {
 
     @Transactional
     @CacheEvict(cacheNames = "emp", allEntries = true)
-    public void updateAuthorizeTime(RResult result, UpdateAuthorizeTimeParam param) {
+    public synchronized void updateAuthorizeTime(RResult result, UpdateAuthorizeTimeParam param) {
 
         String xqCpuCode = param.getXqCpuCode().trim();
 
@@ -700,6 +715,10 @@ public class AuthorizeService {
             boolean delete = FileUtil.delAllFile(path);
             boolean b = CreateSQ.deSQ(sqEntityPlus, path);
 
+            if(!b){
+                result.setMessage("授权失败！可能是授权文件写出不成功");
+                return;
+            }
             EntityWrapper<SQEntityPlus> sqew = new EntityWrapper<>();
             sqew.eq("ssid", sqEntityPlus.getSsid());
             sqEntityMapper.update(sqEntityPlus, sqew);
@@ -744,4 +763,25 @@ public class AuthorizeService {
         return reqsultNum;
     }
 
+    public void checkSQFiledonwload(RResult result, CheckSQFiledonwloadParam param) {
+
+        EntityWrapper<SQCode> ew = new EntityWrapper<>();
+        ew.eq("ssid", param.getSsid());
+        List<SQCode> list = sqCodeMapper.selectList(ew);
+
+        if (null != list && list.size() > 0) {
+            String realpath = list.get(0).getRealpath();
+            File file = new File(realpath);
+            if(!file.exists()){
+                result.setMessage("当前授权文件不存在，不能下载");
+                return;
+            }
+        }else{
+            result.setMessage("当前授权不存在，请重新添加授权");
+            return;
+        }
+
+        result.changeToTrue(param.getSsid());
+        result.setMessage("当前授权可下载");
+    }
 }

@@ -266,7 +266,7 @@ public class ReadWriteFile {
 				filepath=path.substring(0, path.lastIndexOf("\\"));
 			}
         	File filenamepath = new File(filepath);
-        	if(!filenamepath.exists()  && !filenamepath.isDirectory()){
+        	if(!filenamepath.exists() || !filenamepath.isDirectory()){
         		LogUtil.intoLog(ReadWriteFile.class,path+"//注意，读取的是一个不存在的地址文件，启动创建");
 
     			boolean bool=filenamepath.mkdirs();

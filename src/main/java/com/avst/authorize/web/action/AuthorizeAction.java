@@ -7,6 +7,7 @@ import com.avst.authorize.common.entity.SQEntityPlus;
 import com.avst.authorize.common.utils.*;
 import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.web.mapper.SQEntityMapper;
+import com.avst.authorize.web.req.CheckSQFiledonwloadParam;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
 import com.avst.authorize.web.req.GetAuthorizeParam;
 import com.avst.authorize.web.req.UpdateAuthorizeTimeParam;
@@ -149,6 +150,20 @@ public class AuthorizeAction {
     public ResponseEntity<Resource> downloadAllSQFile(@PathVariable("ssid") String ssid) {
         return authorizeService.downloadAllSQFile(ssid);
     }
+
+    /**
+     * 校验下载授权文件
+     * @param param
+     * @return
+     */
+    @RequestMapping("/checkSQFiledonwload")
+    public RResult checkSQFiledonwload(@RequestBody CheckSQFiledonwloadParam param) {
+        RResult result = new RResult();
+        authorizeService.checkSQFiledonwload(result, param);
+        result.setEndtime(DateUtil.getDateAndMinute());
+        return result;
+    }
+
 
     /**
      * 授权文件下载2

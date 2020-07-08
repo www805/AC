@@ -2,6 +2,7 @@ package com.avst.authorize.web.action;
 
 import com.avst.authorize.common.config.check.UserCheckSequence;
 import com.avst.authorize.common.entity.User;
+import com.avst.authorize.common.utils.DateUtil;
 import com.avst.authorize.common.utils.LogUtil;
 import com.avst.authorize.common.utils.RResult;
 import com.avst.authorize.web.req.LoginCheckParam;
@@ -61,7 +62,12 @@ public class LoginAction {
         User user = (User) subject.getPrincipal();
         user.setLastlogintime(new Date());
         boolean updateById_bool = user.updateById();
-        LogUtil.intoLog(this.getClass(),"登录成功，修改最后登录时间--"+updateById_bool);
+        LogUtil.intoLog(this.getClass(), "登录成功，修改最后登录时间--" + DateUtil.getDateAndMinute() + "--" + updateById_bool);
+
+        if(28800000 < SecurityUtils.getSubject().getSession().getTimeout()){
+            SecurityUtils.getSubject().getSession().setTimeout(28800000);//session设置为8小时
+            LogUtil.intoLog("session失效时间：" + SecurityUtils.getSubject().getSession().getTimeout());
+        }
 
         result.changeToTrue();
         return result;

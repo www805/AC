@@ -37,6 +37,7 @@ function getactionid_manage() {
         getFindByssid:"/ac/getFindByssid",
         getPrivilege:"/ac/getPrivilege",
         downloadSQFile:"/ac/downloadSQFile",
+        checkSQFiledonwload:"/ac/checkSQFiledonwload",
         downloadAllSQFile:"/ac/downloadAllSQFile",
         updateAuthorizeTime:"/ac/updateAuthorizeTime",
 

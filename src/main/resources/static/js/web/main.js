@@ -263,6 +263,33 @@ function downloadAllSQFile(ssid) {
     layer.close(loadIndex);
 }
 
+//校验下载授权文件
+function checkSQFiledonwload(ssid) {
+    //先判断是否能下载，再进入下载
+    var url = getactionid_manage().checkSQFiledonwload;
+    var data={
+        ssid: ssid
+    };
+    ajaxSubmitByJson(url, data, callCheckSQFiledonwload);
+}
+
+function callCheckSQFiledonwload(data) {
+
+    if (null != data && data.actioncode == 'SUCCESS') {
+        if(isNotEmpty(data.data)){
+            window.location.href =  "/ac/downloadSQFile/" + data.data;
+        }else{
+            layer.close(loadIndex);
+            layer.msg(data.message,{icon: 5});
+        }
+    }else{
+        layer.close(loadIndex);
+        layer.msg(data.message,{icon: 5});
+    }
+}
+
+
+
 //获取指定ssid的授权信息
 function getFindByssid(ssid) {
     var url = getactionid_manage().getFindByssid;
@@ -448,8 +475,8 @@ function callGetFindByssid(data){
                     sqCodeListHTML += '<tr>\n' +
                         '        <td>' + sqCode.name + '</td>\n' +
                         '        <td width="410" title="' + sqCode.sqcode + '">' + sqCode.sqcode + '</td>\n' +
-                        '        <td width="40">' + (sqCode.sqDay==null?'':sqCode.sqDay+"天") + '</td>\n' +
-                        '        <td><a href="' + url + '/' + sqCode.ssid + '" onclick="loaddown();">下载授权文件</a></td>\n' +
+                        '        <td width="40">' + (sqCode.sqDay == null ? '' : sqCode.sqDay + "天") + '</td>\n' +
+                        '        <td><a href="javascript:void(0);" onclick="loaddown();checkSQFiledonwload(\'' + sqCode.ssid + '\');">下载授权文件</a></td>\n' +
                         '</tr>';
                 }
 
@@ -826,7 +853,7 @@ function opneModal_1() {
             type: 1,
             title: '添加授权',
             content: html,
-            area: ['630px', '650px'],
+            area: ['730px', '650px'],
             btn: ['确定', '取消'],
             success: function (layero, index) {
                 layero.addClass('layui-form');//添加form标识
@@ -880,9 +907,16 @@ function opneModal_1() {
                         }
                     });
 
+                    //如果im功能同时超过两个，就会报错
                     if((gnlist.split('im')).length-1 > 1){
                         layer.msg("即时通讯功能只能选择一个",{icon: 5})
                     }else{
+                        //IM授权必须为服务器版本才能设置IM授权
+                        //功能中如果含有im，并且服务端为空的话就提示错误
+                        if(gnlist.indexOf("im") != -1 && gnlist.indexOf("o_v") == -1){
+                            layer.msg("即时通讯功能必须为服务器版本才能设置",{icon: 5})
+                            return ;
+                        }
                         //提交
                         addAuthorize();
                     }

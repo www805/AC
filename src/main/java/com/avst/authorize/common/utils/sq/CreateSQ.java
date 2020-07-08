@@ -34,12 +34,16 @@ public class CreateSQ {
             LogUtil.intoLog(1, CreateSQ.class, "授权创建后 rr:" + rr);
 
             String path=basepath+"\\"+ javakeyname;
-            for (int i = 0; i < 5; i++) { //进行5次写出，确保文件一定写到文件中
+            int count = 5;
+            for (int i = 0; i < count; i++) { //进行5次写出，确保文件一定写到文件中
                 File file = new File(path);
                 if(!file.exists()){
                     boolean b = ReadWriteFile.writeTxtFile(rr, path);
                     if(!b){
                         LogUtil.intoLog(4, CreateSQ.class, "授权文件写出失败:" + path);
+                        if(count <= i){
+                            return false;
+                        }
                     }else{
                         LogUtil.intoLog(1, CreateSQ.class, "把授权写到授权文件中保存成功:" + path);
                     }
