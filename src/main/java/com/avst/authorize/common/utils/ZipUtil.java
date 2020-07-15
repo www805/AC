@@ -7,8 +7,11 @@ import org.springframework.web.multipart.MultipartFile;
 import sun.nio.cs.ext.GBK;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -32,10 +35,13 @@ public class ZipUtil {
 //            unrar("D:\\java\\AC\\sq\\tempdonwload\\donwload.rar", "D:\\java\\AC\\sq\\tempdonwload\\");
 
 
-            String entry = "D:\\java\\AC\\sq\\shouquan\\";//需要压缩的文件目录
-//            File file = new File(entry);
-//
-//            ZipOutputStream zipOutput = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath() + ".zip")));
+//            String entry = "D:\\java\\AC\\sq\\shouquan\\";//需要压缩的文件目录
+            String entry = "D:\\java\\AC\\sq\\tempshouquan\\";//需要压缩的文件目录
+            File file = new File(entry);
+
+            System.out.println(file.getAbsolutePath()+ "\\sqq.zip");
+
+//            ZipOutputStream zipOutput = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file.getAbsolutePath() + "sqq.zip")));
 //
 //            String base = file.getName();
 //
@@ -43,8 +49,9 @@ public class ZipUtil {
 //            zipOutput.closeEntry();
 //            zipOutput.close();
 
-            compressAllFileZip(entry,"D:\\java\\AC\\sq\\tempshouquan\\123","可以吗？？？骚灵情歌");
+//            compressAllFileZip(entry,"D:\\java\\AC\\sq\\tempshouquan\\123","可以吗？？？骚灵情歌");
 
+            decompression(file.getAbsolutePath() + "\\sqq.zip", entry, null);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -408,4 +415,159 @@ public class ZipUtil {
     }
 
 
+    /**
+     * 解压到指定目录
+     */
+    public static void unZipFiles(String zipPath,String descDir)throws IOException
+    {
+        unZipFiles(new File(zipPath), descDir);
+    }
+    /**
+     * 解压文件到指定目录
+     */
+    @SuppressWarnings("rawtypes")
+    public static void unZipFiles(File zipFile,String descDir)
+    {
+        File pathFile = new File(descDir);
+        if(!pathFile.exists()) {
+            pathFile.mkdirs();
+        }
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            //解决zip文件中有中文目录或者中文文件
+            ZipFile zip = new ZipFile(zipFile, Charset.forName("GBK"));
+            for(Enumeration entries = zip.entries(); entries.hasMoreElements();) {
+                ZipEntry entry = (ZipEntry)entries.nextElement();
+                String zipEntryName = entry.getName();
+                in = zip.getInputStream(entry);
+                String outPath = (descDir+zipEntryName).replaceAll("\\*", "/");;
+                //判断路径是否存在,不存在则创建文件路径
+                File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
+                if(!file.exists()){
+                    file.mkdirs();
+                }
+                outPath = outPath.replace("/", "\\");
+                //判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
+                if(new File(outPath).isDirectory()) {
+                    continue;
+                }
+                //输出文件路径信息
+                System.out.println(outPath);
+                out = new FileOutputStream(outPath);
+                byte[] buf1 = new byte[1024];
+                int len;
+                while((len=in.read(buf1))>0)
+                {
+                    out.write(buf1,0,len);
+                }
+
+            }
+            System.out.println("******************解压完毕********************");
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(null != in){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != out){
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+
+
+
+
+    /**
+     * 解压.zip文件
+     * @param sourceFile 压缩包路径
+     * @param outputDir 解压到目的录
+     * @throws IOException
+     */
+    public static void unZip(String sourceFile, String outputDir) throws IOException {
+        ZipFile zipFile = null;
+        File file = new File(sourceFile);
+        try {
+            Charset CP866 = Charset.forName("CP866");  //specifying alternative (non UTF-8) charset
+            zipFile =  new ZipFile(file, CP866);
+            createDirectory(outputDir,null);//创建输出目录
+
+            Enumeration<?> enums = zipFile.entries();
+            while(enums.hasMoreElements()){
+
+                ZipEntry entry = (ZipEntry) enums.nextElement();
+                System.out.println("解压." +  entry.getName());
+
+                if(entry.isDirectory()){//是目录
+                    createDirectory(outputDir,entry.getName());//创建空目录
+                }else{//是文件
+                    File tmpFile = new File(outputDir + "/" + entry.getName());
+                    createDirectory(tmpFile.getParent() + "/",null);//创建输出目录
+
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try{
+                        in = zipFile.getInputStream(entry);;
+                        out = new FileOutputStream(tmpFile);
+                        int length = 0;
+
+                        byte[] b = new byte[2048];
+                        while((length = in.read(b)) != -1){
+                            out.write(b, 0, length);
+                        }
+
+                    }catch(IOException ex){
+                        throw ex;
+                    }finally{
+                        if(in!=null)
+                            in.close();
+                        if(out!=null)
+                            out.close();
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            throw new IOException("解压缩文件出现异常",e);
+        } finally{
+            try{
+                if(zipFile != null){
+                    zipFile.close();
+                }
+            }catch(IOException ex){
+                throw new IOException("关闭zipFile出现异常",ex);
+            }
+        }
+    }
+
+
+
+    /**
+     * 构建目录
+     * @param outputDir
+     * @param subDir
+     */
+    public static void createDirectory(String outputDir,String subDir){
+        File file = new File(outputDir);
+        if(!(subDir == null || subDir.trim().equals(""))){//子目录不为空
+            file = new File(outputDir + "/" + subDir);
+        }
+        if(!file.exists()){
+            if(!file.getParentFile().exists())
+                file.getParentFile().mkdirs();
+            file.mkdirs();
+        }
+    }
 }

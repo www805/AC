@@ -33,6 +33,8 @@
             <result column="csqentityssid" property="sqentityssid"/>
             <result column="cstartTime" property="startTime"/>
             <result column="csqDay" property="sqDay"/>
+            <result column="cfactory" property="factory"/>
+            <result column="ccomment" property="comment"/>
             <result column="cssid" property="ssid"/>
             <result column="cstring1" property="string1"/>
             <result column="cstring2" property="string2"/>
@@ -57,6 +59,8 @@
             c.sqentityssid csqentityssid,
             c.startTime cstartTime,
             c.sqDay csqDay,
+            c.factory cfactory,
+            c.comment ccomment,
             c.ssid cssid,
             c.string1 cstring1,
             c.string2 cstring2,
@@ -97,6 +101,8 @@
             a.sqentityssid as csqentityssid,
             a.startTime as cstartTime,
             a.sqDay as csqDay,
+            a.factory cfactory,
+            a.comment ccomment,
             a.ssid as cssid,
             a.string1 as cstring1,
             a.string2 as cstring2,
@@ -113,6 +119,8 @@
     <select id="getSQListPage" resultMap="BaseResultMap">
         SELECT
             s.*,
+            a.factory cfactory,
+            a.comment ccomment,
             t.typename sqtypename
         FROM
             ac_sqentityplus s

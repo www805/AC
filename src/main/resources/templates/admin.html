@@ -102,6 +102,7 @@
             <form class="layui-form" >
 
                 <div class="layui-form-item" style="margin-bottom: 10px;">
+
                     <label class="layui-form-label" style="padding-left: 0;">申请人名称：</label>
                     <div class="layui-input-inline">
                         <input type="text" name="sq_username" id="sq_username" lay-verify="required" placeholder="请输入申请人名称" autocomplete="off" class="layui-input">
@@ -109,12 +110,12 @@
 
                     <label class="layui-form-label" style="padding-left: 0;">授权申请码：</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="sqcode" id="sqcode" lay-verify="required" placeholder="请输入授权申请码" autocomplete="off" class="layui-input">
+                        <input type="text" name="sq_sqcode" id="sq_sqcode" lay-verify="required" placeholder="请输入授权申请码" autocomplete="off" class="layui-input">
                     </div>
 
                     <label class="layui-form-label" style="padding-left: 0;">单位名称：</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="keyword" id="keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
+                        <input type="text" name="sq_keyword" id="sq_keyword" lay-verify="required" placeholder="请输入单位名称" autocomplete="off" class="layui-input">
                     </div>
 
                     <label class="layui-form-label" style="padding-left: 0;">授权类型：</label>
@@ -131,6 +132,12 @@
 
                 </div>
 
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="padding-left: 0;">出厂标识：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="sq_factory" id="sq_factory" lay-verify="required" placeholder="请输入出厂标识" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
 
             </form>
 
@@ -166,12 +173,12 @@
             <col width="110">
             <col width="170">
             <col width="150">
-            <col width="100">
+            <col width="120">
             <col width="300">
             <col width="100">
             <col width="90">
             <col width="90">
-            <col width="170">
+            <col width="175">
             <col width="100">
             <col width="150"><!---->
         </colgroup>
@@ -181,7 +188,7 @@
             <th>申请人名称</th>
             <th>公司名称</th>
             <th>单位名称</th>
-            <th>单位代码</th>
+            <th>出厂标识</th>
             <th>申请权限功能</th>
             <th>申请台数</th>
             <th>授权总天数</th>
@@ -199,7 +206,10 @@
             <td>{{value.username==null?"":value.username}}</td>
             <td>{{value.companyname==null?"":value.companyname}}</td>
             <td>{{value.clientName==null?"":value.clientName}}</td>
-            <td>{{value.unitCode==null?"":value.unitCode}}</td>
+            <td>
+                {{# var factoryStr = ""; if(value.sqCodeList!=null && value.sqCodeList.length > 0){factoryStr = value.sqCodeList[0].factory;  } }}
+                {{factoryStr}}
+            </td>
             <td>
                 {{# var gnStr = value.gnlist; var roles=""; if(isNotEmpty(gnStr)){ var gnlist = gnStr.split("|"); }}
                 {{# for (var j = 0; j < gnlist.length; j++) { var rs=gnlist[j]; if(rs.indexOf("{com") == -1){ roles+='<span class="layui-badge layui-bg-blue" style="margin-right: 10px;">'+rs+'</span>';} } }}
@@ -240,7 +250,7 @@
         //     }
         // };
 
-        $('#keyword,#sq_username,#sqcode').on('input propertychange', function() {
+        $('#sq_keyword,#sq_username,#sq_sqcode,#sq_factory').on('input propertychange', function() {
             getAuthorizeList_init(1,10);
         });
 

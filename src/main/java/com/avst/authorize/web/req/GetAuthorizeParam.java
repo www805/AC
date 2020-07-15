@@ -32,6 +32,25 @@ public class GetAuthorizeParam {
     private String ssid;
 //    @NotBlank(message = "公司简介不能为空", groups = Create.class)
     private String companymsg;
+    @NotBlank(message = "出厂标识不能为空", groups = Create.class)
+    private String factory;
+    private String comment="";
+
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     public String getCompanyname() {
         return companyname;

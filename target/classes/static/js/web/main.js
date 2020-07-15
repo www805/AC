@@ -9,12 +9,14 @@ var sqEntityInfo = "";
 function getAuthorizeList_init(currPage,pageSize) {
     var url = getactionid_manage().getAuthorizeList;
     var sq_username=$("input[name='sq_username']").val();
-    var sqcode=$("input[name='sqcode']").val();
-    var keyword=$("input[name='keyword']").val();
+    var sqcode=$("input[name='sq_sqcode']").val();
+    var factory=$("input[name='sq_factory']").val();
+    var keyword=$("input[name='sq_keyword']").val();
     var sqtypessid=$("#sqtypessid").val();
     var data={
         username: sq_username,
         clientName: keyword,
+        factory: factory,
         sqcode: sqcode,
         batypessid: sqtypessid,
         currPage:currPage,
@@ -29,11 +31,17 @@ function getAuthorizeList_init(currPage,pageSize) {
     ajaxSubmitByJson(url,data,callGetAuthorizeList);
 }
 
-function getProblemTypeList(sq_username, keyword, sqtypessid, sqcode, currPage, pageSize) {
+function getProblemTypeList(sq_username, keyword, sqtypessid, sqcode, factory, currPage, pageSize) {
     var url = getactionid_manage().getAuthorizeList;
+    sq_username = $("input[name='sq_username']").val();
+    keyword = $("input[name='sq_keyword']").val();
+    factory = $("input[name='sq_factory']").val();
+    sqcode = $("input[name='sq_sqcode']").val();
+    sqtypessid = $("#sqtypessid").val();
     var data = {
         username: sq_username,
         clientName: keyword,
+        factory: factory,
         sqcode: sqcode,
         batypessid: sqtypessid,
         currPage: currPage,
@@ -71,6 +79,8 @@ function addAuthorize() {
     var unitCode = $("input[name='unitCode']").val();
     var sqDay = $("input[name='sqDay']").val();
     var sqsize = $("input[name='sqsize']").val();
+    var factory = $("input[name='factory']").val();
+    var comment = $("input[name='comment']").val();
     var batypessid = $("#batypessid").val();
 
     var cpuCode = $("#cpuCode2").val();
@@ -142,6 +152,8 @@ function addAuthorize() {
         batypessid: batypessid,
         gnlist: gnlist,
         cpuCode: cpuCode,
+        factory: factory,
+        comment: comment,
         companymsg: companymsg
     };
 
@@ -258,6 +270,33 @@ function downloadAllSQFile(ssid) {
 
     layer.close(loadIndex);
 }
+
+//校验下载授权文件
+function checkSQFiledonwload(ssid) {
+    //先判断是否能下载，再进入下载
+    var url = getactionid_manage().checkSQFiledonwload;
+    var data={
+        ssid: ssid
+    };
+    ajaxSubmitByJson(url, data, callCheckSQFiledonwload);
+}
+
+function callCheckSQFiledonwload(data) {
+
+    if (null != data && data.actioncode == 'SUCCESS') {
+        if(isNotEmpty(data.data)){
+            window.location.href =  "/ac/downloadSQFile/" + data.data;
+        }else{
+            layer.close(loadIndex);
+            layer.msg(data.message,{icon: 5});
+        }
+    }else{
+        layer.close(loadIndex);
+        layer.msg(data.message,{icon: 5});
+    }
+}
+
+
 
 //获取指定ssid的授权信息
 function getFindByssid(ssid) {
@@ -435,25 +474,39 @@ function callGetFindByssid(data){
 
             var sqCodeList = sqEntityInfo.sqCodeList;
             var sqCodeListHTML = "";
+            var factoryHTML = "";
+            var commentHTML = "";
 
             if (isNotEmpty(sqCodeList)) {
                 for (var i = 0; i < sqCodeList.length; i++) {
                     var sqCode = sqCodeList[i];
+                    var factory = sqCode.factory==null?'':sqCode.factory;
+                    var comment = sqCode.comment==null?'':sqCode.comment;
+
+                    if(isNotEmpty(factory)){
+                        factoryHTML += (i+1) + "号:" + factory + "\n<br/>";
+                    }
+                    if(isNotEmpty(comment)){
+                        commentHTML += (i+1) + "号:" + comment + "\n<br/>";
+                    }
 
                     //输出授权码
                     sqCodeListHTML += '<tr>\n' +
                         '        <td>' + sqCode.name + '</td>\n' +
-                        '        <td width="420" title="' + sqCode.sqcode + '">' + sqCode.sqcode.substring(0, 53) + '</td>\n' +
-                        '        <td width="30">' + (sqCode.sqDay==null?'':sqCode.sqDay+"天") + '</td>\n' +
-                        '        <td><a href="' + url + '/' + sqCode.ssid + '">下载授权文件</a></td>\n' +
+                        '        <td width="410" title="' + sqCode.sqcode + '">' + sqCode.sqcode + '</td>\n' +
+                        '        <td width="40">' + (sqCode.sqDay == null ? '' : sqCode.sqDay + "天") + '</td>\n' +
+                        '        <td><a href="javascript:void(0);" onclick="loaddown();checkSQFiledonwload(\'' + sqCode.ssid + '\');">下载授权文件</a></td>\n' +
                         '</tr>';
                 }
 
                 sqCodeListHTML += '<tr>\n' +
-                    '                    <td colspan="4"><button class="layui-btn layui-btn-normal" onclick="downloadAllSQFile(\'' + sqEntityInfo.ssid + '\');" style="float: right;margin-top: 5px;">批量打包下载</button></td>\n' +
+                    '                    <td colspan="4"><button class="layui-btn layui-btn-normal" onclick="downloadAllSQFile(\'' + sqEntityInfo.ssid + '\');" style="float: right;margin-top: 5px;">U盘批量打包下载</button></td>\n' +
                     '                </tr>\n';
 
             }
+
+            $("#sqinifo_factory").html(factoryHTML);
+            $("#sqinifo_comment").html(commentHTML);
 
             $("#sqinifo_tableId").prepend(sqCodeListHTML);
         }
@@ -483,7 +536,66 @@ function callUpdateAuthorizeTime(data){
 
         }
     }else{
-        layer.msg(data.message,{icon: 5});
+
+        if (isNotEmpty(data.data)){
+
+            // console.log(data.data);
+
+            var sqinfodata = data.data;
+            var dataHtml = "";
+
+            for (let i = 0; i < sqinfodata.length; i++) {
+                var sqinfo = sqinfodata[i];
+                dataHtml += '    <tr>\n' +
+                    '      <td>' + (i+1) + '</td>\n' +
+                    '      <td>' + sqinfo.username + '</td>\n' +
+                    '      <td>' + sqinfo.companyname + '</td>\n' +
+                    '      <td>' + sqinfo.sqDay + '</td>\n' +
+                    '      <td>' + sqinfo.startTime + '</td>\n' +
+                    '      <td><button class="layui-btn layui-btn-normal layui-btn-sm" onclick="sqAuthorizeTime(\''+sqinfo.cpuCode+'\',\''+sqinfo.ssid+'\');">续期</button></td>\n' +
+                    '    </tr>\n        ';
+            }
+
+            var contentHtml = '<table class="layui-table" style="margin-left: 10px;margin-right: 10px;" lay-even="" lay-skin="nob">\n' +
+                '  <colgroup>\n' +
+                '    <col width="70">\n' +
+                '    <col width="110">\n' +
+                '    <col >\n' +
+                '    <col width="90">\n' +
+                '    <col width="170">\n' +
+                '    <col width="100">\n' +
+                '  </colgroup>\n' +
+                '  <thead>\n' +
+                '    <tr>\n' +
+                '      <th>id</th>\n' +
+                '      <th>申请人</th>\n' +
+                '      <th>公司名</th>\n' +
+                '      <th>授权天数</th>\n' +
+                '      <th>授权创建时间</th>\n' +
+                '      <th>操作</th>\n' +
+                '    </tr> \n' +
+                '  </thead>\n' +
+                '  <tbody>\n' +
+                dataHtml +
+                '  </tbody>\n' +
+                '</table> ';
+
+            var index = layer.open({
+                type: 1,
+                title: '发现 ' + sqinfodata.length + ' 条同样的授权码信息，请选择要续期哪条授权？',
+                content: contentHtml,
+                area: ['680px', '300px'],
+                btn: ['返回'],
+                btn2: function (index, layero) {
+                    layer.close(index);
+                }
+            });
+
+
+
+        }else{
+            layer.msg(data.message,{icon: 5});
+        }
     }
 }
 
@@ -600,6 +712,8 @@ function callGetBaseType(data){
     }
 }
 
+
+
 /**
  * 局部刷新
  */
@@ -614,7 +728,7 @@ function getAuthorizeListParam() {
     }  else if (len == 2) {
         getProblemTypeList('', arguments[0], arguments[1]);
     } else if (len > 2) {
-        getProblemTypeList(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5]);
+        getProblemTypeList(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6]);
     }
 }
 
@@ -626,8 +740,9 @@ function showpagetohtml(){
         var currPage=pageparam.currPage;
 
         var sq_username=$("input[name='sq_username']").val();
-        var keyword=$("input[name='keyword']").val();
-        var sqcode=$("input[name='sqcode']").val();
+        var keyword=$("input[name='sq_keyword']").val();
+        var sqcode=$("input[name='sq_sqcode']").val();
+        var factory=$("input[name='sq_factory']").val();
         var sqtypessid=$("#sqtypessid").val();
 
         var arrparam=new Array();
@@ -635,6 +750,7 @@ function showpagetohtml(){
         arrparam[1]=keyword;
         arrparam[2]=sqtypessid;
         arrparam[3]=sqcode;
+        arrparam[4]=factory;
         showpage("paging",arrparam,'getAuthorizeListParam',currPage,pageCount,pageSize);
     }
 }
@@ -713,6 +829,18 @@ function opneModal_1() {
         '                </div>\n' +
         '            </div>\n' +
         '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label"><span style="color: red;">*</span>出厂标识</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="text" name="factory" required  lay-verify="required" autocomplete="off" placeholder="请输入出厂标识" class="layui-input" >\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
+        '                <label class="layui-form-label">备注</label>\n' +
+        '                <div class="layui-input-block">\n' +
+        '                    <input type="text" name="comment" lay-verify="" autocomplete="off" placeholder="请输入备注" class="layui-input" >\n' +
+        '                </div>\n' +
+        '            </div>\n' +
+        '            <div class="layui-form-item">\n' +
         '                <label class="layui-form-label"><span style="color: red;">*</span>公司简介</label>\n' +
         '                <div class="layui-input-block">\n' +
         '                    <textarea name="companymsg" placeholder="请输入公司简介" lay-verify="required" class="layui-textarea"></textarea>\n' +
@@ -720,8 +848,9 @@ function opneModal_1() {
         '            </div>\n' +
         '            <div id="guanli" class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="margin-left: 20px;margin-bottom: 60px;">\n' +
         '                <ul class="layui-tab-title">\n' +
-        '                    <li class="layui-this"><span style="color: red;">*</span>上传授权文件</li>\n' +
+        '                    <li id="updatefun" class="layui-this"><span style="color: red;">*</span>上传授权文件</li>\n' +
         '                    <li>授权码授权</li>\n' +
+        '                    <li>U盘批量授权</li>\n' +
         '                </ul>\n' +
         '                <div class="layui-tab-content" style="height: 100px;padding-top: 15px;">\n' +
         '                    <div class="layui-tab-item layui-show" >\n' +
@@ -737,6 +866,11 @@ function opneModal_1() {
         '                            <div class="layui-input-block">\n' +
         '                                <textarea name="cpuCode2" id="cpuCode2" placeholder="请输入授权号码，换行可以设置多个授权码&#13;&#10;例子：&#13;&#10;11|aaaaaaaaaaaaaaaaaaaaaaaaa&#13;&#10;22|bbbbbbbbbbbbbbbbbbbbbbbbb&#13;&#10;33|cccccccccccccccccccccccccccc" class="layui-textarea"></textarea>\n' +
         '                            </div>\n' +
+        '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="layui-tab-item">\n' +
+        '                        <div class="layui-form-item" onclick="gotoOne();" style="text-align: center;">\n' +
+            '                        <a href="javascript:void(0);" class="layui-btn layui-btn-normal">请上传授权文件后弹出列表框</a>' +
         '                        </div>\n' +
         '                    </div>\n' +
         '                </div>\n' +
@@ -815,9 +949,16 @@ function opneModal_1() {
                         }
                     });
 
+                    //如果im功能同时超过两个，就会报错
                     if((gnlist.split('im')).length-1 > 1){
                         layer.msg("即时通讯功能只能选择一个",{icon: 5})
                     }else{
+                        //IM授权必须为服务器版本才能设置IM授权
+                        //功能中如果含有im，并且服务端为空的话就提示错误
+                        if(gnlist.indexOf("im") != -1 && gnlist.indexOf("o_v") == -1){
+                            layer.msg("即时通讯功能必须为服务器版本才能设置",{icon: 5})
+                            return ;
+                        }
                         //提交
                         addAuthorize();
                     }
@@ -841,6 +982,7 @@ function xuqiModal_1() {
         '                <ul class="layui-tab-title">\n' +
         '                    <li class="layui-this"><span style="color: red;">*</span>授权码授权</li>\n' +
         '                    <li>上传授权文件</li>\n' +
+        '                    <li>U盘批量授权</li>\n' +
         '                </ul>\n' +
         '                <div class="layui-tab-content" style="padding-top: 15px;">\n' +
         '                    <div class="layui-tab-item layui-show" >\n' +
@@ -857,6 +999,8 @@ function xuqiModal_1() {
         '                            <i class="layui-icon"></i>\n' +
         '                            <p>点击上传，或将文件拖拽到此处(可上传SQ.txt 或 trmjava.ini文件)</p>\n' +
         '                        </div>\n' +
+        '                    </div>\n' +
+        '                    <div class="layui-tab-item">\n' +
         '                    </div>\n' +
         '                </div>\n' +
         '            </div>\n' +
@@ -969,6 +1113,14 @@ function opneModal_2(ssid) {
         '                    <td id="sqinifo_gnlist"></td>\n' +
         '                </tr>\n' +
         '                <tr>\n' +
+        '                    <td align="right">出厂标识：</td>\n' +
+        '                    <td id="sqinifo_factory"></td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
+        '                    <td align="right">备注：</td>\n' +
+        '                    <td id="sqinifo_comment"></td>\n' +
+        '                </tr>\n' +
+        '                <tr>\n' +
         '                    <td align="right">公司简介：</td>\n' +
         '                    <td id="sqinifo_companymsg"></td>\n' +
         '                </tr>\n' +
@@ -995,7 +1147,7 @@ function opneModal_2(ssid) {
             type: 1,
             title: '授权详情',
             content: html,
-            area: ['630px', '650px'],
+            area: ['640px', '650px'],
             btn: ['返回'],
             success: function (layero, index) {
                 loadIndex = layer.msg("加载中，请稍后...", {
@@ -1016,4 +1168,39 @@ function opneModal_2(ssid) {
     });
 
 
+}
+
+/**
+ * 下载弹框
+ */
+function loaddown() {
+    loadIndex = layer.msg("下载中，请稍后...", {
+        icon: 16,
+        time: 5000,
+        shade: [0.1, "#fff"]
+    });
+}
+
+function sqAuthorizeTime(xqCpuCode, ssid) {
+    //授权码和ssid续期
+    var url = getactionid_manage().updateAuthorizeTime;
+    var xqSqDay = $("#xq_sqDay").val().trim();
+
+    loadIndex = layer.msg("续期中，请稍后...", {
+        icon: 16,
+        time: 30000,
+        shade: [0.1, "#fff"]
+    });
+
+    var data = {
+        xqCpuCode: xqCpuCode,
+        xqSqDay: xqSqDay,
+        ssid: ssid
+    };
+    ajaxSubmitByJson(url, data, callUpdateAuthorizeTime);
+}
+
+//跳转到第一个选项
+function gotoOne() {
+    $("#updatefun").click();
 }

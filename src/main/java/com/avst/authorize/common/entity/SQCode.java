@@ -19,6 +19,8 @@ public class SQCode extends Model<SQCode>{
     private String sqentityssid;//关联授权信息ssid
     private String startTime;//授权开始时间
     private Integer sqDay;
+    private String factory;//出厂标识
+    private String comment;//备注
     private String ssid;
     private String string1;
     private String string2;
@@ -31,6 +33,22 @@ public class SQCode extends Model<SQCode>{
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getName() {

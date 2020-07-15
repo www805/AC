@@ -6,7 +6,6 @@ import com.avst.authorize.common.entity.*;
 import com.avst.authorize.common.utils.*;
 import com.avst.authorize.common.utils.properties.PropertiesListenerConfig;
 import com.avst.authorize.common.utils.sq.CreateSQ;
-import com.avst.authorize.common.utils.sq.SQEntity;
 import com.avst.authorize.web.mapper.*;
 import com.avst.authorize.web.req.CheckSQFiledonwloadParam;
 import com.avst.authorize.web.req.GetAuthorizeListParam;
@@ -129,7 +128,18 @@ public class AuthorizeService {
             String tempdonwloadName= PropertiesListenerConfig.getProperty("sq.tempshouquan");
             String tempPath = OpenUtil.getXMSoursePath() + tempdonwloadName;
             FileUtil.delAllFile(tempPath);
-            ZipUtil.decompression(null, tempPath, file);
+            File uploadfile = FileUtil.fileUpload(tempPath, file);
+            if(null == uploadfile){
+                result.setMessage("zip文件上传失败！");
+                return;
+            }
+//            ZipUtil.decompression(null, tempPath, uploadfile);
+            try {
+                ZipUtil.unZip(uploadfile.getPath(), tempPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             //解析txt文件里的授权码
             cpuCode = traverseFolder(tempPath);
         }else if("application/octet-stream".equals(contentType)){
@@ -142,7 +152,7 @@ public class AuthorizeService {
 
     }
 
-    @Cacheable(cacheNames = "emp", key = "#param.clientName+'-'+#param.username+'-'+#param.sqcode+'-'+#param.batypessid+'-'+#param.currPage+'-'+#param.pageSize")
+    @Cacheable(cacheNames = "emp", key = "#param.clientName+'-'+#param.username+'-'+#param.sqcode+'-'+#param.factory+'-'+#param.batypessid+'-'+#param.currPage+'-'+#param.pageSize")
     public RResult getAuthorizeList(RResult result, GetAuthorizeListParam param) {
 
         GetAuthorizeListVO authorizeListVO = new GetAuthorizeListVO();
@@ -156,6 +166,9 @@ public class AuthorizeService {
         }
         if(StringUtils.isNotEmpty(param.getSqcode())){
             ew.like("a.sqcode", param.getSqcode());
+        }
+        if(StringUtils.isNotEmpty(param.getFactory())){
+            ew.like("a.factory", param.getFactory());
         }
         if (StringUtils.isNotEmpty(param.getBatypessid()) && !"0".equals(param.getBatypessid())) {
             ew.eq("s.batypessid", param.getBatypessid());
@@ -249,6 +262,7 @@ public class AuthorizeService {
         for (int i = 0; i < cpuCodelist.length; i++) {
             //不等于空，就进入
             String cpucode = cpuCodelist[i];
+            String sqcode = cpuCodelist[i];
 
             if (StringUtils.isNotEmpty(cpucode)) {
                 if (cpucode.indexOf("|") == -1) {//如果没有就在前面加一个名称编号
@@ -273,7 +287,7 @@ public class AuthorizeService {
                 String day = (now.get(Calendar.DAY_OF_MONTH) + "").length() == 1 ? "0" + now.get(Calendar.DAY_OF_MONTH) : now.get(Calendar.DAY_OF_MONTH) + "";
 
                 String sqFileName = PropertiesListenerConfig.getProperty("sq.fileName");
-                String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode() + "\\" + param.getCpuCode() + "_" + System.currentTimeMillis();
+                String path = OpenUtil.getXMSoursePath() + sqFileName + year + "\\" + month + "\\" + day + "\\" + param.getUnitCode() + "\\" + sqcode + "_" + System.currentTimeMillis();
 
                 LogUtil.intoLog("授权路径："+path);
                 boolean b = CreateSQ.deSQ(sqEntity, path);
@@ -289,6 +303,8 @@ public class AuthorizeService {
                     sqCode.setSqentityssid(sqEntity.getSsid());
                     sqCode.setStartTime(sqEntity.getStartTime());
                     sqCode.setSqDay(sqEntity.getSqDay());
+                    sqCode.setFactory(param.getFactory());
+                    sqCode.setComment(param.getComment());
                     sqCode.setSsid(OpenUtil.getUUID_32());
                     Integer insert = sqCodeMapper.insert(sqCode);
                 }else{
@@ -496,7 +512,7 @@ public class AuthorizeService {
 //            String uuid_32 = OpenUtil.getUUID_32();
 
             if (null != entityPlus) {
-                String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getSsid() ;//+ ".zip"
+                String tagerZip = tempPath + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getSsid();//+ ".zip"
 
                 List<SQCode> sqCodeList = entityPlus.getSqCodeList();
                 if (sqCodeList.size() > 0) {
@@ -525,8 +541,8 @@ public class AuthorizeService {
                 mediaTypeStr = (mediaTypeStr == null) ? MediaType.APPLICATION_OCTET_STREAM_VALUE : mediaTypeStr;
                 // 实例化MIME
                 MediaType mediaType = MediaType.parseMediaType(mediaTypeStr);
-
-                sqFileName = entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getStartTime() + ".zip";
+                //前面加u是u盘批量授权
+                sqFileName = "u_" + entityPlus.getUsername() + "_" + entityPlus.getCompanyname() + "_" + entityPlus.getStartTime() + ".zip";
 
                 /*
                  * 构造响应的头
@@ -584,7 +600,7 @@ public class AuthorizeService {
                 for (File file2 : files) {
                     if (file2.isDirectory()) {
 //                        System.out.println("文件夹:" + file2.getAbsolutePath());
-                        traverseFolder(file2.getAbsolutePath());
+                        sqlistStr += traverseFolder(file2.getAbsolutePath());
                     } else {
 //                        System.out.println("文件:" + file2.getAbsolutePath());
                         if (file2.getAbsolutePath().indexOf(".txt") != -1) {
@@ -600,9 +616,11 @@ public class AuthorizeService {
                                     cpuCode += strTmp;
                                 }
 
-                                String filenameFilter = file2.getName().replace(".txt", "");
+//                                String filenameFilter = file2.getName().replace(".txt", "");
+//                                String parent = file2.getParent();
 
-                                sqlistStr += filenameFilter + "|" + cpuCode + "\n";
+//                                sqlistStr += parent + "|" + cpuCode + "\n";
+                                sqlistStr += cpuCode + "\n";
 
 //                                System.out.println(sqlistStr);
                                 LogUtil.intoLog(1, this.getClass(), sqlistStr);

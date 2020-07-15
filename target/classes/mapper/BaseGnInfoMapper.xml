@@ -34,7 +34,7 @@
         FROM
             base_gninfo g
             LEFT JOIN base_gntype nt ON g.bgntypessid = nt.ssid
-        where 1=1
+        where g.id > 0 and nt.id > 0
             ${ew.sqlSegment}
     </select>
 
@@ -60,7 +60,7 @@
         FROM
             base_gninfo g
             LEFT JOIN base_gntype nt ON g.bgntypessid = nt.ssid
-        where 1=1
+        where  g.id > 0 and nt.id > 0
             ${ew.sqlSegment}
     </select>
 

@@ -33,6 +33,8 @@
         FROM
             base_gntype t
             LEFT JOIN base_gninfo g ON t.ssid = g.bgntypessid
+        where t.id > 0
+
     </select>
 
 

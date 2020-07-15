@@ -2,6 +2,7 @@ package com.avst.authorize.common.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -234,6 +235,31 @@ public class FileUtil {
 		return false;
 	}
 
+
+	/**
+	 * 把上传上来的文件拷贝到一个指定的地方
+	 * @param path 拷贝路径
+	 * @param file 文件
+	 * @return
+	 */
+	public static File fileUpload(String path, MultipartFile file) {
+		if (file.isEmpty()) {
+			return null;
+		}
+		String fileName = file.getOriginalFilename();
+		String filePath = new File(path).getAbsolutePath()+ "/" + fileName;
+		File dest = new File(filePath);
+		if (!dest.getParentFile().exists()) {
+			dest.getParentFile().mkdirs();
+		}
+		try {
+			file.transferTo(dest); // 保存文件
+			return dest;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 
 	public static void main(String[] args) {

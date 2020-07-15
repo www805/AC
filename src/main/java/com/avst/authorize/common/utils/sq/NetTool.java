@@ -1,13 +1,16 @@
 package com.avst.authorize.common.utils.sq;
-
-
 import com.avst.authorize.common.utils.LogUtil;
+import com.avst.authorize.common.utils.ReadWriteFile;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * 授权已经到了第三阶段 使用CPU序列号+C盘序列号
@@ -18,20 +21,31 @@ public static void main( String[] args){
  
 	try {
 
-//		LogUtil.intoLog(NetTool.class,getLocalMac());
-//		LogUtil.intoLog(NetTool.class,getCPUCode());
+//		getSQCode();
 
-		System.out.println(getSQCode_win());
-
+		System.out.println(getSQCode());
 
 	} catch (Exception e) {
 		
 		e.printStackTrace();
 	}
-
-  
 }
 
+	public static String getSQCode(){
+		String os = getOsName();
+		System.out.println(os+":os");
+		String mac=null;
+		if (os.startsWith("Win")) {
+			mac= getSQCode_win();
+		} else if (os.startsWith("Linux")) {
+			mac= getSQCode_linux();
+		}else{
+			System.out.println("getSQ is error ，os："+os);
+			return null;
+		}
+		System.out.println(mac+":os trmcode");
+		return mac;
+	}
 
 	/**
 	 * 获取本地设备的授权码
@@ -41,7 +55,9 @@ public static void main( String[] args){
 	public static String getSQCode_win(){
 		String cpuCode=getCPUCode_win();
 //		String ypCode=getHdSerialInfo();
-		String ypCode=getSerialNumber();
+//		String ypCode=getSerialNumber();
+		String ypCode=getDiskID(false);//第六代授权
+
 		String sqcode="";
 		if(null!=cpuCode&&!cpuCode.trim().equals("")){
 			sqcode=cpuCode;
@@ -51,6 +67,79 @@ public static void main( String[] args){
 		}
 		return AnalysisSQ.encode_uid(sqcode);
 	}
+
+	/**
+	 * 获取本地设备的授权码
+	 * 现阶段用CPU序列号+第一块磁盘序列号
+	 * @return
+	 */
+	public static String getSQCode_linux(){
+		String cpuCode=getCPUID_linux();
+
+		String ypCode=getIdentifierByLinux();
+		String sqcode="";
+		if(null!=cpuCode&&!cpuCode.trim().equals("")){
+			sqcode=cpuCode.trim();
+		}
+		if(null!=ypCode&&!ypCode.trim().equals("")){
+			sqcode+=ypCode.trim();
+		}
+		return AnalysisSQ.encode_uid(sqcode);
+	}
+
+	/**
+	 * 获取Linux第一块磁盘的序列号
+	 * @return
+	 */
+	private static String getIdentifierByLinux(){
+		String[] cmd = {"fdisk", "-l"};
+		String result=null;
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		InputStream in2=null;
+		InputStream in=null;
+		OutputStream os = null;
+		try {
+			p = Runtime.getRuntime().exec(cmd);// 管道
+			os=p.getOutputStream();
+			in=p.getInputStream();
+			in2=p.getErrorStream();
+			bufferedReader = new BufferedReader(new InputStreamReader(in));
+			printMessage(in2);
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) {
+				if(line.indexOf("identifier:") > -1){
+
+					String str2 = line.split("identifier:")[1].trim();
+					System.out.println("Identifier is: "+str2);
+					result=str2;
+					break;
+				}
+			}
+
+			if(null!=result&&result.length() > 0){
+				result=result.replaceAll("-", "");
+			}
+
+			int exitvalue=p.waitFor();
+			if(exitvalue!=0){
+				throw new Exception("exitvalue is not 0, 说明代码有错");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+
+			close(os, in, in2, bufferedReader, p);
+		}
+		return result.trim();
+
+
+	}
+
+
+
+
   
 //取得LOCALHOST的IP地址  
 public static String getMyIP() {
@@ -137,6 +226,23 @@ public static String getOsName() {
     return os;
 }
 
+	/**
+	 * 1是win
+	 * 2是Linux
+	 * 3其他
+	 * @return
+	 */
+	public static int osType() {
+		String address = "";
+		String os = getOsName();
+		if (os.startsWith("Win")) {
+			return 1;
+		} else if (os.startsWith("Linux")) {
+			return 2;
+		}
+		return 2;
+	}
+
 /**
  * Returns the MAC address of the computer.
  * 
@@ -205,28 +311,29 @@ public static String getLocalMac() {
 		return cpuCode;
 	}
 
-
 	/**
-	 * Linux系统获取CPU序列号，没有验证过
+	 * Linux系统获取CPU序列号
 	 * @return
-	 * @throws InterruptedException
 	 */
 	private static String getCPUID_linux()  {
 		String result = "";
 		String CPU_ID_CMD = "dmidecode";
 		BufferedReader bufferedReader = null;
+		OutputStream os = null;
 		Process p = null;
 		InputStream in2=null;
 		InputStream in=null;
-		InputStreamReader isr=null;
 		try {
 			p = Runtime.getRuntime().exec(new String[]{ "sh", "-c", CPU_ID_CMD });// 管道
+			os=p.getOutputStream();
 			in=p.getInputStream();
 			in2=p.getErrorStream();
-			isr=new InputStreamReader(in);
-			bufferedReader = new BufferedReader(isr);
+			bufferedReader = new BufferedReader(new InputStreamReader(in));
 			String line = null;
 			int index = -1;
+
+			printMessage(in2);
+
 			while ((line = bufferedReader.readLine()) != null) {
 				// 寻找标示字符串[hwaddr]
 				index = line.toLowerCase().indexOf("uuid");
@@ -237,7 +344,9 @@ public static String getLocalMac() {
 				}
 			}
 
-			printMessage(in2);
+			if(null!=result&&result.length() > 0){
+				result=result.replaceAll("-", "");
+			}
 
 			int exitvalue=p.waitFor();
 			if(exitvalue!=0){
@@ -245,41 +354,12 @@ public static String getLocalMac() {
 			}
 
 		} catch (Exception e) {
+			System.out.println("getCPUID_linux error");
 			e.printStackTrace();
 		}finally {
-
-			try {
-				if(null!=bufferedReader){
-					bufferedReader.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				if(null!=isr){
-					isr.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-
-			try {
-				if(null!=in){
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=p){
-					p.destroy();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			close(os, in, in2, bufferedReader, p);
 		}
+		System.out.println(result+":CPUID_linux");
 		return result.trim();
 	}
 
@@ -310,7 +390,6 @@ public static String getLocalMac() {
 				}
 			}
 			printMessage(in2);
-
 			int exitvalue=process.waitFor();
 			if(exitvalue!=0){
 				throw new Exception(exitvalue+"exitvalue is not 0, 说明代码有错");
@@ -321,39 +400,7 @@ public static String getLocalMac() {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
-
-			try {
-				if(null!=br){
-					br.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=process){
-					process.destroy();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=in){
-					in.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=os){
-					os.flush();
-					os.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			close(os, in, in2, br, process);
 		}
 
 		return null;
@@ -379,7 +426,7 @@ public static String getLocalMac() {
 			isr=new InputStreamReader(in,"gbk");
 			in2=p.getErrorStream();
 			bufferedReader = new BufferedReader(isr);
-
+			printMessage(in2);
 			while ((line = bufferedReader.readLine()) != null) {
 				if (line.indexOf("卷的序列号是 ") != -1) {  //读取参数并获取硬盘序列号
 
@@ -387,8 +434,6 @@ public static String getLocalMac() {
 					break;
 				}
 			}
-
-			printMessage(in2);
 
 			int exitvalue=p.waitFor();
 			p.destroy();
@@ -400,36 +445,13 @@ public static String getLocalMac() {
 			e.printStackTrace();
 		}finally {
 			try {
-				if(null!=bufferedReader){
-					bufferedReader.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
 				if(null!=isr){
 					isr.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-
-			try {
-				if(null!=in){
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=p){
-					p.destroy();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			close(os, in, in2, bufferedReader, p);
 		}
 
 		return HdSerial;
@@ -453,7 +475,7 @@ public static String getLocalMac() {
 		try {
 			File file = File.createTempFile("realhowto",".vbs");
 			file.deleteOnExit();
-			fw = new FileWriter(file);
+			fw = new java.io.FileWriter(file);
 			String vbs = "Set objFSO = CreateObject(\"Scripting.FileSystemObject\")\n"
 					+"Set colDrives = objFSO.Drives\n"
 					+"Set objDrive = colDrives.item(\"" + drive + "\")\n"
@@ -480,37 +502,12 @@ public static String getLocalMac() {
 			e.printStackTrace();
 		}finally {
 			try {
-				if(null!=bufferedReader){
-					bufferedReader.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
 				if(null!=isr){
 					isr.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
-
-			try {
-				if(null!=in){
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=p){
-					p.destroy();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
 			try {
 				if(null!=fw){
 					fw.close();
@@ -518,13 +515,147 @@ public static String getLocalMac() {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			close(os, in, in2, bufferedReader, p);
 		}
 		return result.trim();
 	}
 
+	/**
+	 * 获取当前主机的第一块硬盘的ID
+	 * win专用
+	 * @return
+	 */
+	public static String getDisk0ID() {
+
+		String result = "";
+		FileWriter fw=null;
+		BufferedReader bufferedReader = null;
+		Process p = null;
+		InputStream in2=null;
+		InputStream in=null;
+		InputStreamReader isr=null;
+		OutputStream os = null;
+
+		try {
+
+			File file = File.createTempFile("diskpart",".bat");
+			file.deleteOnExit();
+			File file2 = File.createTempFile("javaw",".ini");
+			file2.deleteOnExit();
+			System.out.println(file2.getPath());
+			File file3 = File.createTempFile("diskpart",".script");
+			file3.deleteOnExit();
+			File file4 = File.createTempFile("run",".bat");
+			file4.deleteOnExit();
+
+            File file5 = File.createTempFile("ceshi",".vbs");
+            file5.deleteOnExit();
+			//生成磁盘信息
+			try {
+
+				fw = new FileWriter(file3);
+				String script1 = "select disk 0";
+				script1+="\n detail disk \n exit &";
+				fw.write(script1);
+				fw.close();
+
+				fw = new FileWriter(file);
+				script1 = "%1 mshta vbscript:CreateObject(\"Shell.Application\").ShellExecute(\"cmd.exe\",\"/c %~s0 ::\",\"\",\"runas\",0)(window.close)&&exit cd /d \"%~dp0\"";
+				script1+="\n diskpart /s   "+file3.getPath()+" >"+file2.getPath()+ "\n exit &";
+				fw.write(script1);
+				fw.close();
+
+				p = Runtime.getRuntime().exec(file.getPath());
+
+				os=p.getOutputStream();
+				os.close();
+				in=p.getInputStream();
+				isr=new InputStreamReader(in,"gbk");
+				in2=p.getErrorStream();
+				bufferedReader = new BufferedReader(isr);
+
+				printMessage(in2);
+
+				String line2;
+				while ((line2 = bufferedReader.readLine()) != null) {
+					System.out.println(line2+":line2");
+				}
+
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}finally {
+				try {
+					if(null!=isr){
+						isr.close();
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				try {
+					if(null!=fw){
+						fw.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				close(os, in, in2, bufferedReader, p);
+			}
+
+			//读取磁盘数据
+			try {
+				Thread.sleep(7000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			List<String> disk0list= ReadWriteFile.readTxtFileToList(file2.getPath(),"gbk");
 
 
+			if(null!=disk0list&&disk0list.size() > 0){
+				for(String line:disk0list){
+					if(line.indexOf("磁盘") > -1&&line.indexOf("ID") > -1&&line.indexOf(":") > -1){
+						//磁盘id
+						String diskid=line.split(":")[1].trim();
+						result+=diskid;
+					}
 
+					if(line.indexOf("路径") > -1&& line.indexOf("位置路径") < 0 &&line.indexOf(":") > -1){
+						//路径
+						String path=line.split(":")[1].trim();
+						result+=path;
+					}
+
+					if(line.indexOf("目标") > -1 &&line.indexOf(":") > -1){
+						//目标
+						String path=line.split(":")[1].trim();
+						result+=path;
+					}
+				}
+			}
+
+			file.delete();
+			file2.delete();
+			file3.delete();
+			file4.delete();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result.trim();
+	}
+
+private static String diskid=null;
+
+	public static String getDiskID(boolean bool){
+
+		if(StringUtils.isEmpty(diskid)||bool){
+			diskid=getDisk0ID();
+
+			LogUtil.intoLog(1,NetTool.class,"重置一次diskid："+diskid);
+		}
+		return diskid;
+	}
 
 	private static void printMessage(final InputStream input) {
 		new Thread(new Runnable() {
@@ -536,7 +667,7 @@ public static String getLocalMac() {
 					while((line=bf.readLine())!=null) {
 						System.out.println(line);
 					}
-         		} catch (IOException e) {
+         		} catch (Exception e) {
             		e.printStackTrace();
          	 	}finally {
 				  try {
@@ -579,41 +710,60 @@ public static String getLocalMac() {
 
 			int exitvalue=process.waitFor();
 			if(exitvalue!=0){
-//				throw new Exception("exitvalue is not 0, 说明代码有错");
-				LogUtil.intoLog(3, NetTool.class.getClass(), "exitvalue is not 0, 说明代码有错");
+				throw new Exception("exitvalue is not 0, 说明代码有错");
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 
-			try {
-				if(null!=os){
-					os.flush();
-					os.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=process){
-					process.destroy();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			try {
-				if(null!=in){
-					in.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			close(os, in, in2, null, process);
 		}
-
 		return null;
 
+	}
+
+
+
+	private static void close(OutputStream os,InputStream in,InputStream in2,BufferedReader br,Process process){
+
+        try {
+            Thread.sleep(1000);//为了printMessage不出现Stream closed
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+			if(null!=br){
+				br.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if(null!=os){
+				os.flush();
+				os.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if(null!=process){
+				process.destroy();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if(null!=in){
+				in.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }  

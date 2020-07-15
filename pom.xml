@@ -124,6 +124,14 @@
         </dependency>
 
 
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.9</version>
+        </dependency>
+
+
         <!--授权用到的工具包-->
         <dependency>
             <groupId>com.wb</groupId>

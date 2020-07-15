@@ -7,8 +7,16 @@ public class GetAuthorizeListParam extends Page{
     private String clientName;
     private String username;
     private String sqcode;
+    private String factory;
     private String batypessid;
 
+    public String getFactory() {
+        return factory;
+    }
+
+    public void setFactory(String factory) {
+        this.factory = factory;
+    }
 
     public String getClientName() {
         return clientName;

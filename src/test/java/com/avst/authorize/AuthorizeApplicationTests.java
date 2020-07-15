@@ -3,6 +3,8 @@ package com.avst.authorize;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import com.avst.authorize.common.entity.BaseGnType;
+import com.avst.authorize.common.entity.SQCode;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -14,6 +16,8 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -21,7 +25,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class AuthorizeApplicationTests {
 
     public static void main(String[] args) {
-
 
     }
     @Test
